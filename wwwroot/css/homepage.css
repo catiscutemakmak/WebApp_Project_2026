@@ -1,0 +1,220 @@
+#root,
+#app,
+.wrapper {
+  display: flex;
+  flex-direction: column; 
+}
+body {
+    min-height: 100vh;
+    background: radial-gradient(circle at bottom, #aa00c1 0%, #000 60%);
+    font-family: 'Noto Sans Thai', sans-serif;
+    margin: 0;
+}
+
+.home-container {
+    max-width: 100%;
+    margin: 0px 0px 0px 0px;
+}
+
+.title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 24px;
+    color: #d400ff;
+    text-align: center;
+    margin-top: 48px;
+    margin-bottom: 48px;
+    letter-spacing: 2px;
+}
+
+.game-cards-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 60px;
+}
+
+.game-card {
+    width: 100%;
+    height: 240px;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+}
+
+
+.game-card:hover {
+    transform: scale(1.05);
+
+}
+
+.game-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+}
+
+.game-card-name {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
+}
+
+@media (max-width: 768px) {
+    .game-cards-container {
+        grid-template-columns: 1fr;
+        padding: 0 16px;
+        gap: 16px;
+    }
+    .game-card {
+        height: 220px;
+    }
+    .game-card-name {
+        font-size: 16px;
+    }
+    .title {
+        font-size: 18px;
+        margin-top: 24px;
+        margin-bottom: 24px;
+    }
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-box {
+    background: #111;
+    border: 1px solid #aa00c1;
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 420px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 0 40px rgba(170, 0, 193, 0.4);
+}
+
+.modal-close {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #fff;
+}
+
+.modal-game-img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 10px;
+    opacity: 0.85;
+}
+
+.modal-game-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    color: #d400ff;
+    text-align: center;
+    margin: 0;
+}
+
+.modal-label {
+    color: #ccc;
+    font-size: 14px;
+    margin: 0;
+    align-self: flex-start;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: #222;
+    border: 1px solid #555;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    font-family: 'Noto Sans Thai', sans-serif;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: #aa00c1;
+}
+
+.input-error {
+    color: #ff4444;
+    font-size: 12px;
+    margin: 0;
+    align-self: flex-start;
+    display: none;
+}
+
+.modal-submit {
+    /* width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #aa00c1, #7700aa);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-family: 'Noto Sans Thai', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s; */
+    width: 240px;
+    height: 48px;
+    padding: 12px;
+    background-color: #aa00c1;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+    align-self: center;
+}
+
+.modal-submit:hover {
+    opacity: 0.85;
+    transform: scale(1.02);
+}
+
+.modal-overlay.active {
+    display: flex !important;
+}

@@ -1,0 +1,95 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    font-family: 'Noto Sans Thai', sans-serif;
+    padding: 20px;
+}
+
+form {
+    background: #202020;
+    padding: 34px 60px;
+    width: 100%;
+    max-width: 600px;   
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(212, 0, 255, 0.15);
+}
+
+.title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 24px;
+    color: #d400ff;
+    text-align: center;
+    margin-bottom: 44px;
+    letter-spacing: 2px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    color: #fff;
+    font-size: 18px;
+}
+
+input {
+    width: 100%;
+    height: 48px;
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-size: 18px;
+    color: #aa00c1;
+    text-align: left;
+    padding: 20px;
+    background: #000;
+    border: 1px solid #aa00c1;
+    border-radius: 8px;
+    color: #F4A5FF;
+    transition: 0.3s;
+}
+
+input:focus {
+    box-shadow: 0 0 12px #d400ff;
+}
+
+button {
+    width: 240px;
+    height: 48px;
+    padding: 12px;
+    background-color: #aa00c1;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    align-self: center;
+    margin-top: 44px;
+}
+
+button:hover {
+    background-color: #45004E; 
+}
+
+.whole-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}

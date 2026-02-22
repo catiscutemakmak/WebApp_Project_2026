@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Requirement</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Create.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    </head>
+    <body>
+        <div class="container">
+
+            <!-- LEFT -->
+            <div class="left-panel">
+                <a href="" class="back-btn">
+                    <span class="icon">
+                        &#x2039; <!-- ❮ -->
+                    </span>
+                    <span class="text">BACK</span>
+                </a>
+                
+                <div class="game-card">
+                    <h3>Choose Game</h3>
+                    <select id="game-select">
+                        <option value="" disabled selected hidden>Choose game</option>
+                            <option value="mlbb">Mobile Legends Bang Bang</option>
+                            <option value="rov">RoV</option>
+                            <option value="valorant">Valorant</option>
+                            <option value="csgo">CS:GO</option>
+                            <option value="overwatch">Overwatch 2</option>
+                            <option value="pubg">PUBG: BATTLEGROUNDS</option>
+                            <option value="amongus">Among Us</option>
+                            <option value="lol">League of Legends</option>
+                    </select>
+                </div>
+
+                <div class="Date_time-card">
+                    <h3>Play Date</h3>
+                    <input type="date" id="play-date" placeholder="DD/MM/YY">
+                    <h3>Time</h3>
+                    <input type="text" id="play-time" placeholder="Select time">
+                </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="right-panel">
+                 <h1 class="title">Requirement</h1>
+
+                <label>Game Mode</label>
+                <select id="game-mode" disabled>
+                    <option value="" disabled selected hidden>Choose Game First</option>
+                </select>
+
+                <label>Server</label>
+                <select id="game-server" disabled>
+                    <option value="" disabled selected hidden>Choose Game First</option>
+                </select>
+
+                <label>Rank Require</label>
+                <div class="rank-row">
+                    <select id="min-rank" disabled>
+                        <option value="" disabled selected hidden>Min Rank</option>
+                    </select>
+
+                    <select id="max-rank" disabled>
+                        <option value="" disabled selected hidden>Max Rank</option>
+                    </select>
+                </div>
+
+                <label>Number of players</label>
+                <select name="playerCount" class="player-select" required>
+                    <option value="" disabled selected hidden>Choose Player</option>
+                    <option value="1">1 Player</option>
+                    <option value="2">2 Players</option>
+                    <option value="3">3 Players</option>
+                    <option value="4">4 Players</option>
+                    <option value="5">5 Players</option>
+                </select>
+
+                <label>Description</label>
+                <textarea placeholder="Description"></textarea>
+
+                <button class="submit-btn">SUBMIT</button>
+            </div>
+
+        </div>
+    <script src="~/js/Create.js"></script>
+    </body>
+
+</html>

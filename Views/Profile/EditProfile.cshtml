@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;300;400;500;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="~/css/EditProfile.css" />
+</head>
+
+<body>
+ 
+     <!-- MAIN -->
+    <div class="container">
+
+        <!-- LEFT -->
+        <div class="left-panel">
+            <a href="@Url.Action("ViewProfile", "Profile")" class="back-btn">
+                <span class="icon">
+                    &#x2039; <!-- ❮ -->
+                </span>
+                <span class="text">BACK</span>
+            </a>
+
+            <div class="avatar"></div>
+
+            <div class="avatar-options">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <button class="ok-btn">OK</button>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="right-panel">
+            <h2>Hi! Username Surname</h2>
+
+            <div class="form-row basic-info">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" placeholder="Name">
+                </div>
+                <div class="input-group">
+                    <label>Phone</label>
+                    <input type="text" id="phoneInput" placeholder="Phone number (+66)" maxlength="12">
+                </div>
+            </div>
+
+            <hr class="separator">
+
+            <div class="game-selection-grid">
+                <div class="game-box">
+                    <div class="input-group">
+                        <label>Game 1</label>
+                        <select class="game-select" data-rank="rank1" required>
+                            <option value="" disabled selected hidden>Choose game</option>
+                            <option value="mlbb">Mobile Legends Bang Bang</option>
+                            <option value="rov">RoV</option>
+                            <option value="valorant">Valorant</option>
+                            <option value="csgo">CS:GO</option>
+                            <option value="overwatch">Overwatch 2</option>
+                            <option value="pubg">PUBG: BATTLEGROUNDS</option>
+                            <option value="amongus">Among Us</option>
+                            <option value="lol">League of Legends</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Rank</label>
+                        <select id="rank1" required>
+                            <option value="" disabled selected hidden>Choose Rank</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="game-box">
+                    <div class="input-group">
+                        <label>Game 2</label>
+                        <select class="game-select" data-rank="rank2" required>
+                            <option value="" disabled selected hidden>Choose game</option>
+                            <option value="mlbb">Mobile Legends Bang Bang</option>
+                            <option value="rov">RoV</option>
+                            <option value="valorant">Valorant</option>
+                            <option value="csgo">CS:GO</option>
+                            <option value="overwatch">Overwatch 2</option>
+                            <option value="pubg">PUBG: BATTLEGROUNDS</option>
+                            <option value="amongus">Among Us</option>
+                            <option value="lol">League of Legends</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Rank</label>
+                        <select id="rank2" required>
+                            <option value="" disabled selected hidden>Choose Rank</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="game-box">
+                    <div class="input-group">
+                        <label>Game 3</label>
+                        <select class="game-select" data-rank="rank3" required>
+                            <option value="" disabled selected hidden>Choose game</option>
+                            <option value="mlbb">Mobile Legends Bang Bang</option>
+                            <option value="rov">RoV</option>
+                            <option value="valorant">Valorant</option>
+                            <option value="csgo">CS:GO</option>
+                            <option value="overwatch">Overwatch 2</option>
+                            <option value="pubg">PUBG: BATTLEGROUNDS</option>
+                            <option value="amongus">Among Us</option>
+                            <option value="lol">League of Legends</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Rank</label>
+                        <select id="rank3" required>
+                            <option value="" disabled selected hidden>Choose Rank</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group full-width">
+                <label>Description</label>
+                <textarea placeholder="Tell me more about who you are!"></textarea>
+            </div>
+
+            <button class="submit-btn">SUBMIT</button>
+        </div>
+
+    </div>
+
+    <script src="~/js/ProfileRank.js"></script>
+</body>
+
+</html>

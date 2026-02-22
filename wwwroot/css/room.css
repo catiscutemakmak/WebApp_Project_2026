@@ -1,0 +1,291 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;300;400;500;700&display=swap');
+:root {
+    --primary: #EB55FF;
+    --secondary: #AA00C1;
+    --text-soft: #F4A5FF;
+}
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+
+.player-room {
+    width: 75%; 
+    display: grid;
+    grid-template-columns: repeat(5, minmax(100px, 170px));
+    justify-content: center;      
+    gap: 15px;
+    background-color: #0d0d0d;
+    padding: 10px 40px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    position: relative;
+    border: 1px solid #1f1f1e;
+    margin: 20px auto;
+}
+
+
+.room-name {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    font-family: 'Noto Sans Thai', sans-serif;
+    transform: translateY(-50%); /* ดันขึ้นครึ่งนึง */
+
+    padding: 4px 12px;
+    background: #0d0d0d;
+    color: #ffffff;
+
+    border: 1px solid #fffb23;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+@media (max-width: 1400px) {
+    .player-room {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* mobile */
+@media (max-width: 600px) {
+    .player-room {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+.player-dev , .empty-dev {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border: 1px solid rgba(235, 85, 255, 0.3);
+    border-radius: 14px;
+    padding: 15px;
+    font-size: 14px;
+    background: linear-gradient(145deg, #0f0f0f, #1a001f);
+    transition: 0.25s ease;
+}
+
+.player-dev:hover {
+    transform: translateY(-6px);
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 20px rgba(235, 85, 255, 0.6);
+}
+.empty-dev:hover
+{
+    transform: translateY(-6px);
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 20px rgba(235, 85, 255, 0.6);
+}
+
+.empty-dev:hover span {
+    visibility: hidden;
+}
+
+.empty-dev:hover::after {
+    content: "ദ്ദി˙ ᴗ ˙ )";
+    color: #EB55FF;
+}
+
+.empty-dev{
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed #EB55FF;
+    border-radius: 12px;
+}
+.player-profile {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #EB55FF;
+}
+p {
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12;
+}
+.rankImg {
+    width: 60px;
+    height: 60px;
+}
+.empty-crown {
+    display: block;
+    font-size: 18px;
+    color: #EB55FF;
+}
+
+.player-dev p {
+    margin: 2px 0;
+}
+
+.rank-p{
+font-family: 'Noto Sans Thai', sans-serif;
+font-style: normal;
+font-weight: 700;
+font-size: 12px;
+color: #F4A5FF;
+flex: none;
+order: 1;
+flex-grow: 0;
+z-index: 1;
+}
+
+
+.chat-dev{
+    background-color: #000000;
+    color: #ffffff;
+    grid-column: 1 / -1;  
+    border: 1px solid #1c1c1c;
+    border-radius: 12px;
+
+    max-height: 190px;
+    overflow: hidden
+}
+.chat-dev:hover{
+    overflow-y: auto;
+    
+}
+.chat-format {
+    display: flex;
+    align-items: stretch;  
+    gap: 10px;
+    margin: 10px;
+    
+    
+}
+.chat-dev::-webkit-scrollbar-track {
+    background: #111;
+}
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #333;
+  color: white;
+  position: fixed;
+  padding: 20px;
+}
+
+.chat-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-top: 15px;
+}
+
+.chat-textbox {
+    background: #1c1c1c;
+    padding: 0px 12px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;   
+    min-height: 30px;
+
+}
+
+.sent-box{
+ 
+grid-column: 1 / -1;  
+min-height: 40px;
+box-sizing: border-box;
+background: #000000;
+border: 1px solid #AA00C1;
+border-radius: 8px;
+
+
+}
+.sent-box {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    
+}
+
+.chat-input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    background-color: #000000;
+    color: white;
+
+}
+
+.chat-send-btn {
+    padding: 0 16px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    background-color: #000000;
+    
+}
+
+.yellow{
+    color: #FFCC00;
+}
+
+.btnContainer{
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    margin: 30px auto;
+
+    
+}
+
+.btnContainer button{
+    
+    margin: 5px 5px;
+    flex: 1;
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    border-radius: 6px;
+    padding: 5px 50px;
+    
+}
+
+.backbtn{
+    display: flex;          /* ต้องมี */
+    align-items: center;    /* จัดกลางแนวตั้ง */
+    justify-content: center;
+    gap: 8px;               /* เว้นระยะ svg กับ text */
+
+    border: 2px solid #AA00C1;
+    background-color: #000000;
+    color:#F4A5FF;
+}
+
+.Readybtn{
+    color: white;
+    background-color:#AA00C1 ;
+    border: 2px solid #AA00C1;
+
+}
+
+.Startbtn{
+    color: #696969;
+    background-color:white ;
+    border: 2px solid white;
+}
+
+@media (max-width: 600px) {
+    .btnContainer {
+        flex-direction: column; 
+    
+    }
+}

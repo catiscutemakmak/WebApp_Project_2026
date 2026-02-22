@@ -1,0 +1,362 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Noto Sans Thai', sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #000;
+    color: #fff;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+        rgba(255,255,255,0.01),
+        rgba(0,0,0,0.01)
+    );
+    pointer-events: none;
+}
+
+/* MAIN */
+.container {
+    display: flex;
+    padding: 40px;
+    gap: 40px;
+}
+
+/* LEFT */
+.left-panel {
+    width: 40%;
+    height: auto;
+    margin-top: 10px;
+    text-align: center;
+    background-color: transparent;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: 140px;
+    margin-top: 20px;
+    width: fit-content;
+    padding: 10px 60px;
+    background: transparent;
+    text-decoration: none;
+    border: 2px solid #AA00C1;
+    border-radius: 14px;
+    color: #F4A5FF;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+
+.text{
+    text-decoration: none;
+}
+
+.back-btn .icon {
+    width: 25px;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #d98cff;
+    border-radius: 5px;
+    font-size: 30px;
+    line-height: 1;
+    font-weight: lighter;
+}
+
+.back-btn:hover {
+    background: #45004E;
+    color: white;
+    transition: 0.1s;
+    border: 2px solid #45004E;
+}
+
+.back-btn:hover .icon {
+    color: white;
+    border: 2px solid white;
+    transition: 0.1s;
+}
+
+.avatar {
+    width: 420px;
+    height: 420px;
+    margin: 30px auto;
+    border-radius: 50%;
+    background-image: url("/images/avatar.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.avatar {
+    position: relative;
+}
+
+
+.avatar-options {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: repeat(4, 60px);
+    gap: 30px;
+    margin: 20px 0;
+    margin-top: 20px;
+}
+
+.dot {
+    width: 70px;
+    height: 70px;
+    background: #ddd;
+    border-radius: 50%;
+}
+
+.ok-btn {
+    padding: 8px 80px;
+    background: #AA00C1;
+    margin-top: 40px;
+    border: 2px solid #AA00C1;
+    border-radius: 14px;
+
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    transition: background-color 0.1s ease;
+}
+
+.ok-btn:hover {
+    background: #45004E;
+    color: white;
+    transition: 0.1s;
+    border: 2px solid #45004E;
+}
+
+/* RIGHT */
+.right-panel {
+    flex: 0.85;
+    height: 815px;
+    background: #0f0f0f;
+    padding: 30px;
+    border-radius: 15px;
+    margin-top: 30px;
+    color: #fff;
+}
+
+.right-panel h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h2 {
+    margin-bottom: 25px;
+    color: #ffffff; /* สีม่วงหลัก */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+
+textarea {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    background: #000;
+    border: 1px solid #AA00C1;
+    border-radius: 8px;
+    color: #fff;
+}   
+
+textarea {
+  height: 170px;
+  margin-bottom: 20px;
+  resize: none;
+}
+
+.submit-btn {
+  display: block;
+  margin: 20px auto 0;  
+  padding: 8px 80px;
+  background: #AA00C1;
+  border: 2px solid #AA00C1;
+  border-radius: 14px;
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  transition: background-color 0.1s ease;
+}
+
+.submit-btn:hover {
+    background-color: #45004E;
+    color: white;
+    transition: 0.1s;
+    border: 2px solid #45004E;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    font-size: 0.85rem;
+    color: #e052f3;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input[type="text"], textarea {
+    appearance: none;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+select{
+    appearance: none;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    transition: all 0.3s ease;
+    color: #8f8c8c;
+}
+
+select:valid{
+    color: #ffffff;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    color: #fff;
+    border-color: #a020f0;
+    box-shadow: 0 0 8px rgba(160, 32, 240, 0.4);
+}
+
+.game-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.game-box {
+    background: #151515;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #222;
+}
+
+.separator {
+    border: 0;
+    border-top: 1px solid #222;
+    margin: 20px 0;
+}
+
+textarea {
+    width: 100%;
+    min-height: 100px;
+    resize: none;
+}
+
+
+
+/* Phone Responsive */
+@media (max-width: 768px) {
+    .game-selection-grid {
+        grid-template-columns: 1fr;
+    }
+    .form-row {
+        flex-direction: column;
+    }
+}
+
+
+/* Ipad Responsive */
+@media (max-width: 1024px) {
+
+    /* NAVBAR */
+    .navbar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px 20px;
+    }
+
+    .menu {
+        gap: 20px;
+        margin-left: 0;
+        justify-content: space-between;
+        padding: 0;
+    }
+
+    /* MAIN */
+    .container {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    /* LEFT PANEL */
+    .left-panel {
+        width: 100%;
+        height: auto;
+        margin-top: 0;
+    }
+
+    .back-btn {
+        margin: 0 auto;
+        padding: 8px 40px;
+        font-size: 16px;
+    }
+
+    .avatar {
+        width: 250px;
+        height: 250px;
+    }
+
+    .avatar-options {
+        grid-template-columns: repeat(4, 50px);
+        gap: 15px;
+    }
+
+    .dot {
+        width: 50px;
+        height: 50px;
+    }
+
+    /* RIGHT PANEL */
+    .right-panel {
+        width: 100%;
+        height: auto;
+        padding: 30px 20px;
+        margin-top: 20px;
+    }
+
+    /* FORM */
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    textarea {
+        height: 140px;
+    }
+
+
+}

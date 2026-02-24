@@ -31,7 +31,7 @@ body {
   height: 100vh;  
     background:
     linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
-    url("hero.png") center/cover no-repeat;
+    url("/images/char.png") center/cover no-repeat;
 
   display: flex;
   justify-content: center;
@@ -61,11 +61,11 @@ body {
   height: 60px;
   background: #AA00C1;
   border-radius: 12px;
-
+  text-decoration: none;
   display: flex;
   justify-content: center;
   align-items: center;
-
+  
   font-size: 24px;
   font-weight: 800;
   color: white;
@@ -137,18 +137,18 @@ body {
 
 
 .lol { 
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url("bg-lol.png") center/cover no-repeat; 
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url("/images/bg - lol.png") center/cover no-repeat; 
 }
 .valo { 
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),url("bg-valo.png") center/cover no-repeat; 
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),url("/images/bg - valo.png") center/cover no-repeat; 
 }
 .rov { 
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),url("bg-rov.png") center/cover no-repeat; 
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),url("/images/bg - rov.png") center/cover no-repeat; 
 }
 .ow2 { 
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),url("bg-ow2.png") 13% center/cover no-repeat; 
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),url("/images/bg - ow2.png") 13% center/cover no-repeat; 
 }
 .counter { 
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),url("bg-counter.png") center/cover no-repeat; 
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),url("/images/bg - counter.png") center/cover no-repeat; 
 }
 

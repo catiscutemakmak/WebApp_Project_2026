@@ -47,6 +47,7 @@ form {
 label {
     color: #fff;
     font-size: 18px;
+    margin-top: 10px;
 }
 
 input {
@@ -59,6 +60,7 @@ input {
     padding: 20px;
     background: #000;
     border: 1px solid #aa00c1;
+    margin-top: 10px;
     border-radius: 8px;
     color: #F4A5FF;
     transition: 0.3s;

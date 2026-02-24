@@ -61,11 +61,11 @@ body {
   height: 60px;
   background: #AA00C1;
   border-radius: 12px;
-
+  text-decoration: none;
   display: flex;
   justify-content: center;
   align-items: center;
-
+  
   font-size: 24px;
   font-weight: 800;
   color: white;

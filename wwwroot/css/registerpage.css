@@ -35,7 +35,8 @@ form {
     font-size: 24px;
     color: #d400ff;
     text-align: center;
-    margin-bottom: 44px;
+    margin-top: 10px;
+    margin-bottom: 30px;
     letter-spacing: 2px;
 }
 
@@ -46,6 +47,7 @@ form {
 
 label {
     color: #fff;
+    margin-top: 10px;
     font-size: 18px;
 }
 
@@ -58,6 +60,7 @@ input {
     text-align: left;
     padding: 20px;
     background: #000;
+    margin-top: 10px;
     border: 1px solid #aa00c1;
     border-radius: 8px;
     color: #F4A5FF;

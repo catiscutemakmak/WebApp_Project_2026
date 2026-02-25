@@ -27,6 +27,20 @@ const room_player = {
               status: "Not Ready",
               profile: "https://i2.wp.com/images.genshin-builds.com/genshin/characters/flins/image.png?strip=all&quality=100"
             }
+        ],
+                room_queue : [
+            {
+                name:"Egg",
+                player_rank:"Legend",
+                role:"Gold",
+                profile:"https://play-lh.googleusercontent.com/PCpXdqvUWfCW1mXhH1Y_98yBpgsWxuTSTofy3NGMo9yBTATDyzVkqU580bfSln50bFU=w600-h300-pc0xffffff-pd"
+            },
+            {
+                name:"Egga",
+                player_rank:"Mythic",
+                role:"Roam",
+                profile:"https://static.wikia.nocookie.net/versus-compendium/images/5/5f/Impostor.png/revision/latest/thumbnail/width/360/height/360?cb=20200912190532"
+            }
         ]
     }
 
@@ -212,4 +226,5 @@ stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
 
     return sent_box;
 }
+const roomId = "@Model";
 renderRooms(room_player);

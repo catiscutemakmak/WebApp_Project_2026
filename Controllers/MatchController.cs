@@ -2,16 +2,14 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 public class MatchController : Controller
+{   
+    
+[Route("game/{gameName}")]
+public IActionResult Match(string gameName)
 {
-    public IActionResult Match()
-    {
-        return View();
-    }
-        public IActionResult Room()
-    {
-        return View();
-    }
-
+    ViewBag.GameName = gameName;
+    return View();
+}
 
         [HttpPost]
     public IActionResult Index(string gameKey, string gameID)

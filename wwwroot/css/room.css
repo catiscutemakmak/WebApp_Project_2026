@@ -246,7 +246,7 @@ border-radius: 8px;
     
 }
 
-.btnContainer button{
+.btnContainer button, a{
     
     margin: 5px 5px;
     flex: 1;
@@ -264,12 +264,41 @@ border-radius: 8px;
     align-items: center;    /* จัดกลางแนวตั้ง */
     justify-content: center;
     gap: 8px;               /* เว้นระยะ svg กับ text */
-
+     text-decoration: none;
     border: 2px solid #AA00C1;
     background-color: #000000;
     color:#F4A5FF;
+    
 }
 
+.backbtn .icon {
+    width: 25px;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #d98cff;
+    border-radius: 5px;
+    font-size: 30px;
+    line-height: 1;
+    font-weight: lighter;
+    
+}
+
+.backbtn:hover {
+    background: #45004E;
+    color: white;
+    transition: 0.1s;
+    border: 2px solid #45004E;
+}
+
+.backbtn:hover .icon {
+    color: white;
+    border: 2px solid white;
+    transition: 0.1s;
+}
 .Readybtn{
     color: white;
     background-color:#AA00C1 ;

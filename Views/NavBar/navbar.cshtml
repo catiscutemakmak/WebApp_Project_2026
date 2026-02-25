@@ -10,10 +10,10 @@
         </div>
 
         <div class="nav-buttons" id="navMenu">
-            <a href="#" class="nav-btn">HOME</a>
-            <a href="#" class="nav-btn">CREATE</a>
-            <a href="#" class="nav-btn">NOTIFICATION</a>
-            <a href="#" class="nav-btn user-btn">
+            <a asp-controller='Home' asp-action='Index' class="nav-btn">HOME</a>
+            <a asp-controller='CreateTeam' asp-action='Create' class="nav-btn">CREATE</a>
+            <a asp-controller='Notice' asp-action='Notice' class="nav-btn">NOTIFICATION</a>
+            <a asp-controller='Profile' asp-action='ViewProfile' class="nav-btn user-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                     class="lucide lucide-square-user-round-icon lucide-square-user-round">

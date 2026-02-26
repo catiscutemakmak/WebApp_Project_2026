@@ -1,7 +1,14 @@
+@model LoginViewModel
+@{
+    Layout = null;
+}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Landing</title>
   <link rel="stylesheet" href="~/css/Landing_style.css">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;800&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -13,9 +20,14 @@
             <h1>Let’s find your teammate!</h1>
 
             <div class="button-group">
-            <button class="btn">LOGIN</button>
-            <button class="btn">REGISTER</button>
+            <a asp-controller="Account" asp-action="Login" class="btn">
+                LOGIN
+            </a>
+            <a asp-controller="Account" asp-action="Register" class="btn">
+                REGISTER
+            </a>
             </div>
+            
         </div>
         </section>
 

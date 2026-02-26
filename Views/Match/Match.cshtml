@@ -9,23 +9,15 @@
 <body>
 <div id="MatchContainer" class="MatchContainer">
 
-    <button type="button" class="back-btn">
-        <img src="https://i.pinimg.com/474x/82/55/03/8255033248d018b6c5f3d460b2deec16.jpg"
-             class="back-btn-icon">
-        BACK
-    </button>
-
-    <select name="games" id="games">
-        <option value="MLBB">MLBB</option>
-        <option value="PUBG">PUBG</option>
-        <option value="LOL">LOL</option>
-        <option value="VALORANT">VALORANT</option>
-        <option value="OW2">OW2</option>
-        <option value="CS2">CS2</option>
-        <option value="AMONGUS">AMONGUS</option>
-        <option value="PEAK">PEAK</option>
-    </select>
-
+    <a asp-controller="Home"
+   asp-action="Index"
+   class="back-btn">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="#F4A5FF" stroke-width="2"/>
+        <path d="M18.6668 21.3332L13.3335 15.9998L18.6668 10.6665" stroke="#F4A5FF" stroke-width="2"/>
+    </svg>
+    BACK
+</a>
 </div>
     <script src="~/js/match.js" asp-append-version="true"></script>
 </body>

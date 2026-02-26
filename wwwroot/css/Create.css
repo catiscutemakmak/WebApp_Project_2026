@@ -28,8 +28,6 @@ body::after {
     height: 60%;
 }
 
-/* ================= ADD BELOW ONLY ================= */
-
 .left-panel {
     width: 30%;
     display: flex;
@@ -273,16 +271,16 @@ textarea {
 
 @media (max-width: 1024px) {
     .container {
-        flex-direction: column; /* เปลี่ยนจากซ้าย-ขวา เป็น บน-ล่าง */
-        height: auto; /* ให้ความสูงยืดตามเนื้อหา */
+        flex-direction: column; 
+        height: auto;
         margin: 20px;
         padding: 20px;
         gap: 20px;
     }
 
     .left-panel {
-        width: 100%; /* แผงซ้ายเต็มจอ */
-        order: 1; /* (Optional) ถ้าอยากให้แบบฟอร์มขึ้นก่อน ให้สลับ order */
+        width: 100%;
+        order: 1;
     }
 
     .right-panel {
@@ -303,13 +301,12 @@ textarea {
         gap: 10px;         
     }
 
-    /* ลบ margin-top ของ h3 ออก */
+
     .Date_time-card h3 {
         margin-top: 10px;    
         margin-bottom: 10px;
     }
 
-    /* ปรับ input ให้ดูสมดุล */
     .Date_time-card input {
         width: 80%;  
         max-width: 300px; 
@@ -329,25 +326,25 @@ textarea {
     }
 
     .back-btn {
-        width: 100%; /* ปุ่มกดย้อนกลับเต็มหน้าจอในมือถือ */
+        width: 100%; 
         justify-content: center;
     }
 
     .submit-btn {
-        width: 100%; /* ปุ่ม Submit เต็มหน้าจอ */
+        width: 100%; 
         padding: 15px;
     }
 
     .Date_time-card h3 {
-        margin-top: 20px; /* ลดระยะห่างด้านบนในมือถือ */
+        margin-top: 20px; 
     }
 
     .Date_time-card input {
-        width: 100%; /* ช่องกรอกวันที่เต็มจอ */
+        width: 100%;
     }
 }
 
-/* ปรับแต่งเรื่อง Font Size สำหรับหน้าจอเล็ก */
+
 @media (max-width: 480px) {
     .title {
         font-size: 1.2rem;

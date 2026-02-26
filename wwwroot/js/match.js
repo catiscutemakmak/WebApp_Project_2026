@@ -280,4 +280,6 @@ const settingRenderMap = {
 
   Server: (value) => `${value}`
 };
+
+const gameName = "@ViewBag.GameName";
 renderRooms(mock_room);

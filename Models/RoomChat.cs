@@ -8,7 +8,7 @@ public class RoomChat
     public Room? Room { get; set; }
 
     public int UserId { get; set; }
-    public User? User { get; set; }
+    public UserProfile? User { get; set; }
 
     public string Message { get; set; } = string.Empty;
 

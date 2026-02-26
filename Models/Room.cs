@@ -11,7 +11,7 @@ public class Room
 
     public string Server {get; set;} = string.Empty;
 
-    public User? RoomOwner {get; set;}
+    public UserProfile? RoomOwner {get; set;}
 
     public int OwnerId {get; set;}
 

@@ -103,23 +103,42 @@ body {
 }
 
 .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     align-self: flex-start;
+    margin-top: 20px;
     margin-bottom: 30px;
+    margin-left: 40px;
     padding: 10px 40px;
-    max-width: 140px;
-    font-size: 1rem;
+    font-size: 20px;
+    font-weight: 600;
     text-decoration: none;
     background: transparent;
     color: #f4a5ff;
     border: 2px solid #aa00c1;
     border-radius: 12px;
     cursor: pointer;
-    transition: 0.3s;
 }
 
 .back-btn:hover {
     background-color: rgba(170, 0, 193, 0.2);
     color: white;
+}
+
+.back-btn .icon {
+    width: 25px;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #d98cff;
+    border-radius: 5px;
+    font-size: 30px;
+    line-height: 1;
+    font-weight: lighter;
 }
 
 .history_page {

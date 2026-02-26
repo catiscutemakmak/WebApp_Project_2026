@@ -6,18 +6,24 @@ Layout = "~/Views/Shared/_Layout.cshtml";
 <head>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/review.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
 </head>
 
 <div class="review-page">
     <div class="left-part">
-        <a href="" class="back-btn">
-            < BACK </a>
+        <a asp-controller="Profile" asp-action="ViewProfile" class="back-btn">
+            <span class="icon">
+                &#x2039;
+            </span>
+            <span class="text">BACK</span>
+        </a>
 
-                <div class="profile-section">
-                    <img src="https://png.pngtree.com/png-vector/20191110/ourmid/pngtree-avatar-icon-profile-icon-member-login-vector-isolated-png-image_1978396.jpg"
-                        alt="Profile Picture" class="profile-pic">
-                    <p class="username" id="username">UserName_1234</p>
-                </div>
+        <div class="profile-section">
+            <img src="https://png.pngtree.com/png-vector/20191110/ourmid/pngtree-avatar-icon-profile-icon-member-login-vector-isolated-png-image_1978396.jpg"
+                alt="Profile Picture" class="profile-pic">
+            <p class="username" id="username">UserName_1234</p>
+        </div>
     </div>
 
     <div class="right-part">

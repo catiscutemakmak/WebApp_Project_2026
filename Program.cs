@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using hateekub.Data;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,0 +1,34 @@
+namespace hateekub.Models
+{
+public class Room
+{
+    public string RoomName { get; set; } = string.Empty;
+
+    public int Id {get; set;}
+    public Game? Game { get; set; }
+
+    public int GameId {get; set;}
+
+    public string Server {get; set;} = string.Empty;
+
+    public User? RoomOwner {get; set;}
+
+    public int OwnerId {get; set;}
+
+    public string Description {get; set;} = string.Empty;
+
+    public DateTime PlayDateTime { get; set; }
+
+    public string GameMode { get; set; } = string.Empty;
+
+    public RoomSetting? RoomSetting { get; set; }
+
+
+    public ICollection<RoomPlayer> Players { get; set; } = new List<RoomPlayer>();
+    public ICollection<RoomQueue> QueuePlayers { get; set; } = new List<RoomQueue>();
+    public ICollection<RoomChat> Chats { get; set; } = new List<RoomChat>();
+}
+
+
+
+}

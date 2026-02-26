@@ -13,9 +13,9 @@ public class RoomSetting
 
         public int MaxRank { get; set; }
 
-        public Boolean AllowDuplicateRole { get; set; }
+        public bool AllowDuplicateRole { get; set; }
 
-        public Boolean IsPrivate { get; set; }
+        public bool IsPrivate { get; set; }
 
         public int MaxPlayer { get; set; }
     }

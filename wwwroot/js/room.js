@@ -39,7 +39,7 @@ const room_player = {
                 name:"Egga",
                 player_rank:"Mythic",
                 role:"Roam",
-                profile:"https://static.wikia.nocookie.net/versus-compendium/images/5/5f/Impostor.png/revision/latest/thumbnail/width/360/height/360?cb=20200912190532"
+                profile:"https://s.france24.com/media/display/544355b0-45df-11f0-9098-005056a97e36/w:980/Part-GTY-GYI0061951038-1-1-0.jpg"
             }
         ]
     }
@@ -112,6 +112,7 @@ function renderRooms(room) {
     const sent_box = CreateSentBox();
     playerRoom.appendChild(sent_box)
     
+    renderQueue(room.room_queue);
     return playerRoom;
 }
 
@@ -226,5 +227,99 @@ stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
 
     return sent_box;
 }
+
+function renderQueue(queue) {
+    const queueBox = document.getElementById("queueBox");
+    const queueList = document.createElement("div");
+    queueList.classList.add("queue-list");
+    const queuebutton = document.createElement("button");
+    queuebutton.innerText = "QUEUE";
+    queuebutton.classList.add("queue-btn");
+    queueBox.appendChild(queuebutton);
+    queuebutton.addEventListener("click", () => {
+        queueList.classList.toggle("show-queue");
+    });
+    queue.forEach(p => {
+
+        const div = document.createElement("div");
+        div.classList.add("queue-div");
+
+        const topdiv = document.createElement("div");
+        topdiv.classList.add("queue-top");
+
+        const imgDiv = document.createElement("img");
+        imgDiv.classList.add("queue-profile");
+        imgDiv.src = p.profile;
+
+        const roleDiv = document.createElement("p");
+        roleDiv.classList.add("queue-role");
+        roleDiv.textContent = `${p.player_rank}/${p.role}`;
+
+        // 🔹 สร้างปุ่มรับ
+        const BtnDiv = document.createElement("div");
+        BtnDiv.classList.add("queue-btn-div");
+        const acceptBtn = document.createElement("button");
+        acceptBtn.innerHTML = "✓";
+        acceptBtn.classList.add("queue-circle-btn", "accept-btn");
+        acceptBtn.addEventListener("click", () => {
+            console.log("Accepted:", p.name);
+        });
+
+        // 🔹 สร้างปุ่มปฏิเสธ
+        const rejectBtn = document.createElement("button");
+        rejectBtn.innerHTML = "✕";
+        rejectBtn.classList.add("queue-circle-btn", "reject-btn");
+        rejectBtn.addEventListener("click", () => {
+            console.log("Rejected:", p.name);
+        });
+
+        BtnDiv.appendChild(acceptBtn);
+        BtnDiv.appendChild(rejectBtn);
+
+        const botdiv = document.createElement("div");
+        botdiv.classList.add("queue-bot");
+
+        const nameDiv = document.createElement("p");
+        nameDiv.classList.add("queue-name");
+        nameDiv.textContent = p.name;
+        topdiv.appendChild(imgDiv);
+        topdiv.appendChild(nameDiv);
+        botdiv.appendChild(roleDiv);
+        botdiv.appendChild(BtnDiv);
+        div.appendChild(topdiv);
+        div.appendChild(botdiv);
+
+        queueList.appendChild(div);
+        queueBox.appendChild(queueList);
+        DragQueue()
+    });
+}
+
+function DragQueue(){
+const box = document.querySelector(".queueBox");
+
+box.style.position = "absolute";
+
+box.addEventListener("mousedown", function(e){
+    let shiftX = e.clientX - box.getBoundingClientRect().left;
+    let shiftY = e.clientY - box.getBoundingClientRect().top;
+
+    function moveAt(pageX, pageY) {
+        box.style.left = pageX - shiftX + "px";
+        box.style.top = pageY - shiftY + "px";
+    }
+
+    function onMouseMove(e) {
+        moveAt(e.pageX, e.pageY);
+    }
+
+    document.addEventListener("mousemove", onMouseMove);
+
+    document.addEventListener("mouseup", function(){
+        document.removeEventListener("mousemove", onMouseMove);
+    }, { once: true });
+});
+}
 const roomId = "@Model";
 renderRooms(room_player);
+

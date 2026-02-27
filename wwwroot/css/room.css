@@ -106,7 +106,7 @@
     height: 60px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #EB55FF;
+    border: 1px solid #ffffff;
 }
 p {
     font-family: 'Noto Sans Thai', sans-serif;
@@ -246,7 +246,8 @@ border-radius: 8px;
     
 }
 
-.btnContainer button, a{
+.btnContainer button,
+.btnContainer a{
     
     margin: 5px 5px;
     flex: 1;
@@ -264,7 +265,7 @@ border-radius: 8px;
     align-items: center;    /* จัดกลางแนวตั้ง */
     justify-content: center;
     gap: 8px;               /* เว้นระยะ svg กับ text */
-     text-decoration: none;
+    text-decoration: none;
     border: 2px solid #AA00C1;
     background-color: #000000;
     color:#F4A5FF;
@@ -317,4 +318,135 @@ border-radius: 8px;
         flex-direction: column; 
     
     }
+}
+
+.queueBox{
+    display: inline-flex;  
+    flex-direction: column;
+    margin: 5px;
+    position: sticky;
+
+    z-index: 999;
+}
+
+.queue-btn{
+    align-self: flex-start;
+    padding: 10px 16px;
+
+    background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.queue-btn:hover{
+    background: #333;
+}
+.queue-list{
+    display: none;
+}
+
+.queue-list.show-queue {
+    display: inline-block;
+}
+
+.queue-div{
+    display: flex;
+    align-items: center;
+    gap: 30px;
+
+    padding: 0px 30px;
+    border-radius: 10px;
+
+    background-color: #1a1a1a;              /* 👈 เพิ่มพื้นหลัง */
+    border: 1px solid rgba(255,255,255,0.15); /* 👈 เส้นไม่ต้องขาวจัด */
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);  /* 👈 เพิ่มมิติ */
+    transition: 0.2s ease;
+}
+.queue-div:hover{
+    background-color: #222;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.6);
+}
+.queue-top{
+    display: flex;
+    flex-direction: column;   
+    margin: 5px;
+    justify-content: center;
+    
+}
+
+.queue-bot{
+    display: flex;
+    flex-direction: column; 
+    margin: 5px;
+    justify-content: center;
+}
+
+.queue-top p{
+    display: flex;
+    justify-content: center;
+}
+.queue-profile {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #ffffff;
+}
+
+.queue-role, .queue-name{
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.queue-btn-div{
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+
+}
+
+
+
+.queue-circle-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease;
+}
+
+.accept-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.accept-btn:hover {
+    background-color: #1e7e34;
+    transform: scale(1.1);
+}
+
+.reject-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: #a71d2a;
+    transform: scale(1.1);
 }

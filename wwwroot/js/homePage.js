@@ -66,7 +66,7 @@ function submitGame() {
 
     var form = document.createElement("form");
     form.method = "POST";
-    form.action = "/Match/Index";
+    form.action = `/game/${currentGameKey}`;
 
     var inputGame = document.createElement("input");
     inputGame.type = "hidden";

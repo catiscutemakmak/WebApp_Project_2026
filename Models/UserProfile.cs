@@ -8,11 +8,8 @@ namespace hateekub.Models
         public string Password { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-
-        public List<UserGame> UserGames { get; set; } = new();
         public List<Review> Reviews { get; set; } = new();
         public List<History> Histories { get; set; } = new();
-
         public List<Notification> Notifications { get; set; } = new();
 
     }

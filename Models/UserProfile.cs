@@ -10,7 +10,6 @@ namespace hateekub.Models
         public string Description { get; set; } = string.Empty;
         public List<Review> Reviews { get; set; } = new();
         public List<History> Histories { get; set; } = new();
-
         public List<Notification> Notifications { get; set; } = new();
 
     }

@@ -12,6 +12,9 @@ public class RoomPlayer
 
     public DateTime JoinedAt { get; set; }
 
+    public GameRole? Role { get; set; }
+
+    public GameRank? Rank { get; set; }
     public bool IsReady { get; set; }
 }
 }

@@ -33,6 +33,10 @@ namespace hateekub.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<UserProfile>()
+                .HasIndex(u => u.UserId)  // ← Query เร็วขึ้นมาก
+                .IsUnique(); 
+
             // กำหนด Review relationships อย่างชัดเจน
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.User)                    // Review.User

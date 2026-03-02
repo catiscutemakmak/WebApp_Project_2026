@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model hateekub.Models.UserProfile
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -84,13 +85,34 @@
 
             <!-- REVIEW -->
             <div class="review-header">
-                <h2>Review</h2>
-                <button class="review-btn">Write your review</button>
+                <h2>Review (@Model.Reviews.Count)</h2>
+                @if (!ViewBag.IsOwnProfile)
+                {
+                    <a asp-controller="User" asp-action="Review" asp-route-id="@Model.Id" class="review-btn">
+                        Write Review
+                    </a>
+                }
             </div>
 
-            <div class="review-box">
-                Hi, I'm your Mom
-            </div>
+            @if (!Model.Reviews.Any())
+            {
+                <div class="review-box">No reviews yet.</div>
+            }
+            else
+            {
+                @foreach (var review in Model.Reviews)
+                {
+                    <div class="review-box">
+                        <div style="display:flex; justify-content:space-between">
+                            <strong>@(review.Reviewer?.Username ?? "Unknown")</strong>
+                            <span>
+                                @for (int i = 0; i < review.Rating; i++) { <span>⭐</span> }
+                            </span>
+                        </div>
+                        <p>@review.Description</p>
+                    </div>
+                }
+            }
 
         </div>
     </div>

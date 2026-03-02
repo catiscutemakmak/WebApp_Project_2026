@@ -28,6 +28,7 @@ namespace hateekub.Data
         public DbSet<RoomChat> RoomChats { get; set; }
         public DbSet<RoomSetting> RoomSettings { get; set; }
 
+        public DbSet<UserGame> UserGames { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

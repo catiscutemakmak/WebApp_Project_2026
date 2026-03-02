@@ -6,6 +6,6 @@ namespace hateekub.Models
         public int RoomId { get; set; }
         public int UserProfileId { get; set; }
         public UserProfile? User { get; set; } = null!;
-        // public Room? Room { get; set; } = null!;
+        public Room? Room { get; set; } = null!;
     }
 }

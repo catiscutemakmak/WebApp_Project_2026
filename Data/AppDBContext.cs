@@ -21,6 +21,13 @@ namespace hateekub.Data
         public DbSet<History> Histories { get; set; }
         public DbSet<Notification> Notifications { get; set; }
 
+        // Room System Tables
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<RoomPlayer> RoomPlayers { get; set; }
+        public DbSet<RoomQueue> RoomQueues { get; set; }
+        public DbSet<RoomChat> RoomChats { get; set; }
+        public DbSet<RoomSetting> RoomSettings { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -37,6 +44,65 @@ namespace hateekub.Data
                 .WithMany()                             // ไม่มี collection ใน UserProfile
                 .HasForeignKey(r => r.ReviewerId)       // ใช้ ReviewerId
                 .OnDelete(DeleteBehavior.Restrict);     // ห้ามลบถ้ามี Review
+
+            // Room relationships
+            modelBuilder.Entity<Room>()
+                .HasOne(r => r.Game)
+                .WithMany()
+                .HasForeignKey(r => r.GameId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Room>()
+                .HasOne(r => r.RoomOwner)
+                .WithMany()
+                .HasForeignKey(r => r.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // RoomPlayer relationships
+            modelBuilder.Entity<RoomPlayer>()
+                .HasOne(rp => rp.Room)
+                .WithMany(r => r.Players)
+                .HasForeignKey(rp => rp.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<RoomPlayer>()
+                .HasOne(rp => rp.User)
+                .WithMany()
+                .HasForeignKey(rp => rp.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // RoomQueue relationships
+            modelBuilder.Entity<RoomQueue>()
+                .HasOne(rq => rq.Room)
+                .WithMany(r => r.QueuePlayers)
+                .HasForeignKey(rq => rq.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<RoomQueue>()
+                .HasOne(rq => rq.User)
+                .WithMany()
+                .HasForeignKey(rq => rq.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // RoomChat relationships
+            modelBuilder.Entity<RoomChat>()
+                .HasOne(rc => rc.Room)
+                .WithMany(r => r.Chats)
+                .HasForeignKey(rc => rc.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<RoomChat>()
+                .HasOne(rc => rc.User)
+                .WithMany()
+                .HasForeignKey(rc => rc.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // RoomSetting relationship (1-to-1)
+            modelBuilder.Entity<RoomSetting>()
+                .HasOne(rs => rs.Room)
+                .WithOne(r => r.RoomSetting)
+                .HasForeignKey<RoomSetting>(rs => rs.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Game>().HasData(
         new Game

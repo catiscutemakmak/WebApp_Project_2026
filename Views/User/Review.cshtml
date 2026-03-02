@@ -1,3 +1,4 @@
+@model ReviewViewModel
 @{
 ViewData["Title"] = "Review Page";
 Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,12 +8,11 @@ Layout = "~/Views/Shared/_Layout.cshtml";
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/review.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    
 </head>
 
 <div class="review-page">
     <div class="left-part">
-        <a asp-controller="Profile" asp-action="ViewProfile" class="back-btn">
+        <a asp-controller="Profile" asp-action="ViewProfile" asp-route-id="@Model.UserProfileId" class="back-btn">
             <span class="icon">
                 &#x2039;
             </span>
@@ -22,16 +22,21 @@ Layout = "~/Views/Shared/_Layout.cshtml";
         <div class="profile-section">
             <img src="https://png.pngtree.com/png-vector/20191110/ourmid/pngtree-avatar-icon-profile-icon-member-login-vector-isolated-png-image_1978396.jpg"
                 alt="Profile Picture" class="profile-pic">
-            <p class="username" id="username">UserName_1234</p>
+            <p class="username" id="username">@Model.Username</p>
         </div>
     </div>
 
     <div class="right-part">
-        <form action="">
-            <textarea class="review-box" name="review-text" placeholder="Write your review about them..."></textarea>
+        <form asp-controller="User" asp-action="Review" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="UserProfileId" />
+            <input type="hidden" asp-for="Username" />
+
+            <span asp-validation-for="Description" style="color:red"></span>
+            <textarea asp-for="Description" class="review-box" placeholder="Write your review about them..."></textarea>
 
             <div class="star-rating">
-                <input type="radio" name="star_rating" id="star5" value="5">
+                <input type="radio" name="Rating" id="star5" value="5">
                 <label for="star5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
                         fill="transparent" stroke="currentColor" stroke-width="2">
@@ -40,7 +45,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                     </svg>
                 </label>
 
-                <input type="radio" name="star_rating" id="star4" value="4">
+                <input type="radio" name="Rating" id="star4" value="4">
                 <label for="star4">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
                         fill="transparent" stroke="currentColor" stroke-width="2">
@@ -49,7 +54,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                     </svg>
                 </label>
 
-                <input type="radio" name="star_rating" id="star3" value="3">
+                <input type="radio" name="Rating" id="star3" value="3">
                 <label for="star3">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
                         fill="transparent" stroke="currentColor" stroke-width="2">
@@ -58,7 +63,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                     </svg>
                 </label>
 
-                <input type="radio" name="star_rating" id="star2" value="2">
+                <input type="radio" name="Rating" id="star2" value="2">
                 <label for="star2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
                         fill="transparent" stroke="currentColor" stroke-width="2">
@@ -67,7 +72,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                     </svg>
                 </label>
 
-                <input type="radio" name="star_rating" id="star1" value="1">
+                <input type="radio" name="Rating" id="star1" value="1">
                 <label for="star1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
                         fill="transparent" stroke="currentColor" stroke-width="2">
@@ -76,6 +81,9 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                     </svg>
                 </label>
             </div>
+            <span asp-validation-for="Rating" style="color:red"></span>
+
+            <div style="color:red">@ViewBag.Error</div>
 
             <button class="submit-btn" type="submit">SUBMIT</button>
         </form>

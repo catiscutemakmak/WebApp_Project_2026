@@ -1,17 +1,15 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-
-    
-[Route("game/{gameName}/room")]
 public class RoomController : Controller
+{   
+    
+[Route("game/{gameName}/room/{roomId}")]
+public IActionResult Room(string gameName, string roomId)
 {
-    [Route("{roomId:int}")]
-    public IActionResult Room(string gameName, int roomId)
-    {
-        ViewBag.GameName = gameName;
-        ViewBag.RoomId = roomId;
+    ViewBag.GameName = gameName;
+    ViewBag.RoomId = roomId;
+    return View();
+}
 
-        return View();
-    }
 }

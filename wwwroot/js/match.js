@@ -108,6 +108,8 @@ const mock_room = [
     }
 ]
 
+
+
 const rankImageMap = {
     Warrior: "/images/rank/warrior.webp",
     Elite: "/images/rank/elite.webp",
@@ -121,6 +123,8 @@ const rankImageMap = {
 const gamerole = {
   mlbb : ["Mage", "Jungle", "EXP", "Gold", "Support"]
 }
+
+
 function renderRooms(rooms) {
     const roomContainer = document.getElementById("MatchContainer");
     
@@ -281,5 +285,36 @@ const settingRenderMap = {
   Server: (value) => `${value}`
 };
 
+let rooms = [];
+let roles = [];
+
 const gameName = "@ViewBag.GameName";
-renderRooms(mock_room);
+
+async function init() {
+  try {
+    const [roomsRes, rolesRes] = await Promise.all([
+      fetch(`/game/${gameName}/rooms`),
+      fetch(`/game/${gameName}/roles`)
+    ]);
+
+    if (!roomsRes.ok) {
+      throw new Error("Rooms API error: " + roomsRes.status);
+    }
+
+    if (!rolesRes.ok) {
+      throw new Error("Roles API error: " + rolesRes.status);
+    }
+
+    const rooms = await roomsRes.json();
+    const roles = await rolesRes.json();
+
+    console.log(rooms);
+    console.log(roles);
+
+  } catch (err) {
+    console.error("Init error:", err);
+  }
+}
+
+init();
+renderRooms(rooms);

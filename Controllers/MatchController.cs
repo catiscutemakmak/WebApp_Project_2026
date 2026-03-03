@@ -74,7 +74,7 @@ public IActionResult GetGameRoleByGameName(string gameName)
             .Where(r => r.GameId == game.Id)
             .Select(r => new
             {
-
+                
                 RoleId = r.Id,
                 RoleName = r.RoleName,
             })

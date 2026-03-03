@@ -1,48 +1,56 @@
-const room_player = { 
-        game: "mlbb",
-        room_name: "Hello MLBB",
-        room_id: "1001",
-        maximum_player : 5,
-        owner : "Sky",
-        player: [
-            {
-                name: "Sky",
-                player_rank: "Mythic",
-                role: "Mage",
-                status: "Ready",
-                profile: "https://tx.audubon.org/sites/default/files/styles/bean_wysiwyg_full_width/public/cbcpressroom_tuftedtitmouse-judyhowle.jpg?itok=VMtDnqip",
-                
-            },
-            {
-                name: "Dome",
-                player_rank: "Legend",
-                role: "Jungle",
-                status: "Ready",
-                profile: "https://s.france24.com/media/display/544355b0-45df-11f0-9098-005056a97e36/w:980/Part-GTY-GYI0061951038-1-1-0.jpg"
-            },
-            {
-              name: "Bow",
-              player_rank: "Grandmaster",
-              role: "EXP",
-              status: "Not Ready",
-              profile: "https://i2.wp.com/images.genshin-builds.com/genshin/characters/flins/image.png?strip=all&quality=100"
-            }
-        ],
-                room_queue : [
-            {
-                name:"Egg",
-                player_rank:"Legend",
-                role:"Gold",
-                profile:"https://play-lh.googleusercontent.com/PCpXdqvUWfCW1mXhH1Y_98yBpgsWxuTSTofy3NGMo9yBTATDyzVkqU580bfSln50bFU=w600-h300-pc0xffffff-pd"
-            },
-            {
-                name:"Egga",
-                player_rank:"Mythic",
-                role:"Roam",
-                profile:"https://s.france24.com/media/display/544355b0-45df-11f0-9098-005056a97e36/w:980/Part-GTY-GYI0061951038-1-1-0.jpg"
-            }
-        ]
+const room_player = {
+  roomId: 1,
+  gameName: "mlbb",
+  roomName: "Hello MLBB",
+  ownerUsername: "Sky",
+
+  roomSetting: {
+    minRank: 3,
+    maxRank: 7,
+    allowDuplicateRole: false,
+    isPrivate: false,
+    maxPlayer: 5
+  },
+
+  players: [
+    {
+      username: "Sky",
+      roleName: "Mage",
+      rankName: "/images/rank/mythic.webp",
+      userProfile: "https://tx.audubon.org/sites/default/files/styles/bean_wysiwyg_full_width/public/cbcpressroom_tuftedtitmouse-judyhowle.jpg?itok=VMtDnqip",
+      status: "Ready"
+    },
+    {
+      username: "Dome",
+      roleName: "Jungle",
+      rankName: "/images/rank/legend.webp",
+      userProfile: "https://s.france24.com/media/display/544355b0-45df-11f0-9098-005056a97e36/w:980/Part-GTY-GYI0061951038-1-1-0.jpg",
+      status: "Ready"
+    },
+    {
+      username: "Bow",
+      roleName: "EXP",
+      rankName: "/images/rank/grandmaster.webp",
+      userProfile: "https://i2.wp.com/images.genshin-builds.com/genshin/characters/flins/image.png?strip=all&quality=100",
+      status: "Not Ready"
     }
+  ],
+
+  roomQueue: [
+    {
+      username: "Egg",
+      roleName: "Gold",
+      rankName: "/images/rank/legend.webp",
+      userProfile: "https://play-lh.googleusercontent.com/PCpXdqvUWfCW1mXhH1Y_98yBpgsWxuTSTofy3NGMo9yBTATDyzVkqU580bfSln50bFU=w600-h300-pc0xffffff-pd"
+    },
+    {
+      username: "Egga",
+      roleName: "Roam",
+      rankName: "/images/rank/mythic.webp",
+      userProfile: "https://s.france24.com/media/display/544355b0-45df-11f0-9098-005056a97e36/w:980/Part-GTY-GYI0061951038-1-1-0.jpg"
+    }
+  ]
+};
 
 const chat_list = [
   {
@@ -92,53 +100,59 @@ const user = {
 }
 
 function renderRooms(room) {
-    
+
     const playerRoom = document.getElementById("roomContainer");
+    playerRoom.innerHTML = "";
     playerRoom.classList.add("player-room");
 
-    room.player.forEach(p => {
-        playerRoom.appendChild(PlayerCard(p, room.owner));
+    // render players
+    room.players.forEach(p => {
+        playerRoom.appendChild(PlayerCard(p, room.ownerUsername));
     });
 
-    const emptyCount = room.maximum_player - room.player.length;
-    
+    // calculate empty slot
+    const maxPlayer = room.roomSetting.maxPlayer;
+    const currentPlayer = room.players.length;
+    const emptyCount = maxPlayer - currentPlayer;
+
     for (let i = 0; i < emptyCount; i++) {
         playerRoom.appendChild(EmptySlot());
     }
 
+    // chat
     const chatbox = CreateChatBox();
     playerRoom.appendChild(chatbox);
 
     const sent_box = CreateSentBox();
-    playerRoom.appendChild(sent_box)
-    
-    renderQueue(room.room_queue);
+    playerRoom.appendChild(sent_box);
+
+    // queue
+    renderQueue(room.roomQueue);
+
     return playerRoom;
 }
 
-function PlayerCard(player, owner) {
+function PlayerCard(player, ownerUsername) {
+
     const div = document.createElement("div");
     div.classList.add("player-dev");
 
     div.innerHTML = `
-        ${player.profile != "None"
-          ? `<img class="player-profile" src="${player.profile}">`
-          : `<img class="player-profile"
-              src="https://as1.ftcdn.net/jpg/02/57/42/72/1000_F_257427286_Lp7c9XdPnvN46TyFKqUaZpPADJ77ZzUk.jpg">`
-        }
-        ${player.name === owner 
-        ? "<span class='empty-crown'>👑</span>" 
+        <img class="player-profile"
+             src="${player.userProfile ?? 'https://as1.ftcdn.net/jpg/02/57/42/72/1000_F_257427286_Lp7c9XdPnvN46TyFKqUaZpPADJ77ZzUk.jpg'}">
+
+        ${player.username === ownerUsername
+        ? "<span class='empty-crown'>👑</span>"
         : "<span class='empty-crown'>🎮</span>"}
-        
+
         <p class="${player.status === "Ready" ? "yellow" : ""}">
-        ${player.name}
+            ${player.username}
         </p>
-        
 
         <img class="rankImg"
-             src="${rankImageMap[player.player_rank] || "/images/rank/default.png"}">
+             src="${player.rankName ?? "/images/rank/default.png"}">
 
-        <p class="rank-p">${player.role}</p>
+        <p class="rank-p">${player.roleName}</p>
     `;
 
     return div;

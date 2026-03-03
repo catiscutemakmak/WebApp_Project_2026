@@ -66,7 +66,7 @@ function submitGame() {
 
     var form = document.createElement("form");
     form.method = "POST";
-    form.action = `/game/${currentGameKey}`;
+    form.action = `/game/${currentGame}`;
 
     var inputGame = document.createElement("input");
     inputGame.type = "hidden";

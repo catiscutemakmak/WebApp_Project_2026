@@ -11,10 +11,10 @@ const gameImg = {
 };
 
 const gameList = {
-    csgo: "Counter-Strike",
+    csgo: "CS2",
     valorant: "Valorant",
     ow: "Overwatch",
-    lol: "League of Legends",
+    lol: "LoL",
     mlbb: "Mobile Legends",
     rov: "RoV",
     amongus: "Among Us",
@@ -66,7 +66,7 @@ function submitGame() {
 
     var form = document.createElement("form");
     form.method = "POST";
-    form.action = `/game/${currentGame}`;
+    form.action = `/game/${encodeURIComponent(gameList[currentGameKey])}`;
 
     var inputGame = document.createElement("input");
     inputGame.type = "hidden";

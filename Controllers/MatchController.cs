@@ -55,7 +55,8 @@ public IActionResult GetRoomsByGameName(string gameName)
                 Username = p.User != null ? p.User.Nickname : "",
                 RoleName = p.Role != null ? p.Role.RoleName : "",
                 RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
-                    UserProfile = null
+                UserProfile = p.User != null ? p.User.ProfileImagePath : "",
+            
                 })
                 .ToList()
         })

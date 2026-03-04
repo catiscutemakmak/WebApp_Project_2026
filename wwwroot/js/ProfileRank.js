@@ -1,7 +1,7 @@
-document.querySelector(".submit-btn").addEventListener("click", () => {
-  alert("Profile Submitted!");
+document.querySelector(".submit-btn").addEventListener("click", function (e) {
+    console.log("clicked");
+    // อย่าใส่ e.preventDefault();
 });
-
 const rankMap = {
     mlbb: ["Warrior", "Elite", "Master", "Grandmaster", "Epic", "Legend", "Mythic"],
     rov: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Conqueror"],
@@ -14,24 +14,40 @@ const rankMap = {
 };
 
 document.querySelectorAll(".game-select").forEach(gameSelect => {
-    gameSelect.addEventListener("change", () => {
-        const rankSelect = document.getElementById(gameSelect.dataset.rank);
-        const ranks = rankMap[gameSelect.value];
+    const rankSelect = document.getElementById(gameSelect.dataset.rank);
+    
+    // ดึงค่าจาก attribute data-selected (ที่เราจะไปแก้ใน HTML)
+    const initialRank = rankSelect.getAttribute("data-selected"); 
 
-        rankSelect.innerHTML =
-            `<option value="" disabled selected hidden>Choose Rank</option>`;
+    function populateRanks(selectedRank = null) {
+        const ranks = rankMap[gameSelect.value] || [];
+        rankSelect.innerHTML = `<option value="">Choose Rank</option>`;
 
         ranks.forEach(rank => {
             const option = document.createElement("option");
             option.value = rank;
             option.textContent = rank;
+
+            // ตรวจสอบค่าให้ตรงกับที่ดึงมาจาก DB
+            if (rank === selectedRank) {
+                option.selected = true;
+            }
             rankSelect.appendChild(option);
         });
+    }
 
-        gameSelect.style.color = "#fff";
+    // เรียกครั้งแรกตอนโหลดหน้า
+    if (gameSelect.value) {
+        populateRanks(initialRank);
+    }
 
+    // เมื่อเปลี่ยนเกม
+    gameSelect.addEventListener("change", () => {
+        populateRanks(); 
     });
 });
+
+// ลบฟังก์ชัน populateRanks ตัวที่อยู่นอกลูปทิ้งได้เลยเพื่อไม่ให้ซ้ำซ้อน
 
 // PHONE
 
@@ -59,3 +75,4 @@ phoneInput.addEventListener('input', (e) => {
     }
     e.target.value = formattedValue;
 });
+

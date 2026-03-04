@@ -16,15 +16,19 @@
 
         <!-- LEFT -->
         <div class="left-panel">
-            <a href="@Url.Action("ViewProfile", "Profile")" class="back-btn">
+            <a asp-controller='Home' asp-action='Index' class="back-btn">
                 <span class="icon">
                     &#x2039; <!-- ❮ -->
                 </span>
                 <span class="text">BACK</span>
             </a>
 
-            <div class="avatar"></div>
-            <h1 class="name-left">UserName_1234</h1>
+            <div class="avatar">
+                <img src="@(string.IsNullOrEmpty(Model.ProfileImagePath) 
+                                                                     ? "/images/profile/avatar-default.jpg"
+                                                                     : Model.ProfileImagePath)"           alt="Profile Image" />
+            </div>
+            <h1 class="name-left">@(string.IsNullOrWhiteSpace(Model.Nickname) ? "User" : Model.Nickname)</h1>
             <a asp-controller="Profile" asp-action="EditProfile" class="edit-btn">
                 <svg class="edit-icon" xmlns="http://www.w3.org/2000/svg" viewBox="-49.49 -49.49 593.92 593.92">
                     <path d="M389.844,182.85c-6.743,0-12.21,5.467-12.21,12.21v222.968c0,23.562-19.174,42.735-42.736,42.735H67.157
@@ -47,24 +51,45 @@
 
             <!-- STATUS -->
             <div class="status-box">
-                Hi, UserName_1234
+                Hi! @(string.IsNullOrWhiteSpace(Model.Nickname) ? "User" : Model.Nickname)
             </div>
 
             <!-- RANK -->
             <section class="rank-section">
                 <h3 class="rank-right">Rank</h3>
                 <div class="rank-list">
-                    <div class="rank-card game">
-                        <span>Valorant</span>
-                    </div>
+                    @if (Model.ProfileGames != null && Model.ProfileGames.Any())
+                    {
+                        foreach (var game in Model.ProfileGames)
+                        {
+                            var gameKey = game.GameName.ToLower();
 
-                    <div class="rank-card cs2">
-                        <span>CS:GO</span>
-                    </div>
+                            // รวมร่าง: กำหนดทั้งชื่อแสดงผล, Class และ Path ของรูปภาพ
+                            var (displayName, imageClass, imageUrl) = gameKey switch
+                            {
+                                "valorant" => ("Valorant", "game-valorant", "/images/valorant.webp"),
+                                "mlbb" => ("Mobile Legends Bang Bang", "game-mlbb", "/images/bg - mlbb.png"),
+                                "csgo" => ("CS:GO", "game-csgo", "/images/csgo.jpg"),
+                                "rov" => ("RoV", "game-rov", "/images/bg - rov.png"),
+                                "overwatch" => ("Overwatch 2", "game-ow2", "/images/bg - ow2.png"),
+                                "pubg" => ("PUBG: BATTLEGROUNDS", "game-pubg", "/images/bg - pubg.png"),
+                                "amongus" => ("Among Us", "game-amongus", "/images/bg - among us.png"),
+                                "lol" => ("League of Legends", "game-lol", "/images/lol_bg.avif"),
+                            };
 
-                    <div class="rank-card pubg">
-                        <span>PUBG</span>
-                    </div>
+                            <div class="rank-card @imageClass"
+                                 style="background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('@imageUrl');">
+                                <div class="game-name">@displayName</div>
+                                <div class="rank-name">@game.Rank</div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="rank-card">
+                            <span>No games added</span>
+                        </div>
+                    }
                 </div>
             </section>
 
@@ -106,7 +131,10 @@
                         <div style="display:flex; justify-content:space-between">
                             <strong>@(review.Reviewer?.Username ?? "Unknown")</strong>
                             <span>
-                                @for (int i = 0; i < review.Rating; i++) { <span>⭐</span> }
+                                @for (int i = 0; i < review.Rating; i++)
+                                {
+                                    <span>⭐</span>
+                                }
                             </span>
                         </div>
                         <p>@review.Description</p>

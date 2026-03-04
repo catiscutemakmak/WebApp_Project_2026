@@ -276,24 +276,31 @@ select:focus {
 }
 .role-form {
     grid-column: 1 / -1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin: 8px 0;
-    
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, max-content));
+    gap: 5px;
+
+    justify-content: center;  
+
+    margin: 12px 0;
+
     font-family: 'Noto Sans Thai', sans-serif;
     font-weight: 700;
     font-size: 13px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0. corrected 0.5px;
 }
-
+.role-form label {
+    display: flex;
+    justify-content: center;
+}
 .role-form input {
     display: none;
     
 }
 
 .role-form span {
+    
     padding: 6px 16px;
     border-radius: 20px;
     background: #1f1f1f;
@@ -311,6 +318,12 @@ select:focus {
 .role-form input:checked + span {
     background: #AA00C1;
     color: white;
+}
+
+.role-input{
+        padding: 5px 10px;
+    margin-right: 10px;
+    margin-top: 3px;
 }
 .role-disabled {
     background: #2a2a2a;

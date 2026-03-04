@@ -155,6 +155,7 @@ function createRoleForm(room, roles) {
     const label = document.createElement("label");
 
     const input = document.createElement("input");
+    input.classList.add("role-input");
     input.type = "radio";
     input.name = `role-${room.roomId}`;
     input.value = role.roleName;

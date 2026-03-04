@@ -9,6 +9,7 @@ body {
     color: #fff;
 }
 
+
 body::after {
     content: "";
     position: fixed;
@@ -320,6 +321,35 @@ body::after {
     background-repeat: no-repeat;
 }
 
+/* ปุ่ม Logout */
+.logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+    background-color: #ff4757; /* สีแดงสว่าง */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans Thai', sans-serif;
+    margin-top: 25px;
+}
+
+.logout-btn:hover {
+    background-color: #ff6b81; /* สีแดงอ่อนลงเมื่อ Hover */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+}
+
+.logout-icon {
+    flex-shrink: 0;
+}
+
 @media (max-width: 1024px) {
 
     /* layout หลัก */
@@ -390,7 +420,43 @@ body::after {
     .history-desc {
         font-size: 13px;
     }
-
-  
-
 }
+
+/* --- 1. นิยาม Keyframes (การเคลื่อนไหวหลัก) --- */
+
+/* สำหรับค่อยๆ ปรากฏและลอยขึ้น */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes backgroundPulse {
+    0% { opacity: 0.02; }
+    50% { opacity: 0.05; }
+    100% { opacity: 0.02; }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 5px rgba(170, 0, 193, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(170, 0, 193, 0.6); }
+    100% { box-shadow: 0 0 5px rgba(170, 0, 193, 0.2); }
+}
+
+
+.left-panel {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.right-panel {
+    animation: fadeInUp 0.8s ease-out 0.2s backwards; /* delay เล็กน้อยให้ดูมีมิติ */
+}
+
+
+
+

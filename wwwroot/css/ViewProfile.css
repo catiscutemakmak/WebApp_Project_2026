@@ -91,10 +91,14 @@ body::after {
     height: 420px;
     margin: 30px auto;
     border-radius: 50%;
-    background-image: url("/images/avatar.jpg"); /* ← รูป */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    overflow: hidden;           /* สำคัญมาก */
+    position: relative;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;          /* ครอบภาพ */
 }
 
 .edit-btn {
@@ -203,54 +207,7 @@ body::after {
     padding-bottom: 15px;
 }
 
-.game {
-    text-align: center;
-    font-size: 28px;
-    background-image:
-        linear-gradient(
-            to top,
-            rgba(0, 0, 0, 1), 
-            rgba(0, 0, 0, 0.0)
-        ),
-        url("/images/valorant.webp");
 
-    background-size: cover;
-    background-position: 52% center;
-    background-repeat: no-repeat;
-}
-
-.cs2 {
-    text-align: center;
-    font-size: 28px;
-    background-image:
-        linear-gradient(
-            to top,
-            rgba(0, 0, 0, 1), 
-            rgba(0, 0, 0, 0.0)
-        ),
-        url("/images/csgo.jpg");
-
-    background-size:cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-
-.pubg {
-    text-align: center;
-    font-size: 28px;
-    background-image:
-        linear-gradient(
-            to top,
-            rgba(0, 0, 0, 1), 
-            rgba(0, 0, 0, 0.0)
-        ),
-        url("/images/pubg-title.jpeg");
-
-    background-size: cover;
-    background-position: 10% center;
-    background-repeat: no-repeat;
-}
 
 .history-card {
     background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, transparent 100%);
@@ -334,7 +291,34 @@ body::after {
     transition: 0.3s;
 }
 
+.rank-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 15px;
+}
 
+.game-name {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.rank-name {
+    background: #b000ff;
+    text-align: center;
+    padding: 4px 12px;
+    border-radius: 15px;
+    margin-top: 6px;
+    font-size: 14px;
+}
+
+.rank-card {
+    text-align: center;
+    background-size: cover;      /* ให้รูปเต็มกรอบ */
+    background-position: center; /* ให้รูปอยู่ตรงกลาง */
+    background-repeat: no-repeat;
+}
 
 @media (max-width: 1024px) {
 

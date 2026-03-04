@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using hateekub.Data;
@@ -11,9 +12,11 @@ using hateekub.Data;
 namespace hateekub.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260304100459_AddNicknameToUserProfile")]
+    partial class AddNicknameToUserProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -818,32 +821,6 @@ namespace hateekub.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("hateekub.Models.ProfileGame", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("GameName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Rank")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("UserProfileId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserProfileId");
-
-                    b.ToTable("ProfileGames");
-                });
-
             modelBuilder.Entity("hateekub.Models.Review", b =>
                 {
                     b.Property<int>("Id")
@@ -963,7 +940,7 @@ namespace hateekub.Migrations
                     b.Property<int?>("RankId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int?>("RoleId")
                         .HasColumnType("integer");
 
                     b.Property<int>("RoomId")
@@ -1098,8 +1075,6 @@ namespace hateekub.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-<<<<<<< HEAD
-=======
                     b.Property<string>("Nickname")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1108,12 +1083,8 @@ namespace hateekub.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
->>>>>>> main
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProfileImagePath")
                         .HasColumnType("text");
 
                     b.Property<string>("UserId")
@@ -1235,17 +1206,6 @@ namespace hateekub.Migrations
                     b.Navigation("UserProfile");
                 });
 
-            modelBuilder.Entity("hateekub.Models.ProfileGame", b =>
-                {
-                    b.HasOne("hateekub.Models.UserProfile", "UserProfile")
-                        .WithMany("ProfileGames")
-                        .HasForeignKey("UserProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserProfile");
-                });
-
             modelBuilder.Entity("hateekub.Models.Review", b =>
                 {
                     b.HasOne("hateekub.Models.UserProfile", "Reviewer")
@@ -1311,9 +1271,7 @@ namespace hateekub.Migrations
 
                     b.HasOne("hateekub.Models.GameRole", "Role")
                         .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoleId");
 
                     b.HasOne("hateekub.Models.Room", "Room")
                         .WithMany("Players")
@@ -1385,17 +1343,6 @@ namespace hateekub.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("hateekub.Models.UserProfile", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("hateekub.Models.Game", b =>
                 {
                     b.Navigation("GameRanks");
@@ -1421,8 +1368,6 @@ namespace hateekub.Migrations
                     b.Navigation("Histories");
 
                     b.Navigation("Notifications");
-
-                    b.Navigation("ProfileGames");
 
                     b.Navigation("Reviews");
 

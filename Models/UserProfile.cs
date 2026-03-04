@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 namespace hateekub.Models
 {
     
@@ -6,7 +7,7 @@ namespace hateekub.Models
         public int Id { get; set; }
         public string UserId { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
+        public IdentityUser User { get; set; } = null!;  // 👈 เพิ่มตัวนี้
         public string PhoneNumber { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public List<Review> Reviews { get; set; } = new();

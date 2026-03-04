@@ -19,6 +19,14 @@ body {
     box-sizing: border-box;
 }
 
+.back-btn-container{
+        width: 65%;
+
+    margin: 0 auto;
+    padding: 0 20px;
+    
+
+}
 .MatchContainer{
     width: 65%;
     max-width: 1600px;  

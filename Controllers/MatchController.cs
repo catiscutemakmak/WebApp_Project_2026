@@ -74,7 +74,7 @@ public IActionResult GetGameRoleByGameName(string gameName)
             .Where(r => r.GameId == game.Id)
             .Select(r => new
             {
-                
+
                 RoleId = r.Id,
                 RoleName = r.RoleName,
             })
@@ -83,5 +83,17 @@ public IActionResult GetGameRoleByGameName(string gameName)
         return Ok(roles);
 
     }
+
+[HttpPost("JoinRoom/{roomId}")]
+public IActionResult JoinRoom(int roomId)
+{
+    var room = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
+    if (room == null)
+    {
+        return NotFound();
+    }
+
+    return Ok(room);
+}
 }
 }

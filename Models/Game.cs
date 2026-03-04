@@ -9,5 +9,7 @@ namespace hateekub.Models
         public int MinPlayers { get; set; }
         public List<GameRole> GameRoles { get; set; } = new();
         public List<GameRank> GameRanks { get; set; } = new();
+
+        public ICollection<UserGame> UserGames { get; set; } = new List<UserGame>();
     }
 }

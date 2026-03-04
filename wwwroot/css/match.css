@@ -19,6 +19,14 @@ body {
     box-sizing: border-box;
 }
 
+.back-btn-container{
+        width: 65%;
+
+    margin: 0 auto;
+    padding: 0 20px;
+    
+
+}
 .MatchContainer{
     width: 65%;
     max-width: 1600px;  
@@ -35,7 +43,8 @@ body {
     gap: 15px;
     background-color: #0d0d0d;
     padding: 10px 40px;
-    margin-bottom: 20px;
+    margin-top: 40px;
+    margin-bottom: 5px;
     border-radius: 15px;
     position: relative;
     border: 1px solid #1f1f1e;

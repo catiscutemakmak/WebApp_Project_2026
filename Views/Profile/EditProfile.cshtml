@@ -48,12 +48,12 @@
                 <div class="form-row basic-info">
                     <div class="input-group">
                         <label>Username</label>
-                        <input asp-for="Nickname" type="text" placeholder="Name" />
+                        <input asp-for="Nickname" type="text" placeholder="Name" required/>
                     </div>
                     <div class="input-group">
                         <label>Phone</label>
                         <input asp-for="PhoneNumber" id="phoneInput" type="text" maxlength="12"
-                               placeholder="Phone number (+66)" />
+                               placeholder="Phone number (+66)" required />
                     </div>
                 </div>
 
@@ -63,7 +63,7 @@
                     <div class="game-box">
                         <div class="input-group">
                             <label>Game 1</label>
-                            <select asp-for="ProfileGames[0].GameName" class="game-select" data-rank="rank1">
+                            <select asp-for="ProfileGames[0].GameName" class="game-select" data-rank="rank1" required>
                                 <option value="" disabled selected hidden>Choose game</option>
                                 <option value="mlbb">Mobile Legends Bang Bang</option>
                                 <option value="rov">RoV</option>
@@ -77,7 +77,7 @@
                         </div>
                         <div class="input-group">
                             <label>Rank</label>
-                            <select asp-for="ProfileGames[0].Rank" id="rank1"
+                            <select asp-for="ProfileGames[0].Rank" id="rank1" required
                                     data-selected="@Model.ProfileGames[0].Rank">
                                 <option value="">Choose Rank</option>
                             </select>
@@ -87,7 +87,7 @@
                     <div class="game-box">
                         <div class="input-group">
                             <label>Game 2</label>
-                            <select asp-for="ProfileGames[1].GameName" class="game-select" data-rank="rank2">
+                            <select asp-for="ProfileGames[1].GameName" class="game-select" data-rank="rank2" required>
                                 <option value="" disabled selected hidden>Choose game</option>
                                 <option value="mlbb">Mobile Legends Bang Bang</option>
                                 <option value="rov">RoV</option>
@@ -101,7 +101,7 @@
                         </div>
                         <div class="input-group">
                             <label>Rank</label>
-                            <select asp-for="ProfileGames[1].Rank" id="rank2"
+                            <select asp-for="ProfileGames[1].Rank" id="rank2" required
                                     data-selected="@Model.ProfileGames[1].Rank">
                                 <option value="">Choose Rank</option>
                             </select>
@@ -111,7 +111,7 @@
                     <div class="game-box">
                         <div class="input-group">
                             <label>Game 3</label>
-                            <select asp-for="ProfileGames[2].GameName" class="game-select" data-rank="rank3">
+                            <select asp-for="ProfileGames[2].GameName" class="game-select" data-rank="rank3" required>
                                 <option value="" disabled selected hidden>Choose game</option>
                                 <option value="mlbb">Mobile Legends Bang Bang</option>
                                 <option value="rov">RoV</option>
@@ -125,7 +125,7 @@
                         </div>
                         <div class="input-group">
                             <label>Rank</label>
-                            <select asp-for="ProfileGames[2].Rank" id="rank3"
+                            <select asp-for="ProfileGames[2].Rank" id="rank3" required
                                     data-selected="@Model.ProfileGames[2].Rank">
                                 <option value="">Choose Rank</option>
                             </select>
@@ -135,7 +135,7 @@
 
                 <div class="input-group full-width">
                     <label>Description</label>
-                    <textarea asp-for="Description" placeholder="Tell me more about who you are!"></textarea>
+                    <textarea asp-for="Description" placeholder="Tell me more about who you are!" required></textarea>
                 </div>
 
                 <button type="submit" class="submit-btn">SUBMIT</button>

@@ -7,7 +7,6 @@ namespace hateekub.Models
         public string UserId { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string Nickname { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string? ProfileImagePath { get; set; }

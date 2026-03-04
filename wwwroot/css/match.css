@@ -232,6 +232,7 @@ z-index: 1;
     border: 2px solid #AA00C1;
     border-radius: 12px;
     background-color: #AA00C1;
+    cursor: pointer;
 }
 
 

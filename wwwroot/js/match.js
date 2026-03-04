@@ -77,7 +77,7 @@ function renderRoom(room, roles) {
   const emptyCount = maxPlayer - playerCount;
 
   const roleForm = createRoleForm(room, roles);
-  const joinButton = createJoinButton();
+  const joinButton = createJoinButton(room.roomId);
 
   for (let i = 0; i < emptyCount; i++) {
     wrapper.appendChild(EmptySlot(roleForm, joinButton));
@@ -179,10 +179,51 @@ function createRoleForm(room, roles) {
 /* ================================
    JOIN BUTTON
 ================================ */
-function createJoinButton() {
+function createJoinButton(roomId) {
+
   const btn = document.createElement("button");
   btn.innerText = "JOIN";
   btn.classList.add("join-btn", "hide");
+
+  btn.addEventListener("click", async () => {
+
+
+    const selectedRole = document.querySelector(
+      `input[name="role-${roomId}"]:checked`
+    );
+
+    if (!selectedRole) {
+      alert("Please select a role first.");
+      return;
+    }
+
+    const roleName = selectedRole.value;
+
+    try {
+      const response = await fetch(
+        `/game/${gameName}/JoinRoom/${roomId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ roleName: roleName })
+        }
+      );
+
+      if (response.ok) {
+        alert("Joined successfully!");
+        location.reload(); // refresh UI
+      } else {
+        const errorText = await response.text();
+        alert(errorText);
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
   return btn;
 }
 

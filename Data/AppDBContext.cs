@@ -109,6 +109,23 @@ namespace hateekub.Data
                 .HasForeignKey<RoomSetting>(rs => rs.RoomId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<UserGame>()
+                .HasOne(ug => ug.User)
+                .WithMany(u => u.UserGames)
+                .HasForeignKey(ug => ug.UserProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserGame>()
+                .HasOne(ug => ug.Game)
+                .WithMany(g => g.UserGames)
+                .HasForeignKey(ug => ug.GameId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserGame>()
+                .HasIndex(ug => new { ug.UserProfileId, ug.GameId })
+                .IsUnique();
+
+                
             modelBuilder.Entity<Game>().HasData(
         new Game
         {

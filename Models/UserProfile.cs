@@ -12,6 +12,8 @@ namespace hateekub.Models
         public List<Review> Reviews { get; set; } = new();
         public List<History> Histories { get; set; } = new();
         public List<Notification> Notifications { get; set; } = new();
+
+        public ICollection<UserGame> UserGames { get; set; } = new List<UserGame>();
     }
 
     

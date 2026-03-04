@@ -30,10 +30,11 @@
                 </a>
 
                 <div class="avatar">
-                    <img src="@(string.IsNullOrEmpty(Model.ProfileImagePath) 
-                            ? "/images/profile/avatar-default.jpg"
-                            : Model.ProfileImagePath)"
-                         alt="Profile Image" />
+                    <img id="profilePreview" 
+                        src="@(string.IsNullOrEmpty(Model.ProfileImagePath) 
+                                ? "/images/profile/avatar-default.jpg"
+                                : Model.ProfileImagePath)"
+                        alt="Profile Image" />
                 </div>
                     <label for="upload" class="upload-btn">Change Image</label>
                     <input type="file" id="upload" name="ProfileImage" accept="image/*" hidden />

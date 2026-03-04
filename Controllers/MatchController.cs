@@ -4,6 +4,7 @@ using hateekub.Data;
 using hateekub.Models;
 using hateekub.DTOS;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 namespace hateekub.Controllers
 {
 [Route("game/{gameName}")]
@@ -35,7 +36,7 @@ public IActionResult GetRoomsByGameName(string gameName)
             RoomId = r.Id,
             GameName = r.Game!.GameName,
             RoomName = r.RoomName,
-            OwnerUsername = r.RoomOwner!.Username,
+            OwnerUsername = r.RoomOwner!.Nickname,
             GameMode = r.GameMode,
 
             RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
@@ -51,7 +52,7 @@ public IActionResult GetRoomsByGameName(string gameName)
                 .Select(p => new PlayerDTO
                 {
                     UserId = p.UserId,
-                Username = p.User != null ? p.User.Username : "",
+                Username = p.User != null ? p.User.Nickname : "",
                 RoleName = p.Role != null ? p.Role.RoleName : "",
                 RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
                     UserProfile = null
@@ -87,51 +88,56 @@ public IActionResult GetGameRoleByGameName(string gameName)
 
     }
 
-// [HttpPost("JoinRoom/{roomId}")]
-// public async Task<IActionResult> JoinRoom(int roomId, string roleName)
-// {
-//     var room = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
-//     if (room == null)
-//     {
-//         return NotFound();
-//     }
-//     var roomSetting = _context.RoomSettings.FirstOrDefault(rs => rs.RoomId == roomId);
-//     var currentUser = await _userManager.GetUserAsync(User);
+[HttpPost("JoinRoom/{roomId}")]
+public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest request)
+{
+    var roleName = request.RoleName;
+    var room = await _context.Rooms
+        .Include(r => r.Players)
+        .Include(r => r.RoomSetting)
+        .FirstOrDefaultAsync(r => r.Id == roomId);
 
-//     if (currentUser == null)
-//     {
-//         return RedirectToAction("Login", "Account");
-//     }
+    if (room == null)
+        return NotFound();
 
-//     var alreadyInRoom = room.Players
-//         .Any(p => p.UserId == currentUser.Id);
+    var currentUser = await _userManager.GetUserAsync(User);
+    if (currentUser == null)
+        return RedirectToAction("Login", "Account");
 
-//     if (alreadyInRoom)
-//     {
-//         return BadRequest("You already joined this room.");
-//     }
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
 
-//     if (room.Players.Count >= room.RoomSetting!.MaxPlayer)
-//         return BadRequest("Room is full.");
+    if (userProfile == null)
+        return BadRequest("User profile not found.");
 
-//     var gameRole = _context.GameRoles.FirstOrDefault(gr => gr.RoleName == roleName && gr.GameId == room.GameId);
+    var alreadyInRoom = room.Players
+        .Any(p => p.UserId == userProfile.Id);
 
-//     if (gameRole == null)
-//     {
-//         return BadRequest("Invalid role");
-//     }
+    if (alreadyInRoom)
+        return BadRequest("You already joined this room.");
 
-//     room.Players.Add(new RoomPlayer
-//     {
-//         UserId = currentUser.Id,
-//         RoomId = room.Id,
-//         RoleId = gameRole.Id,
-//         RankId = 1, // Default rank, you can modify this as needed
-//         JoinedAt = DateTime.UtcNow,
-//         IsReady = false
-//     });
-//     _context.SaveChanges();
-//     return Ok(room);
-// }
+    if (room.Players.Count >= room.RoomSetting!.MaxPlayer)
+        return BadRequest("Room is full.");
+
+    var gameRole = await _context.GameRoles
+        .FirstOrDefaultAsync(gr => gr.RoleName == roleName && gr.GameId == room.GameId);
+
+    if (gameRole == null)
+        return BadRequest("Invalid role");
+
+    room.Players.Add(new RoomPlayer
+    {
+        UserId = userProfile.Id,
+        RoomId = room.Id,
+        RoleId = gameRole.Id,
+        RankId = 1,
+        JoinedAt = DateTime.UtcNow,
+        IsReady = false
+    });
+
+    await _context.SaveChangesAsync();
+
+    return Ok();
+}
 }
 }

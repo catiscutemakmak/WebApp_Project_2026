@@ -76,3 +76,16 @@ phoneInput.addEventListener('input', (e) => {
     e.target.value = formattedValue;
 });
 
+document.getElementById('upload').addEventListener('change', function(event) {
+    const file = event.target.files[0]; // ดึงไฟล์ที่เลือกมา
+    if (file) {
+        const reader = new FileReader();
+        
+        // เมื่ออ่านไฟล์เสร็จ ให้เปลี่ยน src ของรูปภาพ
+        reader.onload = function(e) {
+            document.getElementById('profilePreview').src = e.target.result;
+        }
+        
+        reader.readAsDataURL(file); // อ่านไฟล์ในรูปแบบ Data URL
+    }
+});

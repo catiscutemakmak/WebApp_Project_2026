@@ -29,6 +29,7 @@ namespace hateekub.Data
         public DbSet<RoomSetting> RoomSettings { get; set; }
 
         public DbSet<UserGame> UserGames { get; set; }
+        public DbSet<ProfileGame> ProfileGames { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -236,7 +236,9 @@ border-radius: 8px;
 .yellow{
     color: #FFCC00;
 }
-
+.white{
+    color: #FFFFFF;
+}
 .btnContainer{
     width: 40%;
     display: flex;

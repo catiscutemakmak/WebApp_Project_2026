@@ -5,26 +5,52 @@ font-family:sans-serif;
 color:white;
 
 background:
-radial-gradient(circle at 50% 20%,#0e3b5f 0%,transparent 60%),
-radial-gradient(circle at 50% 100%,#031a2e 0%,transparent 70%),
-#020a16;
+radial-gradient(circle at 30% 20%, rgba(140,110,255,0.08) 0%, transparent 45%),
+radial-gradient(circle at 70% 10%, rgba(180,120,255,0.06) 0%, transparent 40%),
+radial-gradient(circle at 50% 90%, rgba(120,80,200,0.08) 0%, transparent 55%),
+linear-gradient(180deg,#030617 0%,#050a1f 60%,#020611 100%);
 
 height:100vh;
 overflow:hidden;
 
 }
 
-/* TOP */
-
-.topbar{
-
+body::before{
+content:"";
 position:absolute;
-top:20px;
-left:40px;
+width:100%;
+height:100%;
+background-image:
+radial-gradient(white 1px, transparent 1px);
+background-size:60px 60px;
+opacity:0.15;
+pointer-events:none;
+}
+body::after{
+content:"";
+position:absolute;
+inset:0;
 
+background:
+radial-gradient(circle at center,
+transparent 55%,
+rgba(0,0,0,0.35) 100%);
+
+pointer-events:none;
+}
+.player-main{
+filter: drop-shadow(0 20px 25px rgba(0,0,0,.5));
+}
+/* TOP */
+button{
+    background:none;
+    border:none;
+}
+.topbar{
 display:flex;
 gap:20px;
 align-items:center;
+justify-content:center;
 
 }
 
@@ -40,9 +66,9 @@ display:flex;
 justify-content:center;
 align-items:center;
 
-gap:50px;
+gap:10px;
 
-margin-top:140px;
+margin-top:100px;
 
 }
 
@@ -108,7 +134,7 @@ overflow:hidden;
 box-shadow:
 
 0 0 20px rgba(255,255,255,.2),
-0 0 60px rgba(0,120,255,.3);
+0 0 60px rgba(226, 134, 247, 0.3);
 
 }
 
@@ -121,8 +147,12 @@ height:100%;
 
 object-fit:cover;
 
+
 }
 
+.left-btn{
+    transform: scaleX(-1);
+}
 /* LEVEL */
 
 .player-level{
@@ -186,7 +216,7 @@ opacity:.8;
 position:absolute;
 bottom:80px;
 left:50%;
-
+justify-content:center;
 transform:translateX(-50%);
 
 display:flex;
@@ -252,4 +282,40 @@ color:white;
 
 padding:10px 40px;
 
+}
+
+/* OWNER (กลาง) */
+.player-main:nth-child(3){
+    transform: scale(1);
+    
+}
+
+/* ใกล้ owner */
+.player-main:nth-child(2),
+.player-main:nth-child(4){
+    transform: scale(0.95);
+    opacity:0.95;
+}
+
+/* ไกล owner */
+.player-main:nth-child(1),
+.player-main:nth-child(5){
+    transform: scale(0.90);
+    opacity:0.90;
+}
+
+.card{
+    width:100%;
+    height:100%;
+    position:relative;
+    border-radius:6px;
+    overflow:visible;
+}
+.player-level{
+display:flex;
+align-items:center;
+gap:4px;
+}
+.player-level img{
+width:20px;
 }

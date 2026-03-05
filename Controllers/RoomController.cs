@@ -57,6 +57,7 @@ public class RoomController : Controller
                 },
 
                 Players = r.Players
+                    .Where(p => !p.IsInQueue)
                     .Select(p => new PlayerDTO
                     {
                         UserId = p.UserId,

@@ -112,7 +112,7 @@ function PlayerCard(player, ownerUsername) {
     <img class="rankImg"
          src="${player.rankName ?? "/images/rank/epic.webp"}">
 
-    <p class="rank-p">${player.roleName || "??"}</p>
+    <p class="rank-p">${player.roleName}</p>
   `;
 
   return div;
@@ -141,11 +141,7 @@ function EmptySlot(roleForm, joinButton) {
 ================================ */
 function createRoleForm(room, roles) {
 
-  if (!roles || roles.length === 0) return null;
-
-  const takenRoles = room.players
-    ?.map(p => p.roleName)
-    .filter(Boolean) || [];
+  const takenRoles = room.players.map(p => p.roleName);
 
   const form = document.createElement("form");
   form.classList.add("role-form", "hide");
@@ -162,7 +158,7 @@ function createRoleForm(room, roles) {
     const span = document.createElement("span");
     span.innerText = role.roleName;
 
-    if (!room.roomSetting?.allowDuplicateRole &&
+    if (!room.roomSetting.allowDuplicateRole &&
         takenRoles.includes(role.roleName)) {
       input.disabled = true;
       span.classList.add("role-disabled");

@@ -118,6 +118,11 @@ function PlayerCard(player, ownerUsername) {
     const div = document.createElement("div");
     div.classList.add("player-dev");
 
+    div.style.cursor = "pointer";
+    div.addEventListener("click", () => {
+    window.location.href = `/Profile/View/${player.userId}`;
+    });
+
     div.innerHTML = `
         <img class="player-profile"
              src="${player.userProfile ?? 'https://as1.ftcdn.net/jpg/02/57/42/72/1000_F_257427286_Lp7c9XdPnvN46TyFKqUaZpPADJ77ZzUk.jpg'}">

@@ -99,6 +99,12 @@ function PlayerCard(player, ownerUsername) {
   const div = document.createElement("div");
   div.classList.add("player-dev");
 
+  div.style.cursor = "pointer";
+
+  div.addEventListener("click", () => {
+    window.location.href = `/Profile/View/${player.userId}`;
+  });
+
   div.innerHTML = `
     <img class="player-profile"
          src="${player.userProfile ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj5K_Hlzgq-p_0Xfv_vykmcOtuXhBI7VFBxg&s'}">

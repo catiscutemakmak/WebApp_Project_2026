@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@model hateekub.Models.UserProfile
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -13,131 +15,132 @@
 </head>
 
 <body>
- 
-     <!-- MAIN -->
+
+    <!-- MAIN -->
     <div class="container">
+        <form asp-controller="Profile" asp-action="EditProfile" method="post" enctype="multipart/form-data">
+            <!-- LEFT -->
+            <div class="left-panel">
+                <a href="javascript:history.back()" class="back-btn">
+                    <span class="icon">
+                        &#x2039; <!-- ❮ -->
+                    </span>
+                    <span class="text">BACK</span>
+                </a>
 
-        <!-- LEFT -->
-        <div class="left-panel">
-            <a asp-controller="Profile" asp-action="ViewProfile" class="back-btn">
-                <span class="icon">
-                    &#x2039; <!-- ❮ -->
-                </span>
-                <span class="text">BACK</span>
-            </a>
+                <div class="avatar">
+                    <img id="profilePreview" 
+                        src="@(string.IsNullOrEmpty(Model.ProfileImagePath) 
+                                ? "/images/profile/avatar-default.jpg"
+                                : Model.ProfileImagePath)"
+                        alt="Profile Image" />
+                </div>
+                    <label for="upload" class="upload-btn">Change Image</label>
+                    <input type="file" id="upload" name="ProfileImage" accept="image/*" hidden />
 
-            <div class="avatar"></div>
-
-            <div class="avatar-options">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
             </div>
 
-            <button class="ok-btn">OK</button>
-        </div>
+            <!-- RIGHT -->
+            <div class="right-panel">
+                @Html.AntiForgeryToken()
+                <h2>Edit Profile</h2>
 
-        <!-- RIGHT -->
-        <div class="right-panel">
-            <h2>Hi! Username Surname</h2>
+                <div class="form-row basic-info">
+                    <div class="input-group">
+                        <label>Username</label>
+                        <input asp-for="Nickname" type="text" placeholder="Name" required/>
+                    </div>
+                    <div class="input-group">
+                        <label>Phone</label>
+                        <input asp-for="PhoneNumber" id="phoneInput" type="text" maxlength="12"
+                               placeholder="Phone number (+66)" required />
+                    </div>
+                </div>
 
-            <div class="form-row basic-info">
-                <div class="input-group">
-                    <label>Username</label>
-                    <input type="text" placeholder="Name">
+                <hr class="separator">
+
+                <div class="game-selection-grid">
+                    <div class="game-box">
+                        <div class="input-group">
+                            <label>Game 1</label>
+                            <select asp-for="ProfileGames[0].GameName" class="game-select" data-rank="rank1" required>
+                                <option value="" disabled selected hidden>Choose game</option>
+                                <option value="mlbb">Mobile Legends Bang Bang</option>
+                                <option value="rov">RoV</option>
+                                <option value="valorant">Valorant</option>
+                                <option value="csgo">CS:GO</option>
+                                <option value="overwatch">Overwatch 2</option>
+                                <option value="pubg">PUBG: BATTLEGROUNDS</option>
+                                <option value="amongus">Among Us</option>
+                                <option value="lol">League of Legends</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Rank</label>
+                            <select asp-for="ProfileGames[0].Rank" id="rank1" required
+                                    data-selected="@Model.ProfileGames[0].Rank">
+                                <option value="">Choose Rank</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="game-box">
+                        <div class="input-group">
+                            <label>Game 2</label>
+                            <select asp-for="ProfileGames[1].GameName" class="game-select" data-rank="rank2" required>
+                                <option value="" disabled selected hidden>Choose game</option>
+                                <option value="mlbb">Mobile Legends Bang Bang</option>
+                                <option value="rov">RoV</option>
+                                <option value="valorant">Valorant</option>
+                                <option value="csgo">CS:GO</option>
+                                <option value="overwatch">Overwatch 2</option>
+                                <option value="pubg">PUBG: BATTLEGROUNDS</option>
+                                <option value="amongus">Among Us</option>
+                                <option value="lol">League of Legends</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Rank</label>
+                            <select asp-for="ProfileGames[1].Rank" id="rank2" required
+                                    data-selected="@Model.ProfileGames[1].Rank">
+                                <option value="">Choose Rank</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="game-box">
+                        <div class="input-group">
+                            <label>Game 3</label>
+                            <select asp-for="ProfileGames[2].GameName" class="game-select" data-rank="rank3" required>
+                                <option value="" disabled selected hidden>Choose game</option>
+                                <option value="mlbb">Mobile Legends Bang Bang</option>
+                                <option value="rov">RoV</option>
+                                <option value="valorant">Valorant</option>
+                                <option value="csgo">CS:GO</option>
+                                <option value="overwatch">Overwatch 2</option>
+                                <option value="pubg">PUBG: BATTLEGROUNDS</option>
+                                <option value="amongus">Among Us</option>
+                                <option value="lol">League of Legends</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Rank</label>
+                            <select asp-for="ProfileGames[2].Rank" id="rank3" required
+                                    data-selected="@Model.ProfileGames[2].Rank">
+                                <option value="">Choose Rank</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label>Phone</label>
-                    <input type="text" id="phoneInput" placeholder="Phone number (+66)" maxlength="12">
+
+                <div class="input-group full-width">
+                    <label>Description</label>
+                    <textarea asp-for="Description" placeholder="Tell me more about who you are!" required></textarea>
                 </div>
+
+                <button type="submit" class="submit-btn">SUBMIT</button>
             </div>
-
-            <hr class="separator">
-
-            <div class="game-selection-grid">
-                <div class="game-box">
-                    <div class="input-group">
-                        <label>Game 1</label>
-                        <select class="game-select" data-rank="rank1" required>
-                            <option value="" disabled selected hidden>Choose game</option>
-                            <option value="mlbb">Mobile Legends Bang Bang</option>
-                            <option value="rov">RoV</option>
-                            <option value="valorant">Valorant</option>
-                            <option value="csgo">CS:GO</option>
-                            <option value="overwatch">Overwatch 2</option>
-                            <option value="pubg">PUBG: BATTLEGROUNDS</option>
-                            <option value="amongus">Among Us</option>
-                            <option value="lol">League of Legends</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Rank</label>
-                        <select id="rank1" required>
-                            <option value="" disabled selected hidden>Choose Rank</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="game-box">
-                    <div class="input-group">
-                        <label>Game 2</label>
-                        <select class="game-select" data-rank="rank2" required>
-                            <option value="" disabled selected hidden>Choose game</option>
-                            <option value="mlbb">Mobile Legends Bang Bang</option>
-                            <option value="rov">RoV</option>
-                            <option value="valorant">Valorant</option>
-                            <option value="csgo">CS:GO</option>
-                            <option value="overwatch">Overwatch 2</option>
-                            <option value="pubg">PUBG: BATTLEGROUNDS</option>
-                            <option value="amongus">Among Us</option>
-                            <option value="lol">League of Legends</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Rank</label>
-                        <select id="rank2" required>
-                            <option value="" disabled selected hidden>Choose Rank</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="game-box">
-                    <div class="input-group">
-                        <label>Game 3</label>
-                        <select class="game-select" data-rank="rank3" required>
-                            <option value="" disabled selected hidden>Choose game</option>
-                            <option value="mlbb">Mobile Legends Bang Bang</option>
-                            <option value="rov">RoV</option>
-                            <option value="valorant">Valorant</option>
-                            <option value="csgo">CS:GO</option>
-                            <option value="overwatch">Overwatch 2</option>
-                            <option value="pubg">PUBG: BATTLEGROUNDS</option>
-                            <option value="amongus">Among Us</option>
-                            <option value="lol">League of Legends</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Rank</label>
-                        <select id="rank3" required>
-                            <option value="" disabled selected hidden>Choose Rank</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="input-group full-width">
-                <label>Description</label>
-                <textarea placeholder="Tell me more about who you are!"></textarea>
-            </div>
-
-            <button class="submit-btn">SUBMIT</button>
-        </div>
-
+        </form>
     </div>
 
     <script src="~/js/ProfileRank.js"></script>

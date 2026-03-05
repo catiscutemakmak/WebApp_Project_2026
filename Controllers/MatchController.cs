@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using hateekub.Data;
 using hateekub.Models;
 using hateekub.DTOS;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 namespace hateekub.Controllers
 {
 [Route("game/{gameName}")]
@@ -10,9 +12,11 @@ public class MatchController : Controller
 {
     private readonly AppDbContext _context;
 
-    public MatchController(AppDbContext context)
+    private readonly UserManager<IdentityUser> _userManager;
+    public MatchController(AppDbContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
         [HttpGet("")]
@@ -32,7 +36,7 @@ public IActionResult GetRoomsByGameName(string gameName)
             RoomId = r.Id,
             GameName = r.Game!.GameName,
             RoomName = r.RoomName,
-            OwnerUsername = r.RoomOwner!.Username,
+            OwnerUsername = r.RoomOwner!.Nickname,
             GameMode = r.GameMode,
 
             RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
@@ -48,10 +52,11 @@ public IActionResult GetRoomsByGameName(string gameName)
                 .Select(p => new PlayerDTO
                 {
                     UserId = p.UserId,
-                Username = p.User != null ? p.User.Username : "",
+                Username = p.User != null ? p.User.Nickname : "",
                 RoleName = p.Role != null ? p.Role.RoleName : "",
                 RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
-                    UserProfile = null
+                UserProfile = p.User != null ? p.User.ProfileImagePath : "",
+            
                 })
                 .ToList()
         })
@@ -74,7 +79,7 @@ public IActionResult GetGameRoleByGameName(string gameName)
             .Where(r => r.GameId == game.Id)
             .Select(r => new
             {
-                
+
                 RoleId = r.Id,
                 RoleName = r.RoleName,
             })
@@ -83,5 +88,60 @@ public IActionResult GetGameRoleByGameName(string gameName)
         return Ok(roles);
 
     }
+
+[HttpPost("JoinRoom/{roomId}")]
+public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest request)
+{
+    var roleName = request.RoleName;
+    var room = await _context.Rooms
+        .Include(r => r.Players)
+        .Include(r => r.RoomSetting)
+        .Include(r => r.Game)  
+        .FirstOrDefaultAsync(r => r.Id == roomId);
+
+    if (room == null)
+        return NotFound();
+
+    var currentUser = await _userManager.GetUserAsync(User);
+    if (currentUser == null)
+        return RedirectToAction("Login", "Account");
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+
+    if (userProfile == null)
+        return BadRequest("User profile not found.");
+
+    var alreadyInRoom = room.Players
+        .Any(p => p.UserId == userProfile.Id);
+
+    if (alreadyInRoom)
+        return BadRequest("You already joined this room.");
+
+    if (room.Players.Count >= room.RoomSetting!.MaxPlayer)
+        return BadRequest("Room is full.");
+
+    var gameRole = await _context.GameRoles
+        .FirstOrDefaultAsync(gr => gr.RoleName == roleName && gr.GameId == room.GameId);
+
+    if (gameRole == null)
+        return BadRequest("Invalid role");
+
+    room.Players.Add(new RoomPlayer
+    {
+        UserId = userProfile.Id,
+        RoomId = room.Id,
+        RoleId = gameRole.Id,
+        RankId = 1,
+        JoinedAt = DateTime.UtcNow,
+        IsReady = false
+    });
+
+    await _context.SaveChangesAsync();
+    return Ok(new {
+        success = true,
+        roomUrl = $"/game/{room.Game!.GameName}/room/{room.Id}"
+    });
+}
 }
 }

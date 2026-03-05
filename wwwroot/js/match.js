@@ -77,7 +77,7 @@ function renderRoom(room, roles) {
   const emptyCount = maxPlayer - playerCount;
 
   const roleForm = createRoleForm(room, roles);
-  const joinButton = createJoinButton();
+  const joinButton = createJoinButton(room.roomId);
 
   for (let i = 0; i < emptyCount; i++) {
     wrapper.appendChild(EmptySlot(roleForm, joinButton));
@@ -98,6 +98,12 @@ function PlayerCard(player, ownerUsername) {
 
   const div = document.createElement("div");
   div.classList.add("player-dev");
+
+  div.style.cursor = "pointer";
+
+  div.addEventListener("click", () => {
+    window.location.href = `/Profile/View/${player.userId}`;
+  });
 
   div.innerHTML = `
     <img class="player-profile"
@@ -151,6 +157,7 @@ function createRoleForm(room, roles) {
     const label = document.createElement("label");
 
     const input = document.createElement("input");
+    input.classList.add("role-input");
     input.type = "radio";
     input.name = `role-${room.roomId}`;
     input.value = role.roleName;
@@ -175,10 +182,52 @@ function createRoleForm(room, roles) {
 /* ================================
    JOIN BUTTON
 ================================ */
-function createJoinButton() {
+function createJoinButton(roomId) {
+
   const btn = document.createElement("button");
-  btn.innerText = "JOIN";
+  btn.type = "button";
+  btn.innerText = "Joining...";
   btn.classList.add("join-btn", "hide");
+
+  btn.addEventListener("click", async () => {
+
+
+    const selectedRole = document.querySelector(
+      `input[name="role-${roomId}"]:checked`
+    );
+
+    if (!selectedRole) {
+      alert("Please select a role first.");
+      return;
+    }
+
+    const roleName = selectedRole.value;
+
+    try {
+      const response = await fetch(
+        `/game/${gameName}/JoinRoom/${roomId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ roleName: roleName })
+        }
+      );
+
+      if (response.ok) {
+      const data = await response.json();
+      window.location.href = data.roomUrl;
+      } else {
+        const errorText = await response.text();
+        alert(errorText);
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
   return btn;
 }
 

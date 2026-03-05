@@ -24,10 +24,11 @@ public class Room
     public RoomSetting? RoomSetting { get; set; }
 
 
-    public ICollection<RoomPlayer> Players { get; set; } = new List<RoomPlayer>();
+    public ICollection<RoomPlayer> Players { get; set; } = new List<RoomPlayer>(); 
     public ICollection<RoomQueue> QueuePlayers { get; set; } = new List<RoomQueue>();
     public ICollection<RoomChat> Chats { get; set; } = new List<RoomChat>();
-}
+
+    }
 
 
 

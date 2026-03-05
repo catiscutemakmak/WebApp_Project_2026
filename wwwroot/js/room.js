@@ -1,42 +1,23 @@
-const room_player = {
-  roomId: 1,
-  gameName: "mlbb",
-  roomName: "Hello MLBB",
-  ownerUsername: "Sky",
+let rooms = null;
 
-  roomSetting: {
-    minRank: 3,
-    maxRank: 7,
-    allowDuplicateRole: false,
-    isPrivate: false,
-    maxPlayer: 5
-  },
+async function init() {
+  try {
+    const roomsRes = await fetch(`/game/${gameName}/room/${roomId}/details`);
 
-  players: [
-    {
-      username: "Sky",
-      roleName: "Mage",
-      rankName: "/images/rank/mythic.webp",
-      userProfile: "https://tx.audubon.org/sites/default/files/styles/bean_wysiwyg_full_width/public/cbcpressroom_tuftedtitmouse-judyhowle.jpg?itok=VMtDnqip",
-      status: "Ready"
-    },
-    {
-      username: "Dome",
-      roleName: "Jungle",
-      rankName: "/images/rank/legend.webp",
-      userProfile: "https://s.france24.com/media/display/544355b0-45df-11f0-9098-005056a97e36/w:980/Part-GTY-GYI0061951038-1-1-0.jpg",
-      status: "Ready"
-    },
-    {
-      username: "Bow",
-      roleName: "EXP",
-      rankName: "/images/rank/grandmaster.webp",
-      userProfile: "https://i2.wp.com/images.genshin-builds.com/genshin/characters/flins/image.png?strip=all&quality=100",
-      status: "Not Ready"
-    }
-  ],
+    if (!roomsRes.ok) throw new Error("Rooms API error: " + roomsRes.status);
+    
+    rooms = await roomsRes.json();
+    
+    renderRooms(rooms);
 
-  roomQueue: [
+  } catch (err) {
+    console.error("Init error:", err);
+  }
+}
+
+init();
+
+  roomQueue = [
     {
       username: "Egg",
       roleName: "Gold",
@@ -50,7 +31,7 @@ const room_player = {
       userProfile: "https://s.france24.com/media/display/544355b0-45df-11f0-9098-005056a97e36/w:980/Part-GTY-GYI0061951038-1-1-0.jpg"
     }
   ]
-};
+
 
 const chat_list = [
   {
@@ -127,7 +108,7 @@ function renderRooms(room) {
     playerRoom.appendChild(sent_box);
 
     // queue
-    renderQueue(room.roomQueue);
+    renderQueue(roomQueue);
 
     return playerRoom;
 }
@@ -137,6 +118,11 @@ function PlayerCard(player, ownerUsername) {
     const div = document.createElement("div");
     div.classList.add("player-dev");
 
+    div.style.cursor = "pointer";
+    div.addEventListener("click", () => {
+    window.location.href = `/Profile/View/${player.userId}`;
+    });
+
     div.innerHTML = `
         <img class="player-profile"
              src="${player.userProfile ?? 'https://as1.ftcdn.net/jpg/02/57/42/72/1000_F_257427286_Lp7c9XdPnvN46TyFKqUaZpPADJ77ZzUk.jpg'}">
@@ -145,7 +131,7 @@ function PlayerCard(player, ownerUsername) {
         ? "<span class='empty-crown'>👑</span>"
         : "<span class='empty-crown'>🎮</span>"}
 
-        <p class="${player.status === "Ready" ? "yellow" : ""}">
+        <p class="${player.status === "Ready" ? "yellow" : "white"}">
             ${player.username}
         </p>
 
@@ -334,6 +320,6 @@ box.addEventListener("mousedown", function(e){
     }, { once: true });
 });
 }
-const roomId = "@Model";
-renderRooms(room_player);
+
+
 

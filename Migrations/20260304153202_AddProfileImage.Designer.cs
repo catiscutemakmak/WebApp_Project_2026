@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using hateekub.Data;
@@ -11,9 +12,11 @@ using hateekub.Data;
 namespace hateekub.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260304153202_AddProfileImage")]
+    partial class AddProfileImage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -400,6 +403,244 @@ namespace hateekub.Migrations
                             GameId = 2,
                             RankImageUrl = "/images/ranks/val/Radiant.webp",
                             RankName = "Radiant"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            GameId = 5,
+                            RankImageUrl = "/images/ranks/mlbb/Iron.webp",
+                            RankName = "Warrior"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            GameId = 5,
+                            RankImageUrl = "/images/ranks/mlbb/Elite.webp",
+                            RankName = "Elite"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            GameId = 5,
+                            RankImageUrl = "/images/ranks/mlbb/Master.webp",
+                            RankName = "Master"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            GameId = 5,
+                            RankImageUrl = "/images/ranks/mlbb/Grandmaster.webp",
+                            RankName = "Grandmaster"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            GameId = 5,
+                            RankImageUrl = "/images/ranks/mlbb/Epic.webp",
+                            RankName = "Epic"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            GameId = 5,
+                            RankImageUrl = "/images/ranks/mlbb/Legend.webp",
+                            RankName = "Legend"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            GameId = 5,
+                            RankImageUrl = "/images/ranks/mlbb/Mythic.webp",
+                            RankName = "Mythic"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            GameId = 3,
+                            RankImageUrl = "/images/ranks/Ow2/Bronze.webp",
+                            RankName = "Bronze"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            GameId = 3,
+                            RankImageUrl = "/images/ranks/Ow2/Silver.webp",
+                            RankName = "Silver"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            GameId = 3,
+                            RankImageUrl = "/images/ranks/Ow2/Gold.webp",
+                            RankName = "Gold"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            GameId = 3,
+                            RankImageUrl = "/images/ranks/Ow2/Platinum.webp",
+                            RankName = "Platinum"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            GameId = 3,
+                            RankImageUrl = "/images/ranks/Ow2/Diamond.webp",
+                            RankName = "Diamond"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            GameId = 3,
+                            RankImageUrl = "/images/ranks/Ow2/Master.webp",
+                            RankName = "Master"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            GameId = 3,
+                            RankImageUrl = "/images/ranks/Ow2/Grandmaster.webp",
+                            RankName = "Grandmaster"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            GameId = 4,
+                            RankImageUrl = "/images/ranks/LoL/Unranked.webp",
+                            RankName = "Unranked"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            GameId = 4,
+                            RankImageUrl = "/images/ranks/LoL/Iron.webp",
+                            RankName = "Iron"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            GameId = 4,
+                            RankImageUrl = "/images/ranks/LoL/Bronze.webp",
+                            RankName = "Bronze"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            GameId = 4,
+                            RankImageUrl = "/images/ranks/LoL/Silver.webp",
+                            RankName = "Silver"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            GameId = 4,
+                            RankImageUrl = "/images/ranks/LoL/Gold.webp",
+                            RankName = "Gold"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            GameId = 4,
+                            RankImageUrl = "/images/ranks/LoL/Platinum.webp",
+                            RankName = "Platinum"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            GameId = 4,
+                            RankImageUrl = "/images/ranks/LoL/Emerald.webp",
+                            RankName = "Emerald"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            GameId = 4,
+                            RankImageUrl = "/images/ranks/LoL/Diamond.webp",
+                            RankName = "Diamond"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            GameId = 4,
+                            RankImageUrl = "/images/ranks/LoL/Master.webp",
+                            RankName = "Master"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            GameId = 4,
+                            RankImageUrl = "/images/ranks/LoL/Grandmaster.webp",
+                            RankName = "Grandmaster"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            GameId = 4,
+                            RankImageUrl = "/images/ranks/LoL/Challenger.webp",
+                            RankName = "Challenger"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            GameId = 9,
+                            RankImageUrl = "/images/ranks/Pubg/Bronze.webp",
+                            RankName = "Bronze"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            GameId = 9,
+                            RankImageUrl = "/images/ranks/Pubg/Silver.webp",
+                            RankName = "Silver"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            GameId = 9,
+                            RankImageUrl = "/images/ranks/Pubg/Gold.webp",
+                            RankName = "Gold"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            GameId = 9,
+                            RankImageUrl = "/images/ranks/Pubg/Platinum.webp",
+                            RankName = "Platinum"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            GameId = 9,
+                            RankImageUrl = "/images/ranks/Pubg/Crown.webp",
+                            RankName = "Crown"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            GameId = 9,
+                            RankImageUrl = "/images/ranks/Pubg/Ace.webp",
+                            RankName = "Ace"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            GameId = 9,
+                            RankImageUrl = "/images/ranks/Pubg/AceMaster.webp",
+                            RankName = "AceMaster"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            GameId = 9,
+                            RankImageUrl = "/images/ranks/Pubg/AceDominator.webp",
+                            RankName = "AceDominator"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            GameId = 9,
+                            RankImageUrl = "/images/ranks/Pubg/Conqueror.webp",
+                            RankName = "Conqueror"
                         });
                 });
 
@@ -507,6 +748,24 @@ namespace hateekub.Migrations
                         {
                             Id = 14,
                             GameId = 6,
+                            RoleName = "Support"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            GameId = 3,
+                            RoleName = "Tank"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            GameId = 3,
+                            RoleName = "Damage"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            GameId = 3,
                             RoleName = "Support"
                         });
                 });
@@ -707,7 +966,7 @@ namespace hateekub.Migrations
                     b.Property<int?>("RankId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int?>("RoleId")
                         .HasColumnType("integer");
 
                     b.Property<int>("RoomId")
@@ -772,11 +1031,13 @@ namespace hateekub.Migrations
                     b.Property<int>("MaxPlayer")
                         .HasColumnType("integer");
 
-                    b.Property<int>("MaxRank")
-                        .HasColumnType("integer");
+                    b.Property<string>("MaxRank")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int>("MinRank")
-                        .HasColumnType("integer");
+                    b.Property<string>("MinRank")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("RoomId")
                         .HasColumnType("integer");
@@ -806,6 +1067,15 @@ namespace hateekub.Migrations
                     b.Property<string>("InGameName")
                         .HasColumnType("text");
 
+                    b.Property<int?>("RankDivision")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("RankLastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RankTier")
+                        .HasColumnType("text");
+
                     b.Property<int>("UserProfileId")
                         .HasColumnType("integer");
 
@@ -813,7 +1083,8 @@ namespace hateekub.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.HasIndex("UserProfileId");
+                    b.HasIndex("UserProfileId", "GameId")
+                        .IsUnique();
 
                     b.ToTable("UserGames");
                 });
@@ -831,6 +1102,10 @@ namespace hateekub.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Nickname")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -1036,9 +1311,7 @@ namespace hateekub.Migrations
 
                     b.HasOne("hateekub.Models.GameRole", "Role")
                         .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoleId");
 
                     b.HasOne("hateekub.Models.Room", "Room")
                         .WithMany("Players")
@@ -1094,13 +1367,13 @@ namespace hateekub.Migrations
             modelBuilder.Entity("hateekub.Models.UserGame", b =>
                 {
                     b.HasOne("hateekub.Models.Game", "Game")
-                        .WithMany()
+                        .WithMany("UserGames")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("hateekub.Models.UserProfile", "User")
-                        .WithMany()
+                        .WithMany("UserGames")
                         .HasForeignKey("UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1110,22 +1383,13 @@ namespace hateekub.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("hateekub.Models.UserProfile", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("hateekub.Models.Game", b =>
                 {
                     b.Navigation("GameRanks");
 
                     b.Navigation("GameRoles");
+
+                    b.Navigation("UserGames");
                 });
 
             modelBuilder.Entity("hateekub.Models.Room", b =>
@@ -1148,6 +1412,8 @@ namespace hateekub.Migrations
                     b.Navigation("ProfileGames");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("UserGames");
                 });
 #pragma warning restore 612, 618
         }

@@ -13,7 +13,7 @@
     <div id="btnContainer" class="btnContainer">
 <a asp-controller="Match"
    asp-action="Match"
-   asp-route-gameName="game.name"
+   asp-route-gameName="@ViewBag.GameName"
    class="backbtn">
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
         <path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="#F4A5FF" stroke-width="2"/>
@@ -31,6 +31,10 @@
     
 
     </div>
+    <script>
+    const gameName = "@ViewBag.GameName";
+    const roomId = "@ViewBag.RoomId";
+</script>
     <script src="~/js/room.js" asp-append-version="true"></script>
 </body>
 

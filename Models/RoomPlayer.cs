@@ -14,7 +14,11 @@ public class RoomPlayer
 
     public GameRole? Role { get; set; }
 
+    public int RoleId { get; set; }
+
     public GameRank? Rank { get; set; }
+
+    public int? RankId { get; set; }
     public bool IsReady { get; set; }
 }
 }

@@ -1,0 +1,255 @@
+body{
+
+margin:0;
+font-family:sans-serif;
+color:white;
+
+background:
+radial-gradient(circle at 50% 20%,#0e3b5f 0%,transparent 60%),
+radial-gradient(circle at 50% 100%,#031a2e 0%,transparent 70%),
+#020a16;
+
+height:100vh;
+overflow:hidden;
+
+}
+
+/* TOP */
+
+.topbar{
+
+position:absolute;
+top:20px;
+left:40px;
+
+display:flex;
+gap:20px;
+align-items:center;
+
+}
+
+.topbar h2{
+letter-spacing:3px;
+}
+
+/* PARTY AREA */
+
+.party-container{
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+gap:50px;
+
+margin-top:140px;
+
+}
+
+/* EMPTY SLOT */
+
+.slot{
+
+width:160px;
+height:260px;
+
+border:2px solid rgba(255,255,255,.2);
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+font-size:36px;
+
+opacity:.6;
+
+transition:.2s;
+
+}
+
+.slot:hover{
+
+opacity:1;
+border-color:white;
+
+}
+
+/* CENTER CARD */
+
+.player-main{
+
+width:240px;
+height:360px;
+
+position:relative;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+}
+
+/* CARD */
+
+.card:hover{
+    scale: calc(1.05);
+}
+.card{
+
+width:100%;
+height:100%;
+
+position:relative;
+
+border-radius:6px;
+
+overflow:hidden;
+
+box-shadow:
+
+0 0 20px rgba(255,255,255,.2),
+0 0 60px rgba(0,120,255,.3);
+
+}
+
+/* BANNER */
+
+.card img{
+
+width:100%;
+height:100%;
+
+object-fit:cover;
+
+}
+
+/* LEVEL */
+
+.player-level{
+
+position:absolute;
+top:10px;
+left:50%;
+
+transform:translateX(-50%);
+
+background:#3a2a1f;
+
+padding:3px 10px;
+
+border-radius:10px;
+
+font-size:12px;
+
+}
+
+/* NAME */
+
+.player-name{
+
+position:absolute;
+bottom:60px;
+left:50%;
+
+transform:translateX(-50%);
+
+background:#f3c267;
+
+color:black;
+
+padding:6px 20px;
+
+font-weight:700;
+
+}
+
+/* TITLE */
+
+.player-title{
+
+position:absolute;
+bottom:30px;
+left:50%;
+
+transform:translateX(-50%);
+
+font-size:12px;
+
+opacity:.8;
+
+}
+
+/* BUTTON BAR */
+
+.bottom-bar{
+
+position:absolute;
+bottom:80px;
+left:50%;
+
+transform:translateX(-50%);
+
+display:flex;
+gap:30px;
+
+}
+
+/* PRACTICE */
+
+.practice{
+
+background:#6c7a86;
+
+border:none;
+
+color:white;
+
+padding:10px 40px;
+
+font-size:16px;
+
+}
+
+/* START */
+
+.start{
+
+background:#ff4655;
+
+border:none;
+
+color:white;
+
+font-size:22px;
+
+padding:14px 90px;
+
+font-weight:800;
+
+letter-spacing:3px;
+
+transition:.2s;
+
+}
+
+.start:hover{
+
+transform:scale(1.05);
+
+background:#ff5c69;
+
+}
+
+/* LEAVE */
+
+.leave{
+
+background:#5f6a73;
+
+border:none;
+
+color:white;
+
+padding:10px 40px;
+
+}

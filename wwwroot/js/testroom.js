@@ -1,63 +1,62 @@
-
 const PlayerMain = document.getElementById("roomContainer");
 
-renderRooms({
+let offset = 2;
+
+const visibleSlots = 5;
+const centerIndex = 2;
+const maxPlayers = 6;
+
+const roomData = {
     ownerUsername: "SKYKY",
     players: [
-        {
-            name:"SKYKY",
-            profile:"/images/profile/0abeee40-d8ff-4e81-a46d-d01a9b610b5d.avif",
-            player_rank:147,
-            roleName:"Controller"
-        },
-        {
-            name:"Alice",
-            profile:"/images/profile/a4a314c2-61a7-4d43-b28d-fe277fdbae93.jpg",
-            player_rank:100,
-            roleName:"Duelist"
-        },
-        {
-            name:"Bob",
-            profile:"/images/profile/539021cf-a592-461e-b9a7-4ed8a132982f.jpg",
-            player_rank:90,
-            roleName:"Initiator"
-        }
+        {name:"SKYKY",profile:"/images/profile/0abeee40-d8ff-4e81-a46d-d01a9b610b5d.avif",player_rank:147,roleName:"Controller"},
+        {name:"Alice",profile:"/images/profile/a4a314c2-61a7-4d43-b28d-fe277fdbae93.jpg",player_rank:100,roleName:"Duelist"},
+        {name:"Bob",profile:"https://i.pinimg.com/736x/bf/6e/29/bf6e296386c67b027cd3d234e3c6efa4.jpg",player_rank:90,roleName:"Initiator"},
+        {name:"Eve",profile:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFBo6bythwEPQHLVrQUDTLl-bVfJ4MnxRDWQ&s",player_rank:80,roleName:"Sentinel"},
+        {name:"Tom",profile:"https://pbs.twimg.com/profile_images/378800000357127977/a826b950ea6dee6f691696c1e31b78b7_400x400.jpeg",player_rank:70,roleName:"Controller"},
+        {name:"Ken",profile:"https://st-th-1.byteark.com/assets.punpro.com/contents/i9149/1590488436656-Image-1.jpg",player_rank:60,roleName:"Duelist"}
     ]
-});
+};
+
+renderRooms(roomData);
 
 function renderRooms(room) {
 
     PlayerMain.innerHTML = "";
 
-    const maxSlots = 5;
-    const slots = new Array(maxSlots).fill(null);
+    const slots = new Array(visibleSlots).fill(null);
 
     const owner = room.players.find(p => p.name === room.ownerUsername);
+
     const others = room.players.filter(p => p.name !== room.ownerUsername);
 
-    // owner อยู่กลาง
-    slots[2] = owner;
+    const emptySlots = maxPlayers - room.players.length;
 
-    let left = 1;
-    let right = 3;
+    const circle = [...others];
 
-    others.forEach((p, i) => {
+    for(let i=0;i<emptySlots;i++){
+        circle.push(null);
+    }
 
-        if (i % 2 === 0) {
-            slots[left] = p;
-            left--;
-        } else {
-            slots[right] = p;
-            right++;
-        }
+    const total = circle.length;
 
-    });
+    slots[centerIndex] = owner;
+
+    for(let i=1;i<=2;i++){
+
+        const leftIndex = (offset - i + total) % total;
+        const rightIndex = (offset + i - 1) % total;
+
+        slots[centerIndex - i] = circle[leftIndex];
+        slots[centerIndex + i] = circle[rightIndex];
+
+    }
 
     slots.forEach(p => {
 
-        if (p) {
+        if(p){
             PlayerMain.appendChild(PlayerCard(p, room.ownerUsername));
-        } else {
+        }else{
             PlayerMain.appendChild(EmptySlot());
         }
 
@@ -73,7 +72,7 @@ function PlayerCard(player, ownerUsername) {
     const card = document.createElement("div");
     card.classList.add("card");
 
-    if (player.name === ownerUsername) {
+    if(player.name === ownerUsername){
         card.classList.add("owner");
     }
 
@@ -83,7 +82,7 @@ function PlayerCard(player, ownerUsername) {
     const level = document.createElement("div");
     level.classList.add("player-level");
     level.innerText = player.player_rank;
-
+    
     const name = document.createElement("div");
     name.classList.add("player-name");
     name.innerText = player.name;
@@ -92,6 +91,7 @@ function PlayerCard(player, ownerUsername) {
     title.classList.add("player-title");
     title.innerText = player.roleName;
 
+    
     card.appendChild(img);
     card.appendChild(level);
     card.appendChild(name);
@@ -102,7 +102,7 @@ function PlayerCard(player, ownerUsername) {
     return div;
 }
 
-function EmptySlot() {
+function EmptySlot(){
 
     const div = document.createElement("div");
     div.classList.add("slot");
@@ -110,3 +110,19 @@ function EmptySlot() {
 
     return div;
 }
+
+document.getElementById("leftBtn").onclick = () => {
+
+    offset--;
+
+    renderRooms(roomData);
+
+};
+
+document.getElementById("rightBtn").onclick = () => {
+
+    offset++;
+
+    renderRooms(roomData);
+
+};

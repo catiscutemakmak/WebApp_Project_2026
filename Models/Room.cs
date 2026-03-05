@@ -25,7 +25,12 @@ public class Room
 
 
     public ICollection<RoomPlayer> Players { get; set; } = new List<RoomPlayer>(); 
-    public ICollection<RoomQueue> QueuePlayers { get; set; } = new List<RoomQueue>();
+
+    public IEnumerable<RoomPlayer> ActivePlayers =>
+        Players.Where(p => !p.IsInQueue);
+
+    public IEnumerable<RoomPlayer> Queue =>
+        Players.Where(p => p.IsInQueue);
     public ICollection<RoomChat> Chats { get; set; } = new List<RoomChat>();
 
     }

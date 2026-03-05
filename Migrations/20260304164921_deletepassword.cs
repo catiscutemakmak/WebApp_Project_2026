@@ -14,9 +14,6 @@ namespace hateekub.Migrations
                 name: "FK_RoomPlayers_GameRoles_RoleId",
                 table: "RoomPlayers");
 
-            migrationBuilder.DropColumn(
-                name: "Password",
-                table: "UserProfiles");
 
             migrationBuilder.AlterColumn<int>(
                 name: "RoleId",

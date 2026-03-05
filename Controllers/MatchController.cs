@@ -28,8 +28,7 @@ public class MatchController : Controller
 [HttpGet("rooms")]
 public IActionResult GetRoomsByGameName(string gameName)
 {
-
-            var rooms = _context.Rooms
+    var rooms = _context.Rooms
         .Where(r => r.Game != null && r.Game.GameName == gameName)
         .Select(r => new RoomDTO
         {
@@ -49,20 +48,20 @@ public IActionResult GetRoomsByGameName(string gameName)
             },
 
             Players = r.Players
+                .Where(p => !p.IsInQueue)
                 .Select(p => new PlayerDTO
                 {
                     UserId = p.UserId,
-                Username = p.User != null ? p.User.Nickname : "",
-                RoleName = p.Role != null ? p.Role.RoleName : "",
-                RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
-                UserProfile = p.User != null ? p.User.ProfileImagePath : "",
-            
+                    Username = p.User != null ? p.User.Nickname : "",
+                    RoleName = p.Role != null ? p.Role.RoleName : "",
+                    RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
+                    UserProfile = p.User != null ? p.User.ProfileImagePath : "",
                 })
                 .ToList()
         })
         .ToList();
 
-            return Ok(rooms);
+    return Ok(rooms);
 }
 
 [HttpGet("roles")]
@@ -88,59 +87,79 @@ public IActionResult GetGameRoleByGameName(string gameName)
         return Ok(roles);
 
     }
-
 [HttpPost("JoinRoom/{roomId}")]
 public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest request)
 {
-    var roleName = request.RoleName;
+    if (string.IsNullOrEmpty(request.RoleName))
+        return BadRequest("Role is required");
+
     var room = await _context.Rooms
         .Include(r => r.Players)
         .Include(r => r.RoomSetting)
-        .Include(r => r.Game)  
+        .Include(r => r.Game)
         .FirstOrDefaultAsync(r => r.Id == roomId);
 
     if (room == null)
-        return NotFound();
+        return NotFound("Room not found");
 
     var currentUser = await _userManager.GetUserAsync(User);
     if (currentUser == null)
-        return RedirectToAction("Login", "Account");
+        return Unauthorized();
 
     var userProfile = await _context.UserProfiles
         .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
 
     if (userProfile == null)
-        return BadRequest("User profile not found.");
+        return BadRequest("User profile not found");
 
+    // กัน join ซ้ำ
     var alreadyInRoom = room.Players
         .Any(p => p.UserId == userProfile.Id);
 
     if (alreadyInRoom)
-        return BadRequest("You already joined this room.");
+        return BadRequest("You already joined this room");
 
-    if (room.Players.Count >= room.RoomSetting!.MaxPlayer)
-        return BadRequest("Room is full.");
+    var isPrivate = room.RoomSetting!.IsPrivate;
+
+    // นับเฉพาะคนที่ join จริง
+    var activePlayerCount = room.Players
+        .Count(p => !p.IsInQueue);
+
+    if (!isPrivate && activePlayerCount >= room.RoomSetting.MaxPlayer)
+        return BadRequest("Room is full");
 
     var gameRole = await _context.GameRoles
-        .FirstOrDefaultAsync(gr => gr.RoleName == roleName && gr.GameId == room.GameId);
+        .FirstOrDefaultAsync(gr =>
+            gr.RoleName == request.RoleName &&
+            gr.GameId == room.GameId);
 
     if (gameRole == null)
         return BadRequest("Invalid role");
 
-    room.Players.Add(new RoomPlayer
+    var newPlayer = new RoomPlayer
     {
         UserId = userProfile.Id,
         RoomId = room.Id,
         RoleId = gameRole.Id,
         RankId = 1,
         JoinedAt = DateTime.UtcNow,
-        IsReady = false
-    });
+        IsReady = false,
+        IsInQueue = isPrivate
+    };
+
+    room.Players.Add(newPlayer);
 
     await _context.SaveChangesAsync();
-    return Ok(new {
+
+    return Ok(new
+    {
         success = true,
-        roomUrl = $"/game/{room.Game!.GameName}/room/{room.Id}"
+        roomUrl = isPrivate
+            ? null
+            : $"/game/{room.Game!.GameName}/room/{room.Id}",
+        message = isPrivate
+            ? "Added to queue"
+            : "Joined room"
     });
 }
 }

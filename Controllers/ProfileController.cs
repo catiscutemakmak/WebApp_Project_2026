@@ -171,4 +171,22 @@ public class ProfileController : Controller
 
         return RedirectToAction("ViewProfile");
     }
+
+        public IActionResult View(int id)
+        {
+            var user = _context.UserProfiles
+                .Include(x => x.ProfileGames)
+                .Include(x => x.Reviews)
+                .ThenInclude(r => r.Reviewer)
+                .FirstOrDefault(x => x.Id == id);
+
+            if (user == null)
+                return NotFound();
+
+            var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            ViewBag.IsOwnProfile = user.UserId == currentUserId;
+
+            return View("ViewProfile", user);
+        }
 }

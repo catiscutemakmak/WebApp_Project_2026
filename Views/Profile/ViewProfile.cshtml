@@ -5,18 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;300;400;500;700&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;300;400;500;700&display=swap"rel="stylesheet">
     <link rel="stylesheet" href="~/css/ViewProfile.css" />
 </head>
 
 <body>
-
+    <div id="particles"></div>
     <div class="container">
 
         <!-- LEFT -->
         <div class="left-panel">
-            <a asp-controller='Home' asp-action='Index' class="back-btn">
+            <a href="javascript:history.back()" class="back-btn">
                 <span class="icon">
                     &#x2039; <!-- ❮ -->
                 </span>
@@ -29,22 +28,24 @@
                                                          : Model.ProfileImagePath)" alt="Profile Image" />
             </div>
             <h1 class="name-left">@(string.IsNullOrWhiteSpace(Model.Nickname) ? "User" : Model.Nickname)</h1>
-            <a asp-controller="Profile" asp-action="EditProfile" class="edit-btn">
-                <svg class="edit-icon" xmlns="http://www.w3.org/2000/svg" viewBox="-49.49 -49.49 593.92 593.92">
-                    <path d="M389.844,182.85c-6.743,0-12.21,5.467-12.21,12.21v222.968c0,23.562-19.174,42.735-42.736,42.735H67.157
-                    c-23.562,0-42.736-19.174-42.736-42.735V150.285c0-23.562,19.174-42.735,42.736-42.735h267.741
-                    c6.743,0,12.21-5.467,12.21-12.21s-5.467-12.21-12.21-12.21H67.157C30.126,83.13,0,113.255,0,150.285v267.743
-                    c0,37.029,30.126,67.155,67.157,67.155h267.741c37.03,0,67.156-30.126,67.156-67.155V195.061
-                    C402.054,188.318,396.587,182.85,389.844,182.85z" />
-                    <path d="M483.876,20.791c-14.72-14.72-38.669-14.714-53.377,0L221.352,229.944
-                    c-0.28,0.28-3.434,3.559-4.251,5.396l-28.963,65.069c-2.057,4.619-1.056,10.027,2.521,13.6
-                    c2.337,2.336,5.461,3.576,8.639,3.576c1.675,0,3.362-0.346,4.96-1.057l65.07-28.963
-                    c1.83-0.815,5.114-3.97,5.396-4.25L483.876,74.169
-                    c7.131-7.131,11.06-16.61,11.06-26.692C494.936,37.396,491.007,27.915,483.876,20.791z" />
-                </svg>
-                <span class="btn-text">EDIT</span>
-            </a>
-
+            @if (ViewBag.IsOwnProfile)
+            {
+                <a asp-controller="Profile" asp-action="EditProfile" class="edit-btn">
+                    <svg class="edit-icon" xmlns="http://www.w3.org/2000/svg" viewBox="-49.49 -49.49 593.92 593.92">
+                        <path d="M389.844,182.85c-6.743,0-12.21,5.467-12.21,12.21v222.968c0,23.562-19.174,42.735-42.736,42.735H67.157
+                        c-23.562,0-42.736-19.174-42.736-42.735V150.285c0-23.562,19.174-42.735,42.736-42.735h267.741
+                        c6.743,0,12.21-5.467,12.21-12.21s-5.467-12.21-12.21-12.21H67.157C30.126,83.13,0,113.255,0,150.285v267.743
+                        c0,37.029,30.126,67.155,67.157,67.155h267.741c37.03,0,67.156-30.126,67.156-67.155V195.061
+                        C402.054,188.318,396.587,182.85,389.844,182.85z" />
+                        <path d="M483.876,20.791c-14.72-14.72-38.669-14.714-53.377,0L221.352,229.944
+                        c-0.28,0.28-3.434,3.559-4.251,5.396l-28.963,65.069c-2.057,4.619-1.056,10.027,2.521,13.6
+                        c2.337,2.336,5.461,3.576,8.639,3.576c1.675,0,3.362-0.346,4.96-1.057l65.07-28.963
+                        c1.83-0.815,5.114-3.97,5.396-4.25L483.876,74.169
+                        c7.131-7.131,11.06-16.61,11.06-26.692C494.936,37.396,491.007,27.915,483.876,20.791z" />
+                    </svg>
+                    <span class="btn-text">EDIT</span>
+                </a>
+            }
         </div>
 
         <!-- RIGHT -->
@@ -142,6 +143,8 @@
                     </div>
                 }
             }
+            @if (ViewBag.IsOwnProfile)
+            {
             <form asp-controller="Account" asp-action="Logout" method="post" style="width: 100%; margin-top: 10px;">
                 @Html.AntiForgeryToken() @* เพื่อความปลอดภัยป้องกัน CSRF *@
                 <button type="submit" class="logout-btn">
@@ -155,7 +158,7 @@
                     <span class="btn-text">LOGOUT</span>
                 </button>
             </form>
-
+            }
         </div>
     </div>
 

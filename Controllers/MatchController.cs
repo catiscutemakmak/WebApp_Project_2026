@@ -96,6 +96,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     var room = await _context.Rooms
         .Include(r => r.Players)
         .Include(r => r.RoomSetting)
+        .Include(r => r.Game)  
         .FirstOrDefaultAsync(r => r.Id == roomId);
 
     if (room == null)
@@ -137,8 +138,10 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     });
 
     await _context.SaveChangesAsync();
-
-    return Ok();
+    return Ok(new {
+        success = true,
+        roomUrl = $"/game/{room.Game!.GameName}/room/{room.Id}"
+    });
 }
 }
 }

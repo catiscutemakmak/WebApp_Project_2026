@@ -183,7 +183,8 @@ function createRoleForm(room, roles) {
 function createJoinButton(roomId) {
 
   const btn = document.createElement("button");
-  btn.innerText = "JOIN";
+  btn.type = "button";
+  btn.innerText = "Joining...";
   btn.classList.add("join-btn", "hide");
 
   btn.addEventListener("click", async () => {
@@ -213,8 +214,8 @@ function createJoinButton(roomId) {
       );
 
       if (response.ok) {
-        alert("Joined successfully!");
-        location.reload(); // refresh UI
+      const data = await response.json();
+      window.location.href = data.roomUrl;
       } else {
         const errorText = await response.text();
         alert(errorText);

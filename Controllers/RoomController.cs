@@ -26,6 +26,12 @@ public class RoomController : Controller
         ViewBag.RoomId = roomId;
         return View();
     }
+    [HttpGet("testroom")]
+    public IActionResult testroom()
+    {
+
+        return View();
+    }
 
     // API ดึงข้อมูล room
     [HttpGet("{roomId}/details")]

@@ -221,7 +221,25 @@ function createJoinButton(roomId) {
 
       if (response.ok) {
       const data = await response.json();
-      window.location.href = data.roomUrl;
+
+      // บันทึกห้องลง sessionStorage สำหรับ floating card
+      const joinedRooms = JSON.parse(sessionStorage.getItem("joinedRooms") || "[]");
+      const alreadySaved = joinedRooms.some(r => r.roomId === data.roomId);
+      if (!alreadySaved && data.roomUrl) {
+        joinedRooms.push({
+          roomId: data.roomId,
+          roomName: data.roomName,
+          gameName: data.gameName,
+          roomUrl: data.roomUrl
+        });
+        sessionStorage.setItem("joinedRooms", JSON.stringify(joinedRooms));
+      }
+
+      if (data.roomUrl) {
+        window.location.href = data.roomUrl;
+      } else {
+        alert(data.message); // private room → added to queue
+      }
       } else {
         const errorText = await response.text();
         alert(errorText);

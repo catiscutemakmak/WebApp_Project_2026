@@ -166,6 +166,17 @@ form.addEventListener("submit", async function (e) {
 
     if (res.ok) {
         const roomId = await res.text();
+
+        // บันทึกห้องลง sessionStorage สำหรับ floating card
+        const joinedRooms = JSON.parse(sessionStorage.getItem("joinedRooms") || "[]");
+        joinedRooms.push({
+            roomId: parseInt(roomId),
+            roomName: data.roomName,
+            gameName: data.game,
+            roomUrl: `/game/${data.game}/room/${roomId}`
+        });
+        sessionStorage.setItem("joinedRooms", JSON.stringify(joinedRooms));
+
         window.location.href = `/game/${data.game}/room/${roomId}`;
     }
     if (!res.ok) {

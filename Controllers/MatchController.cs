@@ -154,6 +154,9 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     return Ok(new
     {
         success = true,
+        roomId = room.Id,
+        roomName = room.RoomName,
+        gameName = room.Game!.GameName,
         roomUrl = isPrivate
             ? null
             : $"/game/{room.Game!.GameName}/room/{room.Id}",

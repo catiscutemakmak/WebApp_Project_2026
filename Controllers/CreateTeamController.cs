@@ -47,11 +47,13 @@ public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request
         return BadRequest("Invalid game");
     var roleId = await _context.GameRoles
         .Where(r => r.RoleName == request.GameRole)
+        .Where(r => r.GameId == game.Id)
         .Select(r => r.Id)
         .FirstOrDefaultAsync();
 
     var rankId = await _context.GameRanks
         .Where(r => r.RankName == request.MinRank)
+        .Where(r => r.GameId == game.Id)
         .Select(r => r.Id)
         .FirstOrDefaultAsync();
 

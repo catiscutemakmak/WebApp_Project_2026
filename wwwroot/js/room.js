@@ -1,7 +1,37 @@
+let connection = null
+
 let rooms = null;
 
 async function init() {
   try {
+
+    connection = new signalR.HubConnectionBuilder()
+    .withUrl("/chathub")
+    .build();
+
+    connection.on("ReceiveMessage", function(username, avatar, message){
+
+        const new_message = {
+            sender: username,
+            avatar: avatar,
+            message: message
+        };
+
+        chat_list.push(new_message);
+
+        const chatBox = document.querySelector(".chat-dev");
+        if(chatBox){
+            chatBox.remove();
+        }
+
+        const newChatBox = CreateChatBox();
+        document.getElementById("roomContainer").appendChild(newChatBox);
+    });
+
+    await connection.start();
+
+    await connection.invoke("JoinRoom", roomId);
+
     const roomsRes = await fetch(`/game/${gameName}/room/${roomId}/details`);
 
     if (!roomsRes.ok) throw new Error("Rooms API error: " + roomsRes.status);
@@ -33,33 +63,7 @@ init();
   ]
 
 
-const chat_list = [
-  {
-    sender: "Bow",
-    avatar: "https://i2.wp.com/images.genshin-builds.com/genshin/characters/flins/image.png?strip=all&quality=100",
-    message: "Hello Everyone!",
-  },
-  {
-    sender: "Sky",
-    avatar: "https://tx.audubon.org/sites/default/files/styles/bean_wysiwyg_full_width/public/cbcpressroom_tuftedtitmouse-judyhowle.jpg?itok=VMtDnqip",
-    message: "Hi Bow",
-  },
-  {
-    sender: "Dome",
-    avatar: "https://s.france24.com/media/display/544355b0-45df-11f0-9098-005056a97e36/w:980/Part-GTY-GYI0061951038-1-1-0.jpg",
-    message: "Lets play MLBB Bro!!!",
-  },
-  {
-    sender: "Dome",
-    avatar: "https://s.france24.com/media/display/544355b0-45df-11f0-9098-005056a97e36/w:980/Part-GTY-GYI0061951038-1-1-0.jpg",
-    message: "Hello ans me TT",
-  },
-    {
-    sender: "Bow",
-    avatar: "https://i2.wp.com/images.genshin-builds.com/genshin/characters/flins/image.png?strip=all&quality=100",
-    message: "U all noob bye bye",
-  }
-];
+const chat_list = [];
 
 const rankImageMap = {
     Warrior: "/images/rank/warrior.webp",
@@ -211,17 +215,22 @@ stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
 </svg>
 `;
     sent_box.addEventListener("submit", function(e) {
-    e.preventDefault();
 
-    const new_message = {
-    sender: user.name,
-    avatar: user.avatar,
-    message: input.value,
+        e.preventDefault();
 
-  }
-    chat_list.push(new_message); //place holder//
-    input.value = "";
+        if(input.value.trim() === "") return;
+
+        connection.invoke(
+            "SendMessage",
+            roomId,
+            user.name,
+            user.avatar,
+            input.value
+        ).catch(err => console.error(err));
+
+        input.value = "";
     });
+
     sent_box.appendChild(input);
     sent_box.appendChild(button);
 

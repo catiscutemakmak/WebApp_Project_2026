@@ -62,18 +62,18 @@
                 <select id="game-server" name="gameServer" disabled>
                     <option value="" disabled selected hidden>Choose Game First</option>
                 </select>
-
+                <div id="rank-requirement" class="rank-requirement">
                 <label>Rank Require</label>
                 <div class="rank-row">
-                    <select id="min-rank" name="minRank" disabled>
-                        <option value="" disabled selected hidden>Min Rank</option>
+                    <select id="min-rank" name="minRank" disabled required>
+                        <option value=""  selected hidden>Min Rank</option>
                     </select>
 
-                    <select id="max-rank" name="maxRank"  disabled>
-                        <option value="" disabled selected hidden>Max Rank</option>
+                    <select id="max-rank" name="maxRank" disabled required>
+                        <option value="" selected hidden>Max Rank</option>
                     </select>
                 </div>
-
+                </div>
                 <label>Number of players</label>
                 <select name="maxPlayer" class="player-select" required>
                     <option value="" disabled selected hidden>Choose Player</option>
@@ -93,7 +93,7 @@
                 
                 <div id="role-container">
                     <label>Your Role</label>
-                    <select id="game-role" name="gameRole" class="player-select" disabled>
+                    <select id="game-role" name="gameRole" class="player-select" disabled required>
                         <option value="" disabled selected hidden>Choose Game First</option>
                     </select>
                 </div>

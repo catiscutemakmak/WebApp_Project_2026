@@ -45,17 +45,25 @@ public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request
 
     if (game == null)
         return BadRequest("Invalid game");
-    var roleId = await _context.GameRoles
-        .Where(r => r.RoleName == request.GameRole)
-        .Where(r => r.GameId == game.Id)
-        .Select(r => r.Id)
-        .FirstOrDefaultAsync();
 
-    var rankId = await _context.GameRanks
-        .Where(r => r.RankName == request.MinRank)
-        .Where(r => r.GameId == game.Id)
-        .Select(r => r.Id)
-        .FirstOrDefaultAsync();
+    int? roleId = null;
+    int? rankId = null;
+
+    if (request.GameRole != null && request.GameRole != "Any")
+    {
+        roleId = await _context.GameRoles
+            .Where(r => r.RoleName == request.GameRole && r.GameId == game.Id)
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
+    }
+
+    if (request.MinRank != null && request.MinRank != "Any")
+    {
+        rankId = await _context.GameRanks
+            .Where(r => r.RankName == request.MinRank && r.GameId == game.Id)
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
+    }
 
     var newRoom = new Room
     {

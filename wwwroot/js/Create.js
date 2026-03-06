@@ -81,15 +81,18 @@ const minRank = document.getElementById("min-rank");
 const maxRank = document.getElementById("max-rank");
 const roleSelect = document.getElementById("game-role");
 const roleContainer = document.getElementById("role-container");
+const rankRequirement = document.getElementById("rank-requirement");
 
 function fillSelect(select, items, placeholder) {
-    select.innerHTML = `<option disabled selected hidden>${placeholder}</option>`;
+    select.innerHTML = `<option value="" selected hidden>${placeholder}</option>`;
+
     items.forEach(item => {
         const opt = document.createElement("option");
         opt.value = item;
         opt.textContent = item;
         select.appendChild(opt);
     });
+
     select.disabled = false;
 }
 
@@ -116,6 +119,18 @@ gameSelect.addEventListener("change", () => {
     } else {
         roleContainer.style.display = "block"; // แสดง role
         fillSelect(roleSelect, data.role, "Choose Role");
+    }
+
+        // RANK LOGIC
+    if (data.ranks.length === 1 && data.ranks[0] === "Any") {
+        rankRequirement.style.display = "none";
+            minRank.value = "Any";
+            maxRank.value = "Any";
+    } else {
+        rankRequirement.style.display = "block";
+            minRank.value = "";
+            maxRank.value = "";
+
     }
 });
 
@@ -155,7 +170,7 @@ form.addEventListener("submit", async function (e) {
             formData.get("playTime")
         )
     };
-
+    console.log("Submitting data:", data);
     const res = await fetch("/CreateTeam/CreateTeam", {
         method: "POST",
         headers: {

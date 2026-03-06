@@ -206,16 +206,30 @@ namespace hateekub.Data
                 new GameRole { Id = 9, GameId = 4, RoleName = "Support" },
 
                 // RoV Roles (GameId = 6)
-                new GameRole { Id = 10, GameId = 6, RoleName = "Top Lane" },
+                new GameRole { Id = 10, GameId = 6, RoleName = "OffLane" },
                 new GameRole { Id = 11, GameId = 6, RoleName = "Jungle" },
-                new GameRole { Id = 12, GameId = 6, RoleName = "Mid Lane" },
-                new GameRole { Id = 13, GameId = 6, RoleName = "ADC" },
-                new GameRole { Id = 14, GameId = 6, RoleName = "Support" },
+                new GameRole { Id = 12, GameId = 6, RoleName = "MidLane" },
+                new GameRole { Id = 13, GameId = 6, RoleName = "Carry" },
+                new GameRole { Id = 14, GameId = 6, RoleName = "Roam" },
 
                 // OW Roles (GameId = 3)
                 new GameRole { Id = 15, GameId = 3, RoleName = "Tank" },
                 new GameRole { Id = 16, GameId = 3, RoleName = "Damage" },
-                new GameRole { Id = 17, GameId = 3, RoleName = "Support" }
+                new GameRole { Id = 17, GameId = 3, RoleName = "Support" },
+
+                // Mobile Legends Roles (GameId = 5)
+                new GameRole { Id = 18, GameId = 5, RoleName = "GoldLane" },
+                new GameRole { Id = 19, GameId = 5, RoleName = "ExpLane" },
+                new GameRole { Id = 20, GameId = 5, RoleName = "MidLane" },
+                new GameRole { Id = 21, GameId = 5, RoleName = "MarkMan" },
+                new GameRole { Id = 22, GameId = 5, RoleName = "Support" },
+
+                //csgo Roles (GameId = 1)
+                new GameRole { Id = 23, GameId = 1, RoleName = "Entry Fragger" },
+                new GameRole { Id = 24, GameId = 1, RoleName = "Support" },
+                new GameRole { Id = 25, GameId = 1, RoleName = "AWPer" },
+                new GameRole { Id = 26, GameId = 1, RoleName = "Lurker" },
+                new GameRole { Id = 27, GameId = 1, RoleName = "In-Game Leader" }
             );
 
             // Seed GameRanks
@@ -227,6 +241,7 @@ namespace hateekub.Data
                 new GameRank { Id = 4, GameId = 2, RankName = "Gold", RankImageUrl = "/images/ranks/val/Gold.webp" },
                 new GameRank { Id = 5, GameId = 2, RankName = "Platinum", RankImageUrl = "/images/ranks/val/Platinum.webp" },
                 new GameRank { Id = 6, GameId = 2, RankName = "Diamond", RankImageUrl = "/images/ranks/val/Diamond.webp" },
+                new GameRank { Id = 43, GameId = 2, RankName = "Ascendant", RankImageUrl = "/images/ranks/val/Ascendant.webp" },
                 new GameRank { Id = 7, GameId = 2, RankName = "Immortal", RankImageUrl = "/images/ranks/val/Immortal.webp" },
                 new GameRank { Id = 8, GameId = 2, RankName = "Radiant", RankImageUrl = "/images/ranks/val/Radiant.webp" },
                 // Mobile Legends Ranks (GameId = 5)
@@ -269,7 +284,26 @@ namespace hateekub.Data
                 new GameRank { Id = 39, GameId = 9, RankName = "Ace", RankImageUrl = "/images/ranks/Pubg/Ace.webp" },
                 new GameRank { Id = 40, GameId = 9, RankName = "AceMaster", RankImageUrl = "/images/ranks/Pubg/AceMaster.webp" },
                 new GameRank { Id = 41, GameId = 9, RankName = "AceDominator", RankImageUrl = "/images/ranks/Pubg/AceDominator.webp" },
-                new GameRank { Id = 42, GameId = 9, RankName = "Conqueror", RankImageUrl = "/images/ranks/Pubg/Conqueror.webp" }
+                new GameRank { Id = 42, GameId = 9, RankName = "Conqueror", RankImageUrl = "/images/ranks/Pubg/Conqueror.webp" },
+
+                // RoV Ranks (GameId = 6)
+                new GameRank { Id = 44, GameId = 6, RankName = "Bronze", RankImageUrl = "/images/ranks/RoV/Bronze.webp" },
+                new GameRank { Id = 45, GameId = 6, RankName = "Silver", RankImageUrl = "/images/ranks/RoV/Silver.webp" },
+                new GameRank { Id = 46, GameId = 6, RankName = "Gold", RankImageUrl = "/images/ranks/RoV/Gold.jpg" },
+                new GameRank { Id = 47, GameId = 6, RankName = "Platinum", RankImageUrl = "/images/ranks/RoV/Platinum.jpg" },
+                new GameRank { Id = 48, GameId = 6, RankName = "Diamond", RankImageUrl = "/images/ranks/RoV/Diamond.webp" },
+                new GameRank { Id = 49, GameId = 6, RankName = "Commander", RankImageUrl = "/images/ranks/RoV/Commander.webp" },
+                new GameRank { Id = 50, GameId = 6, RankName = "Conqueror", RankImageUrl = "/images/ranks/RoV/Conqueror.webp" },
+
+                // CS2 Ranks (GameId = 1)
+                new GameRank { Id = 51, GameId = 1, RankName ="Silver", RankImageUrl = "/images/ranks/CS2/Silver.png" },
+                new GameRank { Id = 52, GameId = 1, RankName ="Gold Nova", RankImageUrl = "/images/ranks/CS2/Gold.png" },
+                new GameRank { Id = 53, GameId = 1, RankName ="Master Guardian", RankImageUrl = "/images/ranks/CS2/MasterGuardian.png" },
+                new GameRank { Id = 54, GameId = 1, RankName ="Distinguished", RankImageUrl = "/images/ranks/CS2/Distinguished.png" },
+                new GameRank { Id = 55, GameId = 1, RankName ="Legendary Eagle", RankImageUrl = "/images/ranks/CS2/LegendaryEagle.png" },
+                new GameRank { Id = 56, GameId = 1, RankName ="Supreme", RankImageUrl = "/images/ranks/CS2/SupremeMaster.png" },
+                new GameRank { Id = 57, GameId = 1, RankName ="Global Elite", RankImageUrl = "/images/ranks/CS2/Global.png" }
+
             );
         }
     }

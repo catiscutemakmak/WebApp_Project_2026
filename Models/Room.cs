@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 namespace hateekub.Models
 {
 public class Room
@@ -26,9 +27,11 @@ public class Room
 
     public ICollection<RoomPlayer> Players { get; set; } = new List<RoomPlayer>(); 
 
+    [NotMapped]
     public IEnumerable<RoomPlayer> ActivePlayers =>
         Players.Where(p => !p.IsInQueue);
 
+    [NotMapped]
     public IEnumerable<RoomPlayer> Queue =>
         Players.Where(p => p.IsInQueue);
     public ICollection<RoomChat> Chats { get; set; } = new List<RoomChat>();

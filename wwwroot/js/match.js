@@ -8,19 +8,21 @@ let roles = [];
    INIT
 ================================ */
 async function init() {
+
   try {
+
     const [roomsRes, rolesRes] = await Promise.all([
       fetch(`/game/${gameName}/rooms`),
       fetch(`/game/${gameName}/roles`)
     ]);
 
-    if (!roomsRes.ok) throw new Error("Rooms API error: " + roomsRes.status);
-    if (!rolesRes.ok) throw new Error("Roles API error: " + rolesRes.status);
+    if (!roomsRes.ok) throw new Error("Rooms API error");
+    if (!rolesRes.ok) throw new Error("Roles API error");
 
     rooms = await roomsRes.json();
     roles = await rolesRes.json();
 
-    renderRooms(rooms, roles);
+    renderRooms(rooms);
 
   } catch (err) {
     console.error("Init error:", err);
@@ -30,65 +32,78 @@ async function init() {
 init();
 
 /* ================================
+   NORMALIZE ROOM
+================================ */
+function normalizeRoom(room) {
+
+  return {
+    ...room,
+    players: room.players ?? [],
+    roomSetting: room.roomSetting ?? {},
+  };
+
+}
+
+/* ================================
    RENDER ROOMS
 ================================ */
-function renderRooms(rooms, roles) {
+function renderRooms(rooms) {
+
   const container = document.getElementById("MatchContainer");
   container.innerHTML = "";
 
   rooms.forEach(room => {
-    container.appendChild(renderRoom(normalizeRoom(room), roles));
-  });
-}
 
-/* ================================
-   NORMALIZE (กัน undefined)
-================================ */
-function normalizeRoom(room) {
-  return {
-    ...room,
-    players: room.players || [],
-    roomSetting: room.roomSetting || {}
-  };
+    const safeRoom = normalizeRoom(room);
+    container.appendChild(renderRoom(safeRoom));
+
+  });
+
 }
 
 /* ================================
    RENDER ROOM
 ================================ */
-function renderRoom(room, roles) {
+function renderRoom(room) {
 
   const wrapper = document.createElement("div");
   wrapper.classList.add("player-room");
 
-  // Room Name
+  /* ROOM NAME */
+
   const roomName = document.createElement("div");
   roomName.classList.add("room-name");
   roomName.innerText = room.roomName;
   wrapper.appendChild(roomName);
 
-  // Players
+  /* PLAYERS */
+
   room.players.forEach(player => {
     wrapper.appendChild(PlayerCard(player, room.ownerUsername));
   });
 
-  // Empty Slots
+  /* EMPTY SLOTS */
+
   const playerCount = room.players.length;
-  const maxPlayer = room.roomSetting.maxPlayer || 0;
+  const maxPlayer = room.roomSetting.maxPlayer ?? 0;
   const emptyCount = maxPlayer - playerCount;
 
-  const roleForm = createRoleForm(room, roles);
+  const roleForm = createRoleForm(room);
   const joinButton = createJoinButton(room.roomId);
 
   for (let i = 0; i < emptyCount; i++) {
     wrapper.appendChild(EmptySlot(roleForm, joinButton));
   }
 
-  // Requirement Bar
+  /* REQUIREMENT BAR */
+
   wrapper.appendChild(createRequirementBar(room));
-  wrapper.appendChild(roleForm);
+
+  if (roleForm) wrapper.appendChild(roleForm);
   wrapper.appendChild(joinButton);
 
   return wrapper;
+
 }
 
 /* ================================
@@ -98,16 +113,20 @@ function PlayerCard(player, ownerUsername) {
 
   const div = document.createElement("div");
   div.classList.add("player-dev");
-
   div.style.cursor = "pointer";
 
   div.addEventListener("click", () => {
     window.location.href = `/Profile/View/${player.userId}`;
   });
 
+  const rankImg =
+    player.rankName
+      ? `${player.rankName}`
+      : "/images/rank/unranked.webp";
+
   div.innerHTML = `
     <img class="player-profile"
-         src="${player.userProfile ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj5K_Hlzgq-p_0Xfv_vykmcOtuXhBI7VFBxg&s'}">
+      src="${player.userProfile ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj5K_Hlzgq-p_0Xfv_vykmcOtuXhBI7VFBxg&s'}">
 
     ${player.username === ownerUsername
       ? "<span class='empty-crown'>👑</span>"
@@ -115,43 +134,48 @@ function PlayerCard(player, ownerUsername) {
 
     <p>${player.username}</p>
 
-    <img class="rankImg"
-         src="${player.rankName ?? "/images/rank/epic.webp"}">
+    <img class="rankImg" src="${rankImg}">
 
-    <p class="rank-p">${player.roleName || "??"}</p>
+    <p class="rank-p">${player.roleName ?? "No Role"}</p>
   `;
 
   return div;
+
 }
 
 /* ================================
    EMPTY SLOT
 ================================ */
 function EmptySlot(roleForm, joinButton) {
+
   const btn = document.createElement("button");
+
   btn.type = "button";
   btn.classList.add("empty-dev");
 
   btn.innerHTML = `<span class="empty-crown">/ᐠ • ˕ •マ ?</span>`;
 
   btn.addEventListener("click", () => {
-    roleForm.classList.toggle("hide");
-    joinButton.classList.toggle("hide");
+
+    if (roleForm) roleForm.classList.toggle("hide");
+    if (joinButton) joinButton.classList.toggle("hide");
+
   });
 
   return btn;
+
 }
 
 /* ================================
    ROLE FORM
 ================================ */
-function createRoleForm(room, roles) {
+function createRoleForm(room) {
 
   if (!roles || roles.length === 0) return null;
 
   const takenRoles = room.players
-    ?.map(p => p.roleName)
-    .filter(Boolean) || [];
+    .map(p => p.roleName)
+    .filter(Boolean);
 
   const form = document.createElement("form");
   form.classList.add("role-form", "hide");
@@ -161,8 +185,9 @@ function createRoleForm(room, roles) {
     const label = document.createElement("label");
 
     const input = document.createElement("input");
-    input.classList.add("role-input");
     input.type = "radio";
+    input.classList.add("role-input");
+
     input.name = `role-${room.roomId}`;
     input.value = role.roleName;
 
@@ -171,16 +196,21 @@ function createRoleForm(room, roles) {
 
     if (!room.roomSetting?.allowDuplicateRole &&
         takenRoles.includes(role.roleName)) {
+
       input.disabled = true;
       span.classList.add("role-disabled");
+
     }
 
     label.appendChild(input);
     label.appendChild(span);
+
     form.appendChild(label);
+
   });
 
   return form;
+
 }
 
 /* ================================
@@ -189,50 +219,55 @@ function createRoleForm(room, roles) {
 function createJoinButton(roomId) {
 
   const btn = document.createElement("button");
+
   btn.type = "button";
-  btn.innerText = "Joining...";
+  btn.innerText = "Join";
   btn.classList.add("join-btn", "hide");
 
   btn.addEventListener("click", async () => {
-
 
     const selectedRole = document.querySelector(
       `input[name="role-${roomId}"]:checked`
     );
 
-    if (!selectedRole) {
-      alert("Please select a role first.");
+    if (!selectedRole && roles.length !== 0) {
+      alert("Please select a role.");
       return;
     }
 
-    const roleName = selectedRole.value;
+    const roleName = selectedRole ? selectedRole.value : null;
 
     try {
+
       const response = await fetch(
         `/game/${gameName}/JoinRoom/${roomId}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ roleName: roleName })
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roleName })
         }
       );
 
       if (response.ok) {
-      const data = await response.json();
-      window.location.href = data.roomUrl;
+
+        const data = await response.json();
+        window.location.href = data.roomUrl;
+
       } else {
+
         const errorText = await response.text();
         alert(errorText);
+
       }
 
     } catch (err) {
       console.error(err);
     }
+
   });
 
   return btn;
+
 }
 
 /* ================================
@@ -243,24 +278,31 @@ function createRequirementBar(room) {
   const bar = document.createElement("div");
   bar.classList.add("req-bar");
 
-  const settings = room.roomSetting;
+  const s = room.roomSetting;
 
   const items = [
-    `Min Rank: ${settings.minRank}`,
-    `Max Rank: ${settings.maxRank}`,
-    settings.isPrivate ? "Private Room" : "Public Room",
-    settings.allowDuplicateRole
+
+    s.minRank ? `Min Rank: ${s.minRank}` : null,
+    s.maxRank ? `Max Rank: ${s.maxRank}` : null,
+    s.isPrivate ? "Private Room" : "Public Room",
+    s.allowDuplicateRole
       ? "Duplicate Role Allowed"
       : "No Duplicate Role"
+
   ];
 
   items.forEach(text => {
+
     if (!text) return;
+
     const div = document.createElement("div");
     div.classList.add("req-text");
     div.innerText = text;
+
     bar.appendChild(div);
+
   });
 
   return bar;
+
 }

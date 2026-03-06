@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using hateekub.Data;
@@ -11,9 +12,11 @@ using hateekub.Data;
 namespace hateekub.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260306174336_HasRoleHasRank")]
+    partial class HasRoleHasRank
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1194,11 +1197,13 @@ namespace hateekub.Migrations
                     b.Property<int>("MaxPlayer")
                         .HasColumnType("integer");
 
-                    b.Property<int>("MaxRank")
-                        .HasColumnType("integer");
+                    b.Property<string>("MaxRank")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int>("MinRank")
-                        .HasColumnType("integer");
+                    b.Property<string>("MinRank")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("RoomId")
                         .HasColumnType("integer");
@@ -1228,6 +1233,15 @@ namespace hateekub.Migrations
                     b.Property<string>("InGameName")
                         .HasColumnType("text");
 
+                    b.Property<int?>("RankDivision")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("RankLastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RankTier")
+                        .HasColumnType("text");
+
                     b.Property<int>("UserProfileId")
                         .HasColumnType("integer");
 
@@ -1235,7 +1249,8 @@ namespace hateekub.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.HasIndex("UserProfileId");
+                    b.HasIndex("UserProfileId", "GameId")
+                        .IsUnique();
 
                     b.ToTable("UserGames");
                 });
@@ -1497,13 +1512,13 @@ namespace hateekub.Migrations
             modelBuilder.Entity("hateekub.Models.UserGame", b =>
                 {
                     b.HasOne("hateekub.Models.Game", "Game")
-                        .WithMany()
+                        .WithMany("UserGames")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("hateekub.Models.UserProfile", "User")
-                        .WithMany()
+                        .WithMany("UserGames")
                         .HasForeignKey("UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1529,6 +1544,8 @@ namespace hateekub.Migrations
                     b.Navigation("GameRanks");
 
                     b.Navigation("GameRoles");
+
+                    b.Navigation("UserGames");
                 });
 
             modelBuilder.Entity("hateekub.Models.Room", b =>
@@ -1549,6 +1566,8 @@ namespace hateekub.Migrations
                     b.Navigation("ProfileGames");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("UserGames");
                 });
 #pragma warning restore 612, 618
         }

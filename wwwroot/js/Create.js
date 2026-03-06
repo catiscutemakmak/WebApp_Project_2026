@@ -112,6 +112,7 @@ gameSelect.addEventListener("change", () => {
     if (data.role.length === 1 && data.role[0] === "Any") {
         roleContainer.style.display = "none"; // ซ่อน role
         roleSelect.value = "Any";
+        
     } else {
         roleContainer.style.display = "block"; // แสดง role
         fillSelect(roleSelect, data.role, "Choose Role");

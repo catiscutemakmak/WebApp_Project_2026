@@ -105,7 +105,9 @@ namespace hateekub.Data
             GameName = "CS2",
             GameType = "FPS",
             MaxPlayers = 5,
-            MinPlayers = 1
+            MinPlayers = 1,
+            HasRoles = true,
+            HasRanks = true
         },
         new Game
         {
@@ -113,7 +115,9 @@ namespace hateekub.Data
             GameName = "Valorant",
             GameType = "FPS",
             MaxPlayers = 5,
-            MinPlayers = 1
+            MinPlayers = 1,
+            HasRoles = true,
+            HasRanks = true
         },
         new Game
         {
@@ -121,7 +125,9 @@ namespace hateekub.Data
             GameName = "Overwatch",
             GameType = "FPS",
             MaxPlayers = 5,
-            MinPlayers = 1
+            MinPlayers = 1,
+            HasRoles = true,
+            HasRanks = true
         },
         new Game
         {
@@ -129,7 +135,9 @@ namespace hateekub.Data
             GameName = "LoL",
             GameType = "MOBA",
             MaxPlayers = 5,
-            MinPlayers = 1
+            MinPlayers = 1,
+            HasRoles = true,
+            HasRanks = true
         },
         new Game
         {
@@ -137,7 +145,9 @@ namespace hateekub.Data
             GameName = "Mobile Legends",
             GameType = "MOBA",
             MaxPlayers = 5,
-            MinPlayers = 1
+            MinPlayers = 1,
+            HasRoles = true,
+            HasRanks = true
         },
         new Game
         {
@@ -145,7 +155,9 @@ namespace hateekub.Data
             GameName = "RoV",
             GameType = "MOBA",
             MaxPlayers = 5,
-            MinPlayers = 1
+            MinPlayers = 1,
+            HasRoles = true,
+            HasRanks = true
         },
         new Game
         {
@@ -153,7 +165,10 @@ namespace hateekub.Data
             GameName = "Among Us",
             GameType = "Party",
             MaxPlayers = 15,
-            MinPlayers = 4
+            MinPlayers = 4,
+            HasRoles = false,
+            HasRanks = false
+
         },
         new Game
         {
@@ -161,7 +176,9 @@ namespace hateekub.Data
             GameName = "Peak",
             GameType = "Party",
             MaxPlayers = 4,
-            MinPlayers = 1
+            MinPlayers = 1,
+            HasRoles = false,
+            HasRanks = false
         },
         new Game
         {
@@ -169,7 +186,9 @@ namespace hateekub.Data
             GameName = "PUBG",
             GameType = "Battle Royale",
             MaxPlayers = 4,
-            MinPlayers = 1
+            MinPlayers = 1,
+            HasRoles = false,
+            HasRanks = true
         }
     );
 

@@ -1,13 +1,96 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using hateekub.Data;
+using hateekub.Models;
+using hateekub.DTOS;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
-namespace ProfileWeb.Controllers;
+namespace hateekub.Controllers;
 
-public class CreateTeam : Controller
+public class CreateTeamController: Controller
 {
+
+    private readonly AppDbContext _context;
+
+    private readonly UserManager<IdentityUser> _userManager;
+    public CreateTeamController(AppDbContext context, UserManager<IdentityUser> userManager)
+    {
+        _context = context;
+        _userManager = userManager;
+    }
     public IActionResult Create()
     {
         return View();
     }
 
+[HttpPost]
+public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request)
+{
+    if (!ModelState.IsValid)
+        return BadRequest(ModelState);
+
+    var currentUser = await _userManager.GetUserAsync(User);
+    if (currentUser == null)
+        return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+
+    if (userProfile == null)
+        return BadRequest("User profile not found");
+
+    var game = await _context.Games
+        .FirstOrDefaultAsync(g => g.GameName == request.Game);
+
+    if (game == null)
+        return BadRequest("Invalid game");
+    var roleId = await _context.GameRoles
+        .Where(r => r.RoleName == request.GameRole)
+        .Select(r => r.Id)
+        .FirstOrDefaultAsync();
+
+    var rankId = await _context.GameRanks
+        .Where(r => r.RankName == request.MinRank)
+        .Select(r => r.Id)
+        .FirstOrDefaultAsync();
+
+    var newRoom = new Room
+    {
+        RoomName = request.RoomName,
+        GameId = game.Id,
+        GameMode = request.GameMode,
+        Server = request.GameServer,
+        OwnerId = userProfile.Id,
+        Description = request.Description,
+        PlayDateTime = request.PlayDateTime = request.PlayDateTime.ToUniversalTime(),
+
+        RoomSetting = new RoomSetting
+        {
+            MinRank = request.MinRank,
+            MaxRank = request.MaxRank,
+            AllowDuplicateRole = false,
+            IsPrivate = request.RoomPrivacy,
+            MaxPlayer = request.MaxPlayer
+        },
+
+        Players = new List<RoomPlayer>
+        {
+            new RoomPlayer
+            {
+                UserId = userProfile.Id,
+                IsInQueue = false,
+                JoinedAt = DateTime.UtcNow,
+                IsReady = false,
+                RoleId = roleId,
+                RankId = rankId
+            }
+        }
+    };
+
+    _context.Rooms.Add(newRoom);
+    await _context.SaveChangesAsync();
+
+    return Ok(newRoom.Id);
+}
 }

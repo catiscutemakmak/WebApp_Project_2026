@@ -20,5 +20,6 @@ public class RoomPlayer
 
     public int? RankId { get; set; }
     public bool IsReady { get; set; }
+    public bool IsInQueue { get; set; }
 }
 }

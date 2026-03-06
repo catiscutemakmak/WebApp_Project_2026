@@ -24,7 +24,6 @@ namespace hateekub.Data
         // Room System Tables
         public DbSet<Room> Rooms { get; set; }
         public DbSet<RoomPlayer> RoomPlayers { get; set; }
-        public DbSet<RoomQueue> RoomQueues { get; set; }
         public DbSet<RoomChat> RoomChats { get; set; }
         public DbSet<RoomSetting> RoomSettings { get; set; }
 
@@ -77,18 +76,7 @@ namespace hateekub.Data
                 .HasForeignKey(rp => rp.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // RoomQueue relationships
-            modelBuilder.Entity<RoomQueue>()
-                .HasOne(rq => rq.Room)
-                .WithMany(r => r.QueuePlayers)
-                .HasForeignKey(rq => rq.RoomId)
-                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<RoomQueue>()
-                .HasOne(rq => rq.User)
-                .WithMany()
-                .HasForeignKey(rq => rq.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             // RoomChat relationships
             modelBuilder.Entity<RoomChat>()

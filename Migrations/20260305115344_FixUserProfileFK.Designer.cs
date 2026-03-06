@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using hateekub.Data;
@@ -11,9 +12,11 @@ using hateekub.Data;
 namespace hateekub.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260305115344_FixUserProfileFK")]
+    partial class FixUserProfileFK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -975,9 +978,6 @@ namespace hateekub.Migrations
                     b.Property<int?>("RoomId1")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("RoomId2")
-                        .HasColumnType("integer");
-
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
@@ -990,8 +990,6 @@ namespace hateekub.Migrations
                     b.HasIndex("RoomId");
 
                     b.HasIndex("RoomId1");
-
-                    b.HasIndex("RoomId2");
 
                     b.HasIndex("UserId");
 
@@ -1302,12 +1300,8 @@ namespace hateekub.Migrations
                         .IsRequired();
 
                     b.HasOne("hateekub.Models.Room", null)
-                        .WithMany("ActivePlayers")
+                        .WithMany("QueuePlayers")
                         .HasForeignKey("RoomId1");
-
-                    b.HasOne("hateekub.Models.Room", null)
-                        .WithMany("Queue")
-                        .HasForeignKey("RoomId2");
 
                     b.HasOne("hateekub.Models.UserProfile", "User")
                         .WithMany()
@@ -1376,13 +1370,11 @@ namespace hateekub.Migrations
 
             modelBuilder.Entity("hateekub.Models.Room", b =>
                 {
-                    b.Navigation("ActivePlayers");
-
                     b.Navigation("Chats");
 
                     b.Navigation("Players");
 
-                    b.Navigation("Queue");
+                    b.Navigation("QueuePlayers");
 
                     b.Navigation("RoomSetting");
                 });

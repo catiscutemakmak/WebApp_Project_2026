@@ -24,45 +24,53 @@ flatpickr("#play-time", {
 
 
 const gameData = {
-    mlbb: {
+    "Mobile Legends": {
         modes: ["Classic", "Ranked", "Brawl", "Custom"],
         servers: ["Thailand", "SEA"],
-        ranks: ["Warrior", "Elite", "Master", "Grandmaster", "Epic", "Legend", "Mythic"]
+        ranks: ["Warrior", "Elite", "Master", "Grandmaster", "Epic", "Legend", "Mythic"],
+        role: ["GoldLane", "ExpLane", "MidLane", "MarkMan", "Support"]
     },
-    rov: {
+    "RoV": {
         modes: ["Normal", "Ranked", "Abyssal Clash", "Custom"],
         servers: ["Thailand", "Vietnam", "Taiwan"],
-        ranks: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Conqueror"]
+        ranks: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Commander", "Conqueror"],
+        role: ["OffLane", "Jungle", "MidLane", "Carry", "Roam"]
     },
-    valorant: {
+    "Valorant": {
         modes: ["Unrated", "Competitive", "Swiftplay", "Spike Rush", "Deathmatch"],
         servers: ["Hong Kong", "Singapore", "Tokyo"],
-        ranks: ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Ascendant", "Immortal", "Radiant"]
+        ranks: ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Ascendant", "Immortal", "Radiant"],
+        role: ["Duelist", "Sentinel", "Controller", "Initiator"]
     },
-    csgo: {
+    "CS2": {
         modes: ["Competitive", "Casual", "Deathmatch", "Wingman"],
         servers: ["Asia", "Europe", "America"],
-        ranks: ["Silver", "Gold Nova", "Master Guardian", "Distinguished", "Legendary Eagle", "Supreme", "Global Elite"]
+        ranks: ["Silver", "Gold Nova", "Master Guardian", "Distinguished", "Legendary Eagle", "Supreme", "Global Elite"],
+        role: ["Entry Fragger", "Support", "AWPer", "Lurker", "In-Game Leader"]
     },
-    overwatch: {
+    "Overwatch": {
         modes: ["Quick Play", "Competitive", "Arcade", "Custom"],
         servers: ["Asia", "America", "Europe"],
-        ranks: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Grandmaster"]
+        ranks: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Grandmaster"],
+        role: ["Tank", "Damage", "Support"]
     },
-    pubg: {
+    "PUBG": {
         modes: ["Normal", "Ranked", "Arcade"],
         servers: ["Asia", "SEA", "America", "Europe"],
-        ranks: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master"]
+        ranks: ["Bronze", "Silver", "Gold", "Platinum", "Crown", "Ace","AceMaster","AceDominator","Conqueror"],
+        role: ["Any"]
     },
-    amongus: {
+    "Among Us": {
         modes: ["Classic", "Hide & Seek"],
         servers: ["Asia", "Europe", "North America"],
-        ranks: ["Any"]
+        ranks: ["Any"],
+        role: ["Any"]
     },
-    lol: {
+    "LoL": {
         modes: ["Normal", "Ranked Solo/Duo", "Ranked Flex", "ARAM", "Custom"],
         servers: ["TH", "SG", "JP", "KR"],
-        ranks: ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Grandmaster", "Challenger"]
+        ranks: ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Grandmaster", "Challenger"],
+        role: ["Top Lane", "Jungle", "Mid Lane", "ADC", "Support"]
     }
 };
 
@@ -71,6 +79,8 @@ const modeSelect = document.getElementById("game-mode");
 const serverSelect = document.getElementById("game-server");
 const minRank = document.getElementById("min-rank");
 const maxRank = document.getElementById("max-rank");
+const roleSelect = document.getElementById("game-role");
+const roleContainer = document.getElementById("role-container");
 
 function fillSelect(select, items, placeholder) {
     select.innerHTML = `<option disabled selected hidden>${placeholder}</option>`;
@@ -83,6 +93,10 @@ function fillSelect(select, items, placeholder) {
     select.disabled = false;
 }
 
+function combineDateTime(date, time){
+    return date + "T" + time;
+}
+
 gameSelect.addEventListener("change", () => {
     const game = gameSelect.value;
     const data = gameData[game];
@@ -93,10 +107,68 @@ gameSelect.addEventListener("change", () => {
     fillSelect(serverSelect, data.servers, "Choose Server");
     fillSelect(minRank, data.ranks, "Min Rank");
     fillSelect(maxRank, data.ranks, "Max Rank");
+
+    // ROLE LOGIC
+    if (data.role.length === 1 && data.role[0] === "Any") {
+        roleContainer.style.display = "none"; // ซ่อน role
+        roleSelect.value = "Any";
+    } else {
+        roleContainer.style.display = "block"; // แสดง role
+        fillSelect(roleSelect, data.role, "Choose Role");
+    }
 });
 
 maxRank.addEventListener("change", () => {
     if (minRank.selectedIndex > maxRank.selectedIndex) {
         minRank.selectedIndex = maxRank.selectedIndex;
+    }
+});
+
+document.getElementById("create-room-form").addEventListener("submit", function () {
+    document.querySelectorAll("select:disabled").forEach(el => {
+        el.disabled = false;
+    });
+});
+
+const form = document.getElementById("create-room-form");
+
+form.addEventListener("submit", async function (e) {
+    e.preventDefault(); // กัน reload หน้า
+
+    const formData = new FormData(form);
+
+    const data = {
+        game: formData.get("game"),
+        roomName: formData.get("roomName"),
+        gameMode: formData.get("gameMode"),
+        gameServer: formData.get("gameServer"),
+        minRank: formData.get("minRank"),
+        maxRank: formData.get("maxRank"),
+        maxPlayer: formData.get("maxPlayer"),
+        roomPrivacy: formData.get("RoomPrivacy") === "true",
+        gameRole: formData.get("gameRole"),
+        description: formData.get("description"),
+
+        playDateTime: combineDateTime(
+            formData.get("playDate"),
+            formData.get("playTime")
+        )
+    };
+
+    const res = await fetch("/CreateTeam/CreateTeam", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+        const roomId = await res.text();
+        window.location.href = `/game/${data.game}/room/${roomId}`;
+    }
+    if (!res.ok) {
+    const error = await res.text();
+    alert("Error: " + error);
     }
 });

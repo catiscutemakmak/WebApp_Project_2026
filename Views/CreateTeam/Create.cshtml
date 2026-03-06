@@ -12,8 +12,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     </head>
     <body>
-        <div class="container">
-
+        
+            <form id="create-room-form" class="container">
             <!-- LEFT -->
             <div class="left-panel">
                 <a href="" class="back-btn">
@@ -25,24 +25,24 @@
                 
                 <div class="game-card">
                     <h3>Choose Game</h3>
-                    <select id="game-select">
+                    <select id="game-select" name="game" required>
                         <option value="" disabled selected hidden>Choose game</option>
-                            <option value="mlbb">Mobile Legends Bang Bang</option>
-                            <option value="rov">RoV</option>
-                            <option value="valorant">Valorant</option>
-                            <option value="csgo">CS:GO</option>
-                            <option value="overwatch">Overwatch 2</option>
-                            <option value="pubg">PUBG: BATTLEGROUNDS</option>
-                            <option value="amongus">Among Us</option>
-                            <option value="lol">League of Legends</option>
+                            <option value="Mobile Legends">Mobile Legends Bang Bang</option>
+                            <option value="RoV">RoV</option>
+                            <option value="Valorant">Valorant</option>
+                            <option value="CS2">CS:GO</option>
+                            <option value="Overwatch">Overwatch 2</option>
+                            <option value="PUBG">PUBG: BATTLEGROUNDS</option>
+                            <option value="Among Us">Among Us</option>
+                            <option value="LoL">League of Legends</option>
                     </select>
                 </div>
 
                 <div class="Date_time-card">
                     <h3>Play Date</h3>
-                    <input type="date" id="play-date" placeholder="DD/MM/YY">
+                    <input type="date" id="play-date" name="playDate" placeholder="DD/MM/YY">
                     <h3>Time</h3>
-                    <input type="text" id="play-time" placeholder="Select time">
+                    <input type="text" id="play-time" name="playTime" placeholder="Select time">
                 </div>
             </div>
 
@@ -50,29 +50,32 @@
             <div class="right-panel">
                  <h1 class="title">Requirement</h1>
 
+                                <label>Room Name</label>
+                <input type="text" class ="RoomName" placeholder="Enter room name" name="roomName" required>
+
                 <label>Game Mode</label>
-                <select id="game-mode" disabled>
+                <select id="game-mode" name="gameMode" disabled>
                     <option value="" disabled selected hidden>Choose Game First</option>
                 </select>
 
                 <label>Server</label>
-                <select id="game-server" disabled>
+                <select id="game-server" name="gameServer" disabled>
                     <option value="" disabled selected hidden>Choose Game First</option>
                 </select>
 
                 <label>Rank Require</label>
                 <div class="rank-row">
-                    <select id="min-rank" disabled>
+                    <select id="min-rank" name="minRank" disabled>
                         <option value="" disabled selected hidden>Min Rank</option>
                     </select>
 
-                    <select id="max-rank" disabled>
+                    <select id="max-rank" name="maxRank"  disabled>
                         <option value="" disabled selected hidden>Max Rank</option>
                     </select>
                 </div>
 
                 <label>Number of players</label>
-                <select name="playerCount" class="player-select" required>
+                <select name="maxPlayer" class="player-select" required>
                     <option value="" disabled selected hidden>Choose Player</option>
                     <option value="1">1 Player</option>
                     <option value="2">2 Players</option>
@@ -81,13 +84,27 @@
                     <option value="5">5 Players</option>
                 </select>
 
+                                <label>Room Privacy</label>
+                <select name="RoomPrivacy" class="player-select" required>
+                    <option value="" disabled selected hidden>Choose Privacy</option>
+                    <option value="false">Public</option>
+                    <option value="true">Private</option>
+                </select>
+                
+                <div id="role-container">
+                    <label>Your Role</label>
+                    <select id="game-role" name="gameRole" class="player-select" disabled>
+                        <option value="" disabled selected hidden>Choose Game First</option>
+                    </select>
+                </div>
+
                 <label>Description</label>
-                <textarea placeholder="Description"></textarea>
+                <textarea placeholder="Description" name="description"></textarea>
 
-                <button class="submit-btn">SUBMIT</button>
+                <button type="submit" class="submit-btn">SUBMIT</button>
             </div>
-
-        </div>
+            </form> 
+        
     <script src="~/js/Create.js"></script>
     </body>
 

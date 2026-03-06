@@ -149,6 +149,11 @@ height:60px;
 transition:.2s;
 }
 
+body.game-CS2 .rankImg{
+width:100px;
+}
+
+
 .player-dev:hover .rankImg{
 
 transform:scale(1.1);

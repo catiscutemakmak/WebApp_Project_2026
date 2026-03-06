@@ -198,7 +198,7 @@ label {
     color: #fff;
 }
 
-textarea{
+textarea, .RoomName{
     width: 100%;
     appearance: none;
     background: #1a1a1a;
@@ -209,14 +209,15 @@ textarea{
     color: #8f8c8c;
 }
 
-textarea:focus{
+
+textarea:focus , .RoomName:focus{
     outline: none;
     color: #fff;
     border-color: #a020f0;
     box-shadow: 0 0 8px rgba(160, 32, 240, 0.4);
 }
 
-textarea:valid{
+textarea:valid , .RoomName:valid{
     color: #fff;
 }
 

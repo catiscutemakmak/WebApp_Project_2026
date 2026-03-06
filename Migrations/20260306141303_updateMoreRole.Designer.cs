@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using hateekub.Data;
@@ -11,9 +12,11 @@ using hateekub.Data;
 namespace hateekub.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260306141303_updateMoreRole")]
+    partial class updateMoreRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -389,13 +392,6 @@ namespace hateekub.Migrations
                         },
                         new
                         {
-                            Id = 43,
-                            GameId = 2,
-                            RankImageUrl = "/images/ranks/val/Ascendant.webp",
-                            RankName = "Ascendant"
-                        },
-                        new
-                        {
                             Id = 7,
                             GameId = 2,
                             RankImageUrl = "/images/ranks/val/Immortal.webp",
@@ -645,104 +641,6 @@ namespace hateekub.Migrations
                             GameId = 9,
                             RankImageUrl = "/images/ranks/Pubg/Conqueror.webp",
                             RankName = "Conqueror"
-                        },
-                        new
-                        {
-                            Id = 44,
-                            GameId = 6,
-                            RankImageUrl = "/images/ranks/RoV/Bronze.webp",
-                            RankName = "Bronze"
-                        },
-                        new
-                        {
-                            Id = 45,
-                            GameId = 6,
-                            RankImageUrl = "/images/ranks/RoV/Silver.webp",
-                            RankName = "Silver"
-                        },
-                        new
-                        {
-                            Id = 46,
-                            GameId = 6,
-                            RankImageUrl = "/images/ranks/RoV/Gold.jpg",
-                            RankName = "Gold"
-                        },
-                        new
-                        {
-                            Id = 47,
-                            GameId = 6,
-                            RankImageUrl = "/images/ranks/RoV/Platinum.jpg",
-                            RankName = "Platinum"
-                        },
-                        new
-                        {
-                            Id = 48,
-                            GameId = 6,
-                            RankImageUrl = "/images/ranks/RoV/Diamond.webp",
-                            RankName = "Diamond"
-                        },
-                        new
-                        {
-                            Id = 49,
-                            GameId = 6,
-                            RankImageUrl = "/images/ranks/RoV/Commander.webp",
-                            RankName = "Commander"
-                        },
-                        new
-                        {
-                            Id = 50,
-                            GameId = 6,
-                            RankImageUrl = "/images/ranks/RoV/Conqueror.webp",
-                            RankName = "Conqueror"
-                        },
-                        new
-                        {
-                            Id = 51,
-                            GameId = 1,
-                            RankImageUrl = "/images/ranks/CS2/Silver.png",
-                            RankName = "Silver"
-                        },
-                        new
-                        {
-                            Id = 52,
-                            GameId = 1,
-                            RankImageUrl = "/images/ranks/CS2/Gold.png",
-                            RankName = "Gold Nova"
-                        },
-                        new
-                        {
-                            Id = 53,
-                            GameId = 1,
-                            RankImageUrl = "/images/ranks/CS2/MasterGuardian.png",
-                            RankName = "Master Guardian"
-                        },
-                        new
-                        {
-                            Id = 54,
-                            GameId = 1,
-                            RankImageUrl = "/images/ranks/CS2/Distinguished.png",
-                            RankName = "Distinguished"
-                        },
-                        new
-                        {
-                            Id = 55,
-                            GameId = 1,
-                            RankImageUrl = "/images/ranks/CS2/LegendaryEagle.png",
-                            RankName = "Legendary Eagle"
-                        },
-                        new
-                        {
-                            Id = 56,
-                            GameId = 1,
-                            RankImageUrl = "/images/ranks/CS2/SupremeMaster.png",
-                            RankName = "Supreme"
-                        },
-                        new
-                        {
-                            Id = 57,
-                            GameId = 1,
-                            RankImageUrl = "/images/ranks/CS2/Global.png",
-                            RankName = "Global Elite"
                         });
                 });
 
@@ -1137,6 +1035,12 @@ namespace hateekub.Migrations
                     b.Property<int>("RoomId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("RoomId1")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RoomId2")
+                        .HasColumnType("integer");
+
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
@@ -1147,6 +1051,10 @@ namespace hateekub.Migrations
                     b.HasIndex("RoleId");
 
                     b.HasIndex("RoomId");
+
+                    b.HasIndex("RoomId1");
+
+                    b.HasIndex("RoomId2");
 
                     b.HasIndex("UserId");
 
@@ -1456,6 +1364,14 @@ namespace hateekub.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("hateekub.Models.Room", null)
+                        .WithMany("ActivePlayers")
+                        .HasForeignKey("RoomId1");
+
+                    b.HasOne("hateekub.Models.Room", null)
+                        .WithMany("Queue")
+                        .HasForeignKey("RoomId2");
+
                     b.HasOne("hateekub.Models.UserProfile", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -1523,9 +1439,13 @@ namespace hateekub.Migrations
 
             modelBuilder.Entity("hateekub.Models.Room", b =>
                 {
+                    b.Navigation("ActivePlayers");
+
                     b.Navigation("Chats");
 
                     b.Navigation("Players");
+
+                    b.Navigation("Queue");
 
                     b.Navigation("RoomSetting");
                 });

@@ -1,13 +1,26 @@
 let connection = null
-
+let connection_room = null
 let rooms = null;
 
-async function init() {
-  try {
 
-    connection = new signalR.HubConnectionBuilder()
-    .withUrl("/chathub")
-    .build();
+async function reloadRooms() {
+  try {
+    const res = await fetch(`/game/${gameName}/room/${roomId}/details`);
+
+    if (!res.ok) {
+      throw new Error("Reload rooms failed");
+    }
+
+    rooms = await res.json();
+    renderRooms(rooms);
+
+  } catch (err) {
+    console.error("Reload rooms error:", err);
+  }
+}
+
+
+function registerChatEvents(){
 
     connection.on("ReceiveMessage", function(username, avatar, message){
 
@@ -20,28 +33,71 @@ async function init() {
         chat_list.push(new_message);
 
         const chatBox = document.querySelector(".chat-dev");
+
         if(chatBox){
             chatBox.remove();
         }
 
         const newChatBox = CreateChatBox();
         document.getElementById("roomContainer").appendChild(newChatBox);
+        
+        const chatContainer = document.querySelector(".chat-dev");
+        if(chatContainer){
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
     });
 
-    await connection.start();
+}
 
+function registerRoomEvents(){
+
+    connection_room.on("RoomCreated", async (updatedGameName) => {
+
+        if (updatedGameName !== gameName) return;
+
+        await reloadRooms();
+    });
+
+    connection_room.on("PlayerJoinedRoom", async (updatedGameName) => {
+
+        if (updatedGameName !== gameName) return;
+
+        await reloadRooms();
+    });
+
+}
+
+
+async function init() {
+
+  try {
+
+    connection = new signalR.HubConnectionBuilder()
+      .withUrl("/chathub")
+      .withAutomaticReconnect()
+      .build();
+
+    connection_room = new signalR.HubConnectionBuilder()
+      .withUrl("/roomhub")
+      .withAutomaticReconnect()
+      .build();
+
+    registerChatEvents();
+    registerRoomEvents();
+
+    await connection.start();
+    await connection_room.start();
+
+    // join chat room
     await connection.invoke("JoinRoom", roomId);
 
-    const roomsRes = await fetch(`/game/${gameName}/room/${roomId}/details`);
+    // join realtime room group
+    await connection_room.invoke("JoinGameGroup", gameName);
 
-    if (!roomsRes.ok) throw new Error("Rooms API error: " + roomsRes.status);
-    
-    rooms = await roomsRes.json();
-    
-    renderRooms(rooms);
+    await reloadRooms();
 
   } catch (err) {
-    console.error("Init error:", err);
+    console.error(err);
   }
 }
 
@@ -239,6 +295,7 @@ stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
 
 function renderQueue(queue) {
     const queueBox = document.getElementById("queueBox");
+    queueBox.innerHTML = "";
     const queueList = document.createElement("div");
     queueList.classList.add("queue-list");
     const queuebutton = document.createElement("button");
@@ -305,7 +362,7 @@ function renderQueue(queue) {
 }
 
 function DragQueue(){
-const box = document.querySelector(".queueBox");
+const box = document.getElementById("queueBox");
 
 box.style.position = "absolute";
 

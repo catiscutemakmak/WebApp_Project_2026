@@ -75,4 +75,29 @@ public class RoomController : Controller
 
         return Ok(room);
     }
+
+    [HttpGet("{roomId}/chat")]
+    public IActionResult GetRoomChat(string gameName, int roomId)
+    {
+        var chats = _context.RoomChats
+            .Where(c => c.RoomId == roomId)
+            .OrderBy(c => c.SentAt)
+            .Select(c => new
+            {
+                sender = _context.UserProfiles
+                    .Where(p => p.UserId == c.UserId)
+                    .Select(p => p.Nickname)
+                    .FirstOrDefault() ?? "Unknown",
+
+                avatar = _context.UserProfiles
+                    .Where(p => p.UserId == c.UserId)
+                    .Select(p => p.ProfileImagePath)
+                    .FirstOrDefault() ?? "/images/default-avatar.png",
+
+                message = c.Message
+            })
+            .ToList();
+
+        return Ok(chats);
+    }
 }

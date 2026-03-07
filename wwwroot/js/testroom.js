@@ -4,13 +4,13 @@ let offset = 2;
 
 const visibleSlots = 5;
 const centerIndex = 2;
-const maxPlayers = 6;
+const maxPlayers = 8;
 
 const roomData = {
     ownerUsername: "SKYKY",
     players: [
         {name:"SKYKY",profile:"/images/profile/0abeee40-d8ff-4e81-a46d-d01a9b610b5d.avif",player_rank:147,roleName:"Controller"},
-        {name:"Alice",profile:"/images/profile/a4a314c2-61a7-4d43-b28d-fe277fdbae93.jpg",player_rank:100,roleName:"Duelist"},
+        {name:"Alice",profile:"/images/profile/7.jpg",player_rank:100,roleName:"Duelist"},
         {name:"Bob",profile:"https://i.pinimg.com/736x/bf/6e/29/bf6e296386c67b027cd3d234e3c6efa4.jpg",player_rank:90,roleName:"Initiator"},
         {name:"Eve",profile:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFBo6bythwEPQHLVrQUDTLl-bVfJ4MnxRDWQ&s",player_rank:80,roleName:"Sentinel"},
         {name:"Tom",profile:"https://pbs.twimg.com/profile_images/378800000357127977/a826b950ea6dee6f691696c1e31b78b7_400x400.jpeg",player_rank:70,roleName:"Controller"},
@@ -27,7 +27,6 @@ function renderRooms(room) {
     const slots = new Array(visibleSlots).fill(null);
 
     const owner = room.players.find(p => p.name === room.ownerUsername);
-
     const others = room.players.filter(p => p.name !== room.ownerUsername);
 
     const emptySlots = maxPlayers - room.players.length;
@@ -39,6 +38,9 @@ function renderRooms(room) {
     }
 
     const total = circle.length;
+
+    // ⭐ แก้ตรงนี้
+    offset = ((offset % total) + total) % total;
 
     slots[centerIndex] = owner;
 
@@ -53,15 +55,12 @@ function renderRooms(room) {
     }
 
     slots.forEach(p => {
-
         if(p){
             PlayerMain.appendChild(PlayerCard(p, room.ownerUsername));
         }else{
             PlayerMain.appendChild(EmptySlot());
         }
-
     });
-
 }
 
 function PlayerCard(player, ownerUsername) {

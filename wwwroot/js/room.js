@@ -176,7 +176,7 @@ function renderRooms(room) {
     // queue
     const queueBox = document.getElementById("queueBox");
 
-    
+    StartBtn()
     renderQueue(queue);
     
     
@@ -459,5 +459,31 @@ box.addEventListener("mousedown", function(e){
 });
 }
 
+function StartBtn(){
+const startBtn = document.getElementById("Startbtn");
+
+startBtn.addEventListener("click", async () => {
+
+    try {
+
+        const res = await fetch(`/api/rooms/${roomId}/start`, {
+            method: "PUT"
+        });
+
+        if (!res.ok) {
+
+            const error = await res.text();
+            alert(error);
+            return;
+        }
+
+        alert("Game starting!");
+
+    } catch (err) {
+        console.error(err);
+    }
+
+});
+}
 
 

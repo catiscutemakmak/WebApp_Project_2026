@@ -81,15 +81,34 @@ public class RoomController : Controller
         return Ok(room);
     }
 
-    // [HttpPut("{roomId}/start")]
+[HttpPut("{roomId}/start")]
+public async Task<IActionResult> StartRoom(int roomId)
+{
+    var room = await _context.Rooms
+        .Include(r => r.Players)
+        .FirstOrDefaultAsync(r => r.Id == roomId);
 
-    // public async Task<IActionResult> StartRoom(int roomId)
-    // {
-    // var room = await _context.Rooms
-    //     .Include(r => r.Players)
-    //     .Include(r => r.RoomSetting)
-    //     .FirstOrDefaultAsync(r => r.Id == roomId);
+    if (room == null)
+        return NotFound("Room not found");
 
-    //     return Ok
-    // }
+    bool roomReady = true;
+
+    foreach (var player in room.Players)
+    {
+        if (!player.IsReady)
+        {
+            roomReady = false;
+            break;
+        }
+    }
+
+    if (!roomReady)
+        return BadRequest("Not all players are ready");
+
+    room.Status = RoomStatus.Starting;
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Room started" });
+}
     }

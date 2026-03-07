@@ -4,6 +4,8 @@ using hateekub.Data;
 using hateekub.Models;
 using hateekub.DTOS;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
+using hateekub.Hubs;
 using Microsoft.EntityFrameworkCore;
 
 [Route("game/{gameName}/room")]
@@ -11,6 +13,7 @@ public class RoomController : Controller
 {   
     private readonly AppDbContext _context;
     private readonly UserManager<IdentityUser> _userManager;
+
 
     public RoomController(AppDbContext context, UserManager<IdentityUser> userManager)
     {

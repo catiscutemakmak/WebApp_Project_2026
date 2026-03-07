@@ -110,6 +110,19 @@ function normalizeRoom(room) {
 }
 
 /* ================================
+   NORMALIZE ROOM
+================================ */
+function normalizeRoom(room) {
+
+  return {
+    ...room,
+    players: room.players ?? [],
+    roomSetting: room.roomSetting ?? {},
+  };
+
+}
+
+/* ================================
    RENDER ROOMS
 ================================ */
 function renderRooms(rooms) {

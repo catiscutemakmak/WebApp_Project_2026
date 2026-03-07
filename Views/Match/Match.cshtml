@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/match.css" />
+
+</head>
+<body class="game-@ViewBag.GameName">
+    <div class="back-btn-container"> 
+        <a asp-controller="Home"
+   asp-action="Index"
+   class="back-btn">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="#F4A5FF" stroke-width="2"/>
+        <path d="M18.6668 21.3332L13.3335 15.9998L18.6668 10.6665" stroke="#F4A5FF" stroke-width="2"/>
+    </svg>
+    BACK
+</a>
+</div> 
+<div id="MatchContainer" class="MatchContainer">
+
+
+
+</div>
+<script>
+    const gameName = "@ViewBag.GameName";
+</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    <script src="~/js/match.js" asp-append-version="true"></script>
+
+    <div id="floating-room-container" class="floating-room-container"></div>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>

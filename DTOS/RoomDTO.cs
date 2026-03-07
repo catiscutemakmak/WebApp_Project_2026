@@ -1,0 +1,15 @@
+namespace hateekub.DTOS
+{
+    public class RoomDTO
+{
+    public int RoomId { get; set; }
+    public string GameName { get; set; } = string.Empty;
+    public string RoomName { get; set; } = string.Empty;
+    public string OwnerUsername { get; set; } = string.Empty;
+    public string GameMode { get; set; } = string.Empty;
+
+    public RoomSettingDTO? RoomSetting { get; set; }
+
+    public List<PlayerDTO> Players { get; set; } = new();
+}
+}

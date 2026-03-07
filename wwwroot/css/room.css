@@ -1,0 +1,598 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap');
+
+:root{
+--primary:#EB55FF;
+--secondary:#7a00ff;
+--dark:#0b0b0c;
+--card:#111114;
+--border:#2b2b2f;
+--text:#eaeaf0;
+--soft:#a5a5b0;
+}
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:'Noto Sans Thai',sans-serif;
+}
+
+body{
+background:
+radial-gradient(circle at 20% 10%,#2b0033 0%,transparent 40%),
+radial-gradient(circle at 80% 80%,#22002a 0%,transparent 40%),
+#000;
+color:var(--text);
+}
+
+/* =========================
+ROOM CONTAINER
+========================= */
+
+.player-room{
+
+width:75%;
+margin:auto;
+margin-top:25px;
+
+display:grid;
+grid-template-columns:repeat(5,minmax(120px,170px));
+gap:18px;
+
+padding:30px;
+
+background:linear-gradient(180deg,#0d0d0f,#070707);
+border:1px solid var(--border);
+border-radius:14px;
+
+box-shadow:
+0 0 30px rgba(0,0,0,.8),
+0 0 15px rgba(235,85,255,.15);
+
+position:relative;
+}
+
+/* =========================
+PLAYER CARD
+========================= */
+
+.player-dev,
+.empty-dev{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+
+padding:18px;
+
+background:linear-gradient(145deg,#121214,#090909);
+
+border:1px solid #26262a;
+border-radius:12px;
+
+transition:.25s;
+position:relative;
+
+}
+
+/* neon border effect */
+
+.player-dev::after{
+content:"";
+position:absolute;
+inset:-1px;
+border-radius:12px;
+
+background:linear-gradient(
+120deg,
+transparent,
+rgba(235,85,255,.6),
+transparent
+);
+
+opacity:0;
+transition:.3s;
+}
+
+.player-dev:hover{
+transform:translateY(-6px);
+border:1px solid var(--primary);
+
+box-shadow:
+0 0 10px rgba(235,85,255,.4),
+0 0 25px rgba(235,85,255,.2);
+}
+
+.player-dev:hover::after{
+opacity:.7;
+}
+
+/* =========================
+AVATAR
+========================= */
+
+.player-profile{
+
+width:60px;
+height:60px;
+
+border-radius:50%;
+object-fit:cover;
+
+border:2px solid #fff;
+
+box-shadow:0 0 10px rgba(235,85,255,.4);
+
+transition:.2s;
+}
+
+.player-dev:hover .player-profile{
+
+transform:scale(1.05);
+
+box-shadow:
+0 0 15px rgba(235,85,255,.7),
+0 0 25px rgba(235,85,255,.4);
+
+}
+
+/* =========================
+RANK ICON
+========================= */
+
+.rankImg{
+
+width:60px;
+height:60px;
+
+transition:.2s;
+}
+
+body.game-CS2 .rankImg{
+width:100px;
+}
+
+
+.player-dev:hover .rankImg{
+
+transform:scale(1.1);
+
+filter:drop-shadow(0 0 6px var(--primary));
+
+}
+
+/* =========================
+TEXT
+========================= */
+
+.player-dev p{
+font-weight:700;
+font-size:13px;
+margin:3px 0;
+}
+
+.rank-p{
+color:#F4A5FF;
+}
+
+.yellow{
+color:#FFCC00;
+}
+
+.white{
+color:#fff;
+}
+
+.empty-crown{
+font-size:18px;
+color:var(--primary);
+}
+
+/* =========================
+EMPTY SLOT
+========================= */
+
+.empty-dev{
+
+border:1px dashed var(--primary);
+background:radial-gradient(circle,#1a001f,#0d0d0d);
+
+}
+
+.empty-dev:hover{
+
+transform:translateY(-5px);
+
+box-shadow:0 0 15px rgba(235,85,255,.7);
+
+}
+
+.empty-dev:hover span{
+visibility:hidden;
+}
+
+.empty-dev:hover::after{
+content:"ദ്ദി˙ ᴗ ˙ )";
+color:var(--primary);
+}
+
+/* =========================
+CHAT
+========================= */
+
+.chat-dev{
+
+grid-column:1/-1;
+
+background:#050505;
+
+border:1px solid var(--border);
+
+border-radius:12px;
+
+max-height:200px;
+
+overflow:hidden;
+}
+
+.chat-dev:hover{
+overflow-y:auto;
+}
+
+.chat-format{
+
+display:flex;
+gap:10px;
+
+margin:10px;
+align-items:flex-start;
+
+animation:chatIn .2s ease;
+}
+
+@keyframes chatIn{
+
+from{
+opacity:0;
+transform:translateY(6px);
+}
+
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+.chat-avatar{
+
+width:30px;
+height:30px;
+
+border-radius:50%;
+
+background-size:cover;
+background-position:center;
+
+margin-top:8px;
+}
+
+.chat-textbox{
+
+background:linear-gradient(135deg,#1a1a1c,#2a002f);
+
+border:1px solid rgba(235,85,255,.2);
+
+padding:6px 12px;
+
+border-radius:20px;
+
+font-size:13px;
+
+display:flex;
+align-items:center;
+
+min-height:28px;
+
+}
+
+.chat-format:hover .chat-textbox{
+
+border:1px solid rgba(235,85,255,.6);
+
+}
+
+/* =========================
+CHAT INPUT
+========================= */
+
+.sent-box{
+
+grid-column:1/-1;
+
+display:flex;
+gap:10px;
+
+padding:10px;
+
+background:#050505;
+
+border:1px solid var(--secondary);
+
+border-radius:12px;
+
+}
+
+.chat-input{
+
+flex:1;
+
+background:#0b0b0b;
+
+border:none;
+
+color:white;
+
+padding:10px;
+
+border-radius:20px;
+
+outline:none;
+
+}
+
+.chat-send-btn{
+
+border:none;
+
+cursor:pointer;
+
+background:#0b0b0b;
+
+padding:0 15px;
+
+border-radius:20px;
+
+transition:.2s;
+}
+
+.chat-send-btn:hover{
+
+background:#1a001f;
+
+}
+
+/* =========================
+BUTTON AREA
+========================= */
+
+.btnContainer{
+
+width:40%;
+margin:30px auto;
+
+display:flex;
+gap:10px;
+
+}
+
+.btnContainer button,
+.btnContainer a{
+
+flex:1;
+
+font-size:18px;
+
+padding:8px 20px;
+
+border-radius:6px;
+
+font-weight:700;
+
+cursor:pointer;
+
+transition:.2s;
+}
+
+/* BACK */
+
+.backbtn{
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+gap:8px;
+
+background:#000;
+
+border:2px solid var(--secondary);
+
+color:#F4A5FF;
+
+text-decoration:none;
+
+}
+
+.backbtn:hover{
+
+background:#3b0044;
+border:2px solid #3b0044;
+
+}
+
+/* READY */
+
+.Readybtn{
+
+background:linear-gradient(135deg,#EB55FF,#7a00ff);
+
+border:none;
+
+color:white;
+
+box-shadow:0 0 12px rgba(235,85,255,.6);
+
+}
+
+.Readybtn:hover{
+
+transform:translateY(-2px);
+
+box-shadow:
+0 0 20px rgba(235,85,255,1),
+0 0 35px rgba(235,85,255,.6);
+
+}
+
+/* START */
+
+.Startbtn{
+
+background:white;
+color:#777;
+
+border:2px solid white;
+
+}
+
+/* =========================
+QUEUE
+========================= */
+
+.queueBox{
+
+position:sticky;
+
+display:inline-flex;
+flex-direction:column;
+
+z-index:999;
+
+}
+
+.queue-btn{
+
+padding:10px 16px;
+
+background:#121214;
+
+border:1px solid #333;
+
+border-radius:8px;
+
+font-weight:700;
+
+color:white;
+
+cursor:pointer;
+
+}
+
+.queue-btn:hover{
+background:#1d1d20;
+}
+
+.queue-list{
+display:none;
+}
+
+.queue-list.show-queue{
+display:block;
+}
+
+/* queue card */
+
+.queue-div{
+
+display:flex;
+gap:20px;
+
+padding:10px;
+
+margin-top:6px;
+
+background:#141417;
+
+border:1px solid #2a2a2a;
+
+border-radius:10px;
+
+transition:.2s;
+
+}
+
+.queue-div:hover{
+
+transform:translateY(-2px);
+
+box-shadow:0 0 10px rgba(0,0,0,.7);
+
+}
+
+.queue-profile{
+
+width:55px;
+height:55px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:1px solid white;
+
+}
+
+.queue-circle-btn{
+
+width:28px;
+height:28px;
+
+border-radius:50%;
+
+border:none;
+
+cursor:pointer;
+
+font-weight:bold;
+
+}
+
+.accept-btn{
+
+background:#28a745;
+color:white;
+
+}
+
+.reject-btn{
+
+background:#dc3545;
+color:white;
+
+}
+
+/* =========================
+RESPONSIVE
+========================= */
+
+@media(max-width:1400px){
+
+.player-room{
+grid-template-columns:repeat(3,1fr);
+}
+
+}
+
+@media(max-width:600px){
+
+.player-room{
+grid-template-columns:repeat(2,1fr);
+}
+
+.btnContainer{
+flex-direction:column;
+}
+
+}

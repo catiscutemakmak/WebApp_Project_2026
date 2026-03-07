@@ -1,0 +1,391 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Noto Sans Thai', sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #000;
+    color: #fff;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+        rgba(255,255,255,0.01),
+        rgba(0,0,0,0.01)
+    );
+    pointer-events: none;
+}
+
+/* MAIN */
+.container {
+
+    padding: 40px;
+    gap: 40px;
+}
+
+
+.container form {
+    display: flex;
+    gap: 40px;
+}
+/* LEFT */
+.left-panel {
+    width: 40%;
+    height: auto;
+    margin-top: 10px;
+    text-align: center;
+    background-color: transparent;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: 140px;
+    margin-top: 20px;
+    width: fit-content;
+    padding: 10px 60px;
+    background: transparent;
+    text-decoration: none;
+    border: 2px solid #AA00C1;
+    border-radius: 14px;
+    color: #F4A5FF;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+
+.text{
+    text-decoration: none;
+}
+
+.back-btn .icon {
+    width: 25px;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #d98cff;
+    border-radius: 5px;
+    font-size: 30px;
+    line-height: 1;
+    font-weight: lighter;
+}
+
+.back-btn:hover {
+    background: #45004E;
+    color: white;
+    transition: 0.1s;
+    border: 2px solid #45004E;
+}
+
+.back-btn:hover .icon {
+    color: white;
+    border: 2px solid white;
+    transition: 0.1s;
+}
+
+.avatar {
+    width: 420px;
+    height: 420px;
+    margin: 30px auto;
+    border-radius: 50%;
+    overflow: hidden;           /* สำคัญมาก */
+    position: relative;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;          /* ครอบภาพ */
+}
+
+
+.avatar-options {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: repeat(4, 60px);
+    gap: 30px;
+    margin: 20px 0;
+    margin-top: 20px;
+}
+
+.dot {
+    width: 70px;
+    height: 70px;
+    background: #ddd;
+    border-radius: 50%;
+}
+
+.ok-btn {
+    padding: 8px 80px;
+    background: #AA00C1;
+    margin-top: 40px;
+    border: 2px solid #AA00C1;
+    border-radius: 14px;
+
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    transition: background-color 0.1s ease;
+}
+
+.ok-btn:hover {
+    background: #45004E;
+    color: white;
+    transition: 0.1s;
+    border: 2px solid #45004E;
+}
+
+/* RIGHT */
+.right-panel {
+    flex: 0.85;
+    height: 815px;
+    background: #0f0f0f;
+    padding: 30px;
+    border-radius: 15px;
+    margin-top: 30px;
+    color: #fff;
+}
+
+.right-panel h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h2 {
+    margin-bottom: 25px;
+    color: #ffffff; /* สีม่วงหลัก */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+
+textarea {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    background: #000;
+    border: 1px solid #AA00C1;
+    border-radius: 8px;
+    color: #fff;
+}   
+
+textarea {
+  height: 170px;
+  margin-bottom: 20px;
+  resize: none;
+}
+
+.submit-btn {
+  display: block;
+  margin: 20px auto 0;  
+  padding: 8px 80px;
+  background: #AA00C1;
+  border: 2px solid #AA00C1;
+  border-radius: 14px;
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  transition: background-color 0.1s ease;
+}
+
+.submit-btn:hover {
+    background-color: #45004E;
+    color: white;
+    transition: 0.1s;
+    border: 2px solid #45004E;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    font-size: 0.85rem;
+    color: #e052f3;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input[type="text"], textarea {
+    appearance: none;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+select{
+    appearance: none;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    transition: all 0.3s ease;
+    color: #8f8c8c;
+}
+
+select:valid{
+    color: #ffffff;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    color: #fff;
+    border-color: #a020f0;
+    box-shadow: 0 0 8px rgba(160, 32, 240, 0.4);
+}
+
+.game-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.game-box {
+    background: #151515;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #222;
+}
+
+.separator {
+    border: 0;
+    border-top: 1px solid #222;
+    margin: 20px 0;
+}
+
+textarea {
+    width: 100%;
+    min-height: 100px;
+    resize: none;
+}
+
+.upload-btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 30px;
+    background: #AA00C1;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+
+/* ============================= */
+/* TABLET (ต่ำกว่า 1024px) */
+/* ============================= */
+@media (max-width: 1024px) {
+
+    .container form {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .left-panel,
+    .right-panel {
+        width: 100%;
+    }
+
+    .right-panel {
+        height: auto;
+    }
+
+    .back-btn {
+        margin-left: 0;
+    }
+
+    .avatar {
+        width: 300px;
+        height: 300px;
+    }
+
+    .game-selection-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ============================= */
+/* MOBILE */
+/* ============================= */
+@media (max-width: 1024px) {
+
+    .container {
+        padding: 20px;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+
+    .avatar {
+        width: 220px;
+        height: 220px;
+    }
+
+    .game-selection-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .right-panel {
+        padding: 20px;
+    }
+}
+
+/* สำหรับค่อยๆ ปรากฏและลอยขึ้น */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes backgroundPulse {
+    0% { opacity: 0.02; }
+    50% { opacity: 0.05; }
+    100% { opacity: 0.02; }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 5px rgba(170, 0, 193, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(170, 0, 193, 0.6); }
+    100% { box-shadow: 0 0 5px rgba(170, 0, 193, 0.2); }
+}
+
+
+.left-panel {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.right-panel {
+    animation: fadeInUp 0.8s ease-out 0.2s backwards; /* delay เล็กน้อยให้ดูมีมิติ */
+}

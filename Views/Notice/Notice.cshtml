@@ -1,0 +1,15 @@
+@model List<hateekub.Models.Notification>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/notice.css" asp-append-version="true" />
+}
+
+<div id="NoticeContainer" class="NoticeContainer">
+</div>
+
+@section Scripts {
+    <script>
+        const notifications = @Html.Raw(Json.Serialize(Model ?? new List<hateekub.Models.Notification>()));
+    </script>
+    <script src="~/js/notice.js" asp-append-version="true"></script>
+}

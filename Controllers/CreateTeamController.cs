@@ -95,6 +95,7 @@ public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request
                 UserId = userProfile.Id,
                 IsInQueue = false,
                 JoinedAt = DateTime.UtcNow,
+                Status = PlayerStatus.Active,
                 IsReady = false,
                 RoleId = roleId,
                 RankId = rankId

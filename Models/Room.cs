@@ -29,11 +29,11 @@ public class Room
 
     [NotMapped]
     public IEnumerable<RoomPlayer> ActivePlayers =>
-        Players.Where(p => !p.IsInQueue);
+        Players.Where(p => p.Status == PlayerStatus.Active);
 
     [NotMapped]
     public IEnumerable<RoomPlayer> Queue =>
-        Players.Where(p => p.IsInQueue);
+        Players.Where(p => p.Status == PlayerStatus.Queue);
     public ICollection<RoomChat> Chats { get; set; } = new List<RoomChat>();
 
     }

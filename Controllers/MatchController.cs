@@ -27,13 +27,15 @@ public class MatchController : Controller
         _hub = hub;
     }
 
-        [HttpGet("")]
-        public IActionResult Match(string gameName)
+[HttpGet("")]
+public IActionResult Match(string gameName)
         {
             ViewBag.GameName = gameName;
             return View();
         }
 [HttpGet("rooms")]
+
+
 public IActionResult GetRoomsByGameName(string gameName)
 {
     var rooms = _context.Rooms
@@ -43,7 +45,7 @@ public IActionResult GetRoomsByGameName(string gameName)
             RoomId = r.Id,
             GameName = r.Game!.GameName,
             RoomName = r.RoomName,
-            OwnerUsername = r.RoomOwner!.Nickname,
+            OwnerUsername = r.RoomOwner!.UserId,
             GameMode = r.GameMode,
 
             RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO

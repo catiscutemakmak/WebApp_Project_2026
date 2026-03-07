@@ -276,7 +276,7 @@ namespace hateekub.Data
                 new GameRank { Id = 7, GameId = 2, RankName = "Immortal", RankImageUrl = "/images/ranks/val/Immortal.webp" },
                 new GameRank { Id = 8, GameId = 2, RankName = "Radiant", RankImageUrl = "/images/ranks/val/Radiant.webp" },
                 // Mobile Legends Ranks (GameId = 5)
-                new GameRank { Id = 9, GameId = 5, RankName = "Warrior", RankImageUrl = "/images/ranks/mlbb/Iron.webp" },
+                new GameRank { Id = 9, GameId = 5, RankName = "Warrior", RankImageUrl = "/images/ranks/mlbb/Warrior.webp" },
                 new GameRank { Id = 10, GameId = 5, RankName = "Elite", RankImageUrl = "/images/ranks/mlbb/Elite.webp" },
                 new GameRank { Id = 11, GameId = 5, RankName = "Master", RankImageUrl = "/images/ranks/mlbb/Master.webp" },
                 new GameRank { Id = 12, GameId = 5, RankName = "Grandmaster", RankImageUrl = "/images/ranks/mlbb/Grandmaster.webp" },

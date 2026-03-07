@@ -40,6 +40,7 @@ public class RoomController : Controller
     [HttpGet("{roomId}/details")]
     public IActionResult GetRoomById(string gameName, int roomId)
     {
+        var currentUserId = _userManager.GetUserId(User);
         var room = _context.Rooms
             .Where(r => r.Id == roomId)
             .Select(r => new RoomDTO
@@ -49,6 +50,7 @@ public class RoomController : Controller
                 RoomName = r.RoomName,
                 OwnerUsername = r.RoomOwner!.Nickname,
                 GameMode = r.GameMode,
+                IsOwner = r.RoomOwner!.UserId == currentUserId,
 
                 RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
                 {
@@ -78,4 +80,5 @@ public class RoomController : Controller
 
         return Ok(room);
     }
-}
+
+    }

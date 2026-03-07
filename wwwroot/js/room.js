@@ -1,6 +1,7 @@
 let connection = null
 let connection_room = null
-let rooms = null;
+let rooms = [];
+let queue = [];
 
 
 async function reloadRooms() {
@@ -12,10 +13,29 @@ async function reloadRooms() {
     }
 
     rooms = await res.json();
+    console.log(rooms)
     renderRooms(rooms);
 
   } catch (err) {
     console.error("Reload rooms error:", err);
+  }
+}
+
+async function reloadQueue() {
+  try {
+
+    const res = await fetch(`/api/rooms/${roomId}/queue`);
+
+    if (!res.ok) {
+      throw new Error("Reload queue failed");
+    }
+
+    queue = await res.json();
+    console.log(queue)
+    renderQueue(queue);
+    
+  } catch (err) {
+    console.error("Reload queue error:", err);
   }
 }
 
@@ -94,7 +114,9 @@ async function init() {
     // join realtime room group
     await connection_room.invoke("JoinGameGroup", gameName);
 
+    await reloadQueue();
     await reloadRooms();
+    
 
   } catch (err) {
     console.error(err);
@@ -102,22 +124,6 @@ async function init() {
 }
 
 init();
-
-  roomQueue = [
-    {
-      username: "Egg",
-      roleName: "Gold",
-      rankName: "/images/rank/legend.webp",
-      userProfile: "https://play-lh.googleusercontent.com/PCpXdqvUWfCW1mXhH1Y_98yBpgsWxuTSTofy3NGMo9yBTATDyzVkqU580bfSln50bFU=w600-h300-pc0xffffff-pd"
-    },
-    {
-      username: "Egga",
-      roleName: "Roam",
-      rankName: "/images/rank/mythic.webp",
-      userProfile: "https://s.france24.com/media/display/544355b0-45df-11f0-9098-005056a97e36/w:980/Part-GTY-GYI0061951038-1-1-0.jpg"
-    }
-  ]
-
 
 const chat_list = [];
 
@@ -168,8 +174,12 @@ function renderRooms(room) {
     playerRoom.appendChild(sent_box);
 
     // queue
-    renderQueue(roomQueue);
+    const queueBox = document.getElementById("queueBox");
 
+    
+    renderQueue(queue);
+    
+    
     return playerRoom;
 }
 
@@ -294,17 +304,23 @@ stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
 }
 
 function renderQueue(queue) {
+
     const queueBox = document.getElementById("queueBox");
     queueBox.innerHTML = "";
+
     const queueList = document.createElement("div");
     queueList.classList.add("queue-list");
+
     const queuebutton = document.createElement("button");
     queuebutton.innerText = "QUEUE";
     queuebutton.classList.add("queue-btn");
+
     queueBox.appendChild(queuebutton);
+
     queuebutton.addEventListener("click", () => {
         queueList.classList.toggle("show-queue");
     });
+
     queue.forEach(p => {
 
         const div = document.createElement("div");
@@ -315,50 +331,79 @@ function renderQueue(queue) {
 
         const imgDiv = document.createElement("img");
         imgDiv.classList.add("queue-profile");
-        imgDiv.src = p.profile;
+        imgDiv.src = p.profileImagePath;
 
-        const roleDiv = document.createElement("p");
-        roleDiv.classList.add("queue-role");
-        roleDiv.textContent = `${p.player_rank}/${p.role}`;
+        const nameDiv = document.createElement("p");
+        nameDiv.classList.add("queue-name");
+        nameDiv.textContent = p.nickname;
 
-        // 🔹 สร้างปุ่มรับ
-        const BtnDiv = document.createElement("div");
-        BtnDiv.classList.add("queue-btn-div");
-        const acceptBtn = document.createElement("button");
-        acceptBtn.innerHTML = "✓";
-        acceptBtn.classList.add("queue-circle-btn", "accept-btn");
-        acceptBtn.addEventListener("click", () => {
-            console.log("Accepted:", p.name);
-        });
-
-        // 🔹 สร้างปุ่มปฏิเสธ
-        const rejectBtn = document.createElement("button");
-        rejectBtn.innerHTML = "✕";
-        rejectBtn.classList.add("queue-circle-btn", "reject-btn");
-        rejectBtn.addEventListener("click", () => {
-            console.log("Rejected:", p.name);
-        });
-
-        BtnDiv.appendChild(acceptBtn);
-        BtnDiv.appendChild(rejectBtn);
+        topdiv.appendChild(imgDiv);
+        topdiv.appendChild(nameDiv);
 
         const botdiv = document.createElement("div");
         botdiv.classList.add("queue-bot");
 
-        const nameDiv = document.createElement("p");
-        nameDiv.classList.add("queue-name");
-        nameDiv.textContent = p.name;
-        topdiv.appendChild(imgDiv);
-        topdiv.appendChild(nameDiv);
+        const roleDiv = document.createElement("p");
+        roleDiv.classList.add("queue-role");
+        roleDiv.textContent = `${p.rankName}/${p.roleName}`;
+
         botdiv.appendChild(roleDiv);
-        botdiv.appendChild(BtnDiv);
+
+        // ✅ owner เท่านั้นเห็นปุ่ม
+        if (rooms.isOwner) {
+
+            const BtnDiv = document.createElement("div");
+            BtnDiv.classList.add("queue-btn-div");
+
+            const acceptBtn = document.createElement("button");
+            acceptBtn.innerHTML = "✓";
+            acceptBtn.classList.add("queue-circle-btn", "accept-btn");
+
+            acceptBtn.addEventListener("click", async () => {
+        try {
+
+        const response = await fetch(
+            `/api/rooms/${roomId}/accept/${p.id}`,
+            {
+            method: "PUT"
+            }
+        );
+
+        if (response.ok) {
+
+            const data = await response.json();
+
+        } else {
+
+            const errorText = await response.text();
+            alert(errorText);
+
+        }
+
+        } catch (err) {
+        console.error(err);
+        }
+
+    });
+            const rejectBtn = document.createElement("button");
+            rejectBtn.innerHTML = "✕";
+            rejectBtn.classList.add("queue-circle-btn", "reject-btn");
+
+            BtnDiv.appendChild(acceptBtn);
+            BtnDiv.appendChild(rejectBtn);
+
+            botdiv.appendChild(BtnDiv);
+        }
+
         div.appendChild(topdiv);
         div.appendChild(botdiv);
 
         queueList.appendChild(div);
-        queueBox.appendChild(queueList);
-        DragQueue()
     });
+
+    queueBox.appendChild(queueList);
+
+    DragQueue();
 }
 
 function DragQueue(){

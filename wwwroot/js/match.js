@@ -1,4 +1,34 @@
 /* ================================
+   SIGNALR
+================================ */
+
+const connection = new signalR.HubConnectionBuilder()
+  .withUrl("/roomhub")
+  .withAutomaticReconnect()
+  .build();
+
+connection.on("RoomCreated", async (updatedGameName) => {
+
+  if (updatedGameName !== gameName) return;
+
+  try {
+
+    const res = await fetch(`/game/${gameName}/rooms`);
+
+    if (!res.ok) throw new Error("Reload rooms failed");
+
+    rooms = await res.json();
+
+    renderRooms(rooms);
+
+  } catch (err) {
+
+    console.error("Realtime update error:", err);
+
+  }
+
+});
+/* ================================
    GLOBAL STATE
 ================================ */
 let rooms = [];
@@ -29,7 +59,26 @@ async function init() {
   }
 }
 
+async function startRealtime(){
+
+  try {
+
+    await connection.start();
+
+    await connection.invoke("JoinGameGroup", gameName);
+
+    console.log("SignalR connected");
+
+  } catch(err) {
+
+    console.error("SignalR error:", err);
+
+  }
+
+}
+
 init();
+startRealtime();
 
 /* ================================
    NORMALIZE ROOM

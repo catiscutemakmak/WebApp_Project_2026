@@ -108,8 +108,7 @@ gameSelect.addEventListener("change", () => {
 
     fillSelect(modeSelect, data.modes, "Choose Mode");
     fillSelect(serverSelect, data.servers, "Choose Server");
-    fillSelect(minRank, data.ranks, "Min Rank");
-    fillSelect(maxRank, data.ranks, "Max Rank");
+
 
     // ROLE LOGIC
     if (data.role.length === 1 && data.role[0] === "Any") {
@@ -128,8 +127,8 @@ gameSelect.addEventListener("change", () => {
             maxRank.value = "Any";
     } else {
         rankRequirement.style.display = "block";
-            minRank.value = "";
-            maxRank.value = "";
+            fillSelect(minRank, data.ranks, "Min Rank");
+            fillSelect(maxRank, data.ranks, "Max Rank");
 
     }
 });

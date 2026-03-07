@@ -41,7 +41,7 @@ public async Task<IActionResult> GetQueueInRoom(int roomId)
     if (!roomExists)
     return NotFound("Room not found");
     var queuePlayers = await _context.RoomPlayers
-        .Where(p => p.RoomId == roomId && p.IsInQueue)
+        .Where(p => p.RoomId == roomId && p.Status == PlayerStatus.Queue)
         .Select(p => new
         {
             p.User!.Nickname,
@@ -85,12 +85,12 @@ public async Task<IActionResult> AcceptQueue(int roomId, int queuePlayerId)
     var queuePlayer = await _context.RoomPlayers
         .FirstOrDefaultAsync(p => p.RoomId == roomId 
                                && p.UserId == queuePlayerId 
-                               && p.IsInQueue);
+                               &&  p.Status == PlayerStatus.Queue);
 
     if (queuePlayer == null)
         return NotFound("Player not in queue");
 
-    queuePlayer.IsInQueue = false;
+    queuePlayer.Status = PlayerStatus.Active;
 
     await _context.SaveChangesAsync();
 

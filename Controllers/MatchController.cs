@@ -58,7 +58,7 @@ public IActionResult GetRoomsByGameName(string gameName)
             },
 
             Players = r.Players
-                .Where(p => !p.IsInQueue)
+                .Where(p => p.Status == PlayerStatus.Active)
                 .Select(p => new PlayerDTO
                 {
                     UserId = p.UserId,
@@ -135,7 +135,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
 
     // นับเฉพาะคนที่ join จริง
     var activePlayerCount = room.Players
-        .Count(p => !p.IsInQueue);
+        .Count(p => p.Status == PlayerStatus.Active);
 
     if (!isPrivate && activePlayerCount >= room.RoomSetting.MaxPlayer)
         return BadRequest("Room is full");
@@ -162,7 +162,9 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         RankId = rankId,
         JoinedAt = DateTime.UtcNow,
         IsReady = false,
-        IsInQueue = isPrivate
+        Status = isPrivate 
+        ? PlayerStatus.Queue 
+        : PlayerStatus.Active
     };
 
     room.Players.Add(newPlayer);

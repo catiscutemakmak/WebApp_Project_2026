@@ -308,6 +308,7 @@ function renderQueue(queue) {
     const queueBox = document.getElementById("queueBox");
     queueBox.innerHTML = "";
 
+    
     const queueList = document.createElement("div");
     queueList.classList.add("queue-list");
 

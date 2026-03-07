@@ -62,7 +62,7 @@ public class RoomController : Controller
                 },
 
                 Players = r.Players
-                    .Where(p => !p.IsInQueue)
+                    .Where(p => p.Status == PlayerStatus.Active)
                     .Select(p => new PlayerDTO
                     {
                         UserId = p.UserId,

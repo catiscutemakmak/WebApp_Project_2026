@@ -20,6 +20,7 @@ public class Room
 
     public DateTime PlayDateTime { get; set; }
 
+    public RoomStatus Status { get; set; }
     public string GameMode { get; set; } = string.Empty;
 
     public RoomSetting? RoomSetting { get; set; }

@@ -96,5 +96,47 @@ public async Task<IActionResult> AcceptQueue(int roomId, int queuePlayerId)
 
     return Ok(new { message = "Player accepted" });
 }
+[HttpPut("{roomId}/reject/{queuePlayerId}")]
+public async Task<IActionResult> RejectQueue(int roomId, int queuePlayerId)
+{
+    var currentUser = await _userManager.GetUserAsync(User);
+
+    if (currentUser == null)
+        return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+    // หา room
+    var room = await _context.Rooms
+        .Include(r => r.Players)
+        .Include(r => r.RoomSetting)
+        .FirstOrDefaultAsync(r => r.Id == roomId);
+
+    if (room == null)
+        return NotFound("Room not found");
+
+
+    if (room.OwnerId != userProfile!.Id)
+        return Forbid();
+
+    if(room.ActivePlayers.Count() >= room.RoomSetting!.MaxPlayer)
+    {
+    return BadRequest("Room is full");
+    }
+
+    var queuePlayer = await _context.RoomPlayers
+        .FirstOrDefaultAsync(p => p.RoomId == roomId 
+                               && p.UserId == queuePlayerId 
+                               &&  p.Status == PlayerStatus.Queue);
+
+    if (queuePlayer == null)
+        return NotFound("Player not in queue");
+
+    queuePlayer.Status = PlayerStatus.Rejected;
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Player rejected" });
+}
 }
 }

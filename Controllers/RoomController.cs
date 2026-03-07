@@ -81,4 +81,15 @@ public class RoomController : Controller
         return Ok(room);
     }
 
+    // [HttpPut("{roomId}/start")]
+
+    // public async Task<IActionResult> StartRoom(int roomId)
+    // {
+    // var room = await _context.Rooms
+    //     .Include(r => r.Players)
+    //     .Include(r => r.RoomSetting)
+    //     .FirstOrDefaultAsync(r => r.Id == roomId);
+
+    //     return Ok
+    // }
     }

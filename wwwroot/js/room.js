@@ -350,7 +350,7 @@ function renderQueue(queue) {
 
         botdiv.appendChild(roleDiv);
 
-        // ✅ owner เท่านั้นเห็นปุ่ม
+       // check Owner
         if (rooms.isOwner) {
 
             const BtnDiv = document.createElement("div");
@@ -389,6 +389,32 @@ function renderQueue(queue) {
             const rejectBtn = document.createElement("button");
             rejectBtn.innerHTML = "✕";
             rejectBtn.classList.add("queue-circle-btn", "reject-btn");
+            rejectBtn.addEventListener("click", async () => {
+        try {
+
+        const response = await fetch(
+            `/api/rooms/${roomId}/reject/${p.id}`,
+            {
+            method: "PUT"
+            }
+        );
+
+        if (response.ok) {
+
+            const data = await response.json();
+
+        } else {
+
+            const errorText = await response.text();
+            alert(errorText);
+
+        }
+
+        } catch (err) {
+        console.error(err);
+        }
+
+    });
 
             BtnDiv.appendChild(acceptBtn);
             BtnDiv.appendChild(rejectBtn);

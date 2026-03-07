@@ -13,6 +13,8 @@ public class MatchController : Controller
     private readonly AppDbContext _context;
 
     private readonly UserManager<IdentityUser> _userManager;
+
+    
     public MatchController(AppDbContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
@@ -136,12 +138,18 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     if (gameRole == null)
         return BadRequest("Invalid role");
 
+    var rankId = await _context.GameRanks
+    .Where(p => p.GameId == room.GameId)
+    .Select(p => p.Id)
+    .FirstOrDefaultAsync();
+
+
     var newPlayer = new RoomPlayer
     {
         UserId = userProfile.Id,
         RoomId = room.Id,
         RoleId = gameRole.Id,
-        RankId = 1,
+        RankId = rankId,
         JoinedAt = DateTime.UtcNow,
         IsReady = false,
         IsInQueue = isPrivate

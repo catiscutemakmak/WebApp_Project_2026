@@ -24,6 +24,7 @@ body {
     background: radial-gradient(circle at bottom, #aa00c1 0%, #000 60%);
     background-size: 200% 200%;
     animation: pageFade 0.8s ease;
+    margin-bottom: 40px;
 }
 
 @keyframes pageFade{

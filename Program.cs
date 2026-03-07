@@ -55,5 +55,6 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.MapHub<hateekub.Hubs.ChatHub>("/chathub");
+app.MapHub<hateekub.Hubs.RoomHub>("/roomhub");
 
 app.Run();

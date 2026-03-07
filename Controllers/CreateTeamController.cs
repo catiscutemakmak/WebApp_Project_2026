@@ -5,6 +5,8 @@ using hateekub.Models;
 using hateekub.DTOS;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
+using hateekub.Hubs;
 
 namespace hateekub.Controllers;
 
@@ -13,11 +15,13 @@ public class CreateTeamController: Controller
 
     private readonly AppDbContext _context;
 
+    private readonly IHubContext<RoomHub> _hub;
     private readonly UserManager<IdentityUser> _userManager;
-    public CreateTeamController(AppDbContext context, UserManager<IdentityUser> userManager)
+    public CreateTeamController(AppDbContext context, UserManager<IdentityUser> userManager, IHubContext<RoomHub> hub)
     {
         _context = context;
         _userManager = userManager;
+        _hub = hub;
     }
     public IActionResult Create()
     {
@@ -100,7 +104,7 @@ public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request
 
     _context.Rooms.Add(newRoom);
     await _context.SaveChangesAsync();
-
+    await _hub.Clients.All.SendAsync("RoomCreated", game.GameName);
     return Ok(newRoom.Id);
 }
 }

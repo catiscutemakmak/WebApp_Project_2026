@@ -8,6 +8,7 @@ namespace hateekub.DTOS
     public string OwnerUsername { get; set; } = string.Empty;
     public string GameMode { get; set; } = string.Empty;
 
+    public bool IsOwner  { get; set; }
     public RoomSettingDTO? RoomSetting { get; set; }
 
     public List<PlayerDTO> Players { get; set; } = new();

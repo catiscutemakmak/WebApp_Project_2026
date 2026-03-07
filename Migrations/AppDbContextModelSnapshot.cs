@@ -248,7 +248,7 @@ namespace hateekub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
 
                     b.HasData(
                         new
@@ -366,7 +366,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("GameRanks");
+                    b.ToTable("GameRanks", (string)null);
 
                     b.HasData(
                         new
@@ -789,7 +789,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("GameRoles");
+                    b.ToTable("GameRoles", (string)null);
 
                     b.HasData(
                         new
@@ -976,7 +976,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("Histories");
+                    b.ToTable("Histories", (string)null);
                 });
 
             modelBuilder.Entity("hateekub.Models.Notification", b =>
@@ -1004,7 +1004,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("hateekub.Models.ProfileGame", b =>
@@ -1030,7 +1030,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("ProfileGames");
+                    b.ToTable("ProfileGames", (string)null);
                 });
 
             modelBuilder.Entity("hateekub.Models.Review", b =>
@@ -1060,7 +1060,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("hateekub.Models.Room", b =>
@@ -1102,7 +1102,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Rooms");
+                    b.ToTable("Rooms", (string)null);
                 });
 
             modelBuilder.Entity("hateekub.Models.RoomChat", b =>
@@ -1132,7 +1132,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RoomChats");
+                    b.ToTable("RoomChats", (string)null);
                 });
 
             modelBuilder.Entity("hateekub.Models.RoomPlayer", b =>
@@ -1174,7 +1174,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RoomPlayers");
+                    b.ToTable("RoomPlayers", (string)null);
                 });
 
             modelBuilder.Entity("hateekub.Models.RoomSetting", b =>
@@ -1210,7 +1210,7 @@ namespace hateekub.Migrations
                     b.HasIndex("RoomId")
                         .IsUnique();
 
-                    b.ToTable("RoomSettings");
+                    b.ToTable("RoomSettings", (string)null);
                 });
 
             modelBuilder.Entity("hateekub.Models.UserGame", b =>
@@ -1249,7 +1249,7 @@ namespace hateekub.Migrations
                     b.HasIndex("UserProfileId", "GameId")
                         .IsUnique();
 
-                    b.ToTable("UserGames");
+                    b.ToTable("UserGames", (string)null);
                 });
 
             modelBuilder.Entity("hateekub.Models.UserProfile", b =>
@@ -1288,7 +1288,7 @@ namespace hateekub.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserProfiles");
+                    b.ToTable("UserProfiles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

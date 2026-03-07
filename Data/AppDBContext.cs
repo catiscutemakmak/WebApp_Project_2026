@@ -114,6 +114,18 @@ namespace hateekub.Data
                 .HasIndex(ug => new { ug.UserProfileId, ug.GameId })
                 .IsUnique();
 
+            // Notification relationships
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.UserProfile)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Room)
+                .WithMany()
+                .HasForeignKey(n => n.RoomId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Game>().HasData(
         new Game

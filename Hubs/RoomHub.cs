@@ -9,6 +9,7 @@ public class RoomHub : Hub
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, gameName);
     }
+    
 }
 }
 

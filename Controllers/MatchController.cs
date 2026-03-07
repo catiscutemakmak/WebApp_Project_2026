@@ -5,6 +5,10 @@ using hateekub.Models;
 using hateekub.DTOS;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
+using hateekub.Hubs;
+
+
 namespace hateekub.Controllers
 {
 [Route("game/{gameName}")]
@@ -14,11 +18,13 @@ public class MatchController : Controller
 
     private readonly UserManager<IdentityUser> _userManager;
 
+    private readonly IHubContext<RoomHub> _hub;
     
-    public MatchController(AppDbContext context, UserManager<IdentityUser> userManager)
+    public MatchController(AppDbContext context, UserManager<IdentityUser> userManager,IHubContext<RoomHub> hub)
     {
         _context = context;
         _userManager = userManager;
+        _hub = hub;
     }
 
         [HttpGet("")]
@@ -101,6 +107,8 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         .Include(r => r.Game)
         .FirstOrDefaultAsync(r => r.Id == roomId);
 
+    
+
     if (room == null)
         return NotFound("Room not found");
 
@@ -158,7 +166,9 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     room.Players.Add(newPlayer);
 
     await _context.SaveChangesAsync();
-
+    await _hub.Clients.Group(room.Game.GameName)
+        .SendAsync("PlayerJoinedRoom", room.Game.GameName);
+    
     return Ok(new
     {
         success = true,

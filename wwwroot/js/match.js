@@ -1,3 +1,19 @@
+async function reloadRooms() {
+  try {
+    const res = await fetch(`/game/${gameName}/rooms`);
+
+    if (!res.ok) {
+      throw new Error("Reload rooms failed");
+    }
+
+    rooms = await res.json();
+    renderRooms(rooms);
+
+  } catch (err) {
+    console.error("Reload rooms error:", err);
+  }
+}
+
 /* ================================
    SIGNALR
 ================================ */
@@ -12,22 +28,26 @@ connection.on("RoomCreated", async (updatedGameName) => {
   if (updatedGameName !== gameName) return;
 
   try {
-
-    const res = await fetch(`/game/${gameName}/rooms`);
-
-    if (!res.ok) throw new Error("Reload rooms failed");
-
-    rooms = await res.json();
-
-    renderRooms(rooms);
-
+    await reloadRooms();
   } catch (err) {
-
     console.error("Realtime update error:", err);
-
   }
 
 });
+
+connection.on("PlayerJoinedRoom", async (updatedGameName) => {
+
+  if (updatedGameName !== gameName) return;
+
+  try {
+    await reloadRooms();
+  } catch (err) {
+    console.error("Realtime update error:", err);
+  }
+
+});
+
+
 /* ================================
    GLOBAL STATE
 ================================ */
@@ -41,22 +61,18 @@ async function init() {
 
   try {
 
-    const [roomsRes, rolesRes] = await Promise.all([
-      fetch(`/game/${gameName}/rooms`),
-      fetch(`/game/${gameName}/roles`)
-    ]);
+    const rolesRes = await fetch(`/game/${gameName}/roles`);
 
-    if (!roomsRes.ok) throw new Error("Rooms API error");
     if (!rolesRes.ok) throw new Error("Roles API error");
 
-    rooms = await roomsRes.json();
     roles = await rolesRes.json();
 
-    renderRooms(rooms);
+    await reloadRooms();
 
   } catch (err) {
     console.error("Init error:", err);
   }
+
 }
 
 async function startRealtime(){
@@ -318,7 +334,6 @@ function createJoinButton(roomId) {
   return btn;
 
 }
-
 /* ================================
    REQUIREMENT BAR
 ================================ */

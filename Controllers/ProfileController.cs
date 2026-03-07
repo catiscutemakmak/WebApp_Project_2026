@@ -123,27 +123,33 @@ public class ProfileController : Controller
         if (profile == null)
             return NotFound();
 
-        if (ProfileImage != null && ProfileImage.Length > 0)
-        {
-            var uploadsFolder = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot/images/profile");
+if (ProfileImage != null && ProfileImage.Length > 0)
+{
+    var uploadsFolder = Path.Combine(
+        Directory.GetCurrentDirectory(),
+        "wwwroot/images/profile");
 
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
+    if (!Directory.Exists(uploadsFolder))
+        Directory.CreateDirectory(uploadsFolder);
 
-            var uniqueFileName = Guid.NewGuid().ToString() +
-                                 Path.GetExtension(ProfileImage.FileName);
+    var extension = Path.GetExtension(ProfileImage.FileName);
+    var fileName = $"{profile.Id}.jpg";
+    var filePath = Path.Combine(uploadsFolder, fileName);
 
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+    // ลบรูปเก่าทุกไฟล์ที่ขึ้นต้นด้วย profile.Id
+    var oldFiles = Directory.GetFiles(uploadsFolder, $"{profile.Id}.*");
+    foreach (var file in oldFiles)
+    {
+        System.IO.File.Delete(file);
+    }
 
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await ProfileImage.CopyToAsync(fileStream);
-            }
+    using (var fileStream = new FileStream(filePath, FileMode.Create))
+    {
+        await ProfileImage.CopyToAsync(fileStream);
+    }
 
-            profile.ProfileImagePath = "/images/profile/" + uniqueFileName;
-        }
+    profile.ProfileImagePath = "/images/profile/" + fileName;
+}
         // ====== Update Basic Info ======
         profile.Nickname = model.Nickname;
         profile.PhoneNumber = model.PhoneNumber;

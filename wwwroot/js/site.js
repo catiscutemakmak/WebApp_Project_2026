@@ -30,6 +30,9 @@ function initFloatingCards() {
     const container = document.getElementById("floating-room-container");
     if (!container) return;
 
+    // ล้าง container ก่อนเสมอ เพื่อป้องกัน duplicate เมื่อ init ซ้ำ
+    container.innerHTML = "";
+
     const joinedRooms = JSON.parse(sessionStorage.getItem("joinedRooms") || "[]");
     if (joinedRooms.length === 0) return;
 

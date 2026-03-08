@@ -54,10 +54,6 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                  class="avatar" title="@(player.User?.Nickname ?? player.User?.Username ?? "Unknown")">
                         }
                     </div>
-
-                    <div class="action">
-                        <a asp-controller="Match" asp-action="Room" asp-route-id="@entry.RoomId" class="view-btn">VIEW MORE</a>
-                    </div>
                 </div>
             }
         }

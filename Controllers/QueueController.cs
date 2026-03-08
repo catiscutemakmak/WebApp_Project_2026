@@ -190,6 +190,7 @@ public async Task<IActionResult> MyQueueRooms()
         .Include(p => p.Room!).ThenInclude(r => r!.RoomSetting)
         .Where(p => p.Room != null
                  && p.Room.Status != RoomStatus.Delete
+                 && p.Room.Status != RoomStatus.Close
                  && p.Room.RoomSetting != null
                  && p.Room.RoomSetting.IsPrivate)
         .Select(p => new

@@ -189,16 +189,13 @@ async function initQueueNotifications() {
     if (typeof signalR === "undefined") return;
     if (window._queueHandlerRegistered) return;
 
-    let pendingRooms = [];
+    let allQueueRooms = [];
     try {
         const res = await fetch("/api/rooms/my-queue-rooms");
-        if (res.ok) {
-            const all = await res.json();
-            pendingRooms = all.filter(r => r.status === "Queue");
-        }
+        if (res.ok) allQueueRooms = await res.json();
     } catch { return; }
 
-    if (pendingRooms.length === 0) return;
+    if (allQueueRooms.length === 0) return;
 
     const notifConn = new signalR.HubConnectionBuilder()
         .withUrl("/roomhub")
@@ -210,8 +207,9 @@ async function initQueueNotifications() {
         await initFloatingQueue();
     });
 
+    // join group ทุก room ที่ยังรอ queue (ทั้ง Queue และ Rejected)
     notifConn.start().then(() => {
-        pendingRooms.forEach(r => notifConn.invoke("AcceptRejectQueue", String(r.roomId)));
+        allQueueRooms.forEach(r => notifConn.invoke("AcceptRejectQueue", String(r.roomId)));
     }).catch(err => console.error("Queue notification error:", err));
 }
 

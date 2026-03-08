@@ -380,6 +380,10 @@ function createJoinButton(roomId) {
         window.location.href = data.roomUrl;
       } else {
         // private room → เข้าร่วม SignalR group และแสดง tab ทันที
+        // ลบ roomId ออกจาก dismissedQueues เผื่อเคย dismiss ไว้ก่อนหน้า
+        const dismissed = JSON.parse(localStorage.getItem("dismissedQueues") || "[]");
+        const updated = dismissed.filter(id => id !== data.roomId);
+        localStorage.setItem("dismissedQueues", JSON.stringify(updated));
         if (connection.state === "Connected") {
           connection.invoke("AcceptRejectQueue", String(data.roomId));
         }

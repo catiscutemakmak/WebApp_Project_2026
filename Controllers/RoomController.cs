@@ -36,7 +36,7 @@ public class RoomController : Controller
         var rooms = await _context.RoomPlayers
             .Where(p => p.UserId == userProfile.Id && p.Status == PlayerStatus.Active)
             .Include(p => p.Room!).ThenInclude(r => r!.Game)
-            .Where(p => p.Room != null && p.Room.Status != RoomStatus.Delete)
+            .Where(p => p.Room != null && p.Room.Status != RoomStatus.Delete && p.Room.Status != RoomStatus.Close)
             .Select(p => new
             {
                 roomId = p.RoomId,
@@ -233,7 +233,9 @@ public async Task<IActionResult> LeaveRoom(int roomId)
     // ถ้าไม่มี player เหลือ
     if (activePlayers.Count == 0)
     {
-        room.Status = RoomStatus.Delete;
+        room.Status = room.Status == RoomStatus.Starting
+            ? RoomStatus.Close
+            : RoomStatus.Delete;
     }
 
     await _context.SaveChangesAsync();
@@ -245,6 +247,14 @@ public async Task<IActionResult> LeaveRoom(int roomId)
     await _hub.Clients
         .Group(room.Game.GameName)
         .SendAsync("PlayerJoinedRoom", room.Game.GameName);
+
+    // ถ้า room ปิดตัว ให้แจ้ง queue players ด้วย เพื่อให้ MY QUEUE card หายออก real-time
+    if (activePlayers.Count == 0)
+    {
+        await _hub.Clients
+            .Group($"room-{roomId}")
+            .SendAsync("QueueUpdated", roomId);
+    }
 
     return Ok(new { message = "Left room" });
 }

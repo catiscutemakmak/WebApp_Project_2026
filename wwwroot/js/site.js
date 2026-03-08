@@ -90,12 +90,8 @@ function createQueueCard(room) {
     card.classList.add("floating-queue-card");
     card.dataset.roomId = room.roomId;
 
-    const isAccepted = !!room.accepted;
-    const isRejected = !!room.rejected;
-
-    let statusText = "Waiting for approval...";
-    if (isAccepted) statusText = "\u2705 Accepted! Click to join.";
-    if (isRejected) statusText = "\u274c Request rejected.";
+    const isRejected = room.status === "Rejected";
+    const statusText = isRejected ? "\u274c Request rejected." : "\u23f3 Waiting for approval...";
 
     card.innerHTML = `
         <div class="floating-queue-info">
@@ -106,35 +102,24 @@ function createQueueCard(room) {
         <button class="floating-queue-cancel" title="Dismiss">&times;</button>
     `;
 
-    if (isAccepted && room.roomUrl) {
-        card.classList.add("floating-queue-card--accepted");
-        card.style.cursor = "pointer";
-        card.addEventListener("click", (e) => {
-            if (e.target.closest(".floating-queue-cancel")) return;
-            // ย้ายจาก queuedRooms → joinedRooms
-            const joinedRooms = JSON.parse(sessionStorage.getItem("joinedRooms") || "[]");
-            if (!joinedRooms.some(r => r.roomId === room.roomId)) {
-                joinedRooms.push({ roomId: room.roomId, roomName: room.roomName, gameName: room.gameName, roomUrl: room.roomUrl });
-                sessionStorage.setItem("joinedRooms", JSON.stringify(joinedRooms));
-            }
-            const queuedRooms = JSON.parse(sessionStorage.getItem("queuedRooms") || "[]");
-            sessionStorage.setItem("queuedRooms", JSON.stringify(queuedRooms.filter(r => r.roomId !== room.roomId)));
-            window.location.href = room.roomUrl;
-        });
-    } else if (isRejected) {
+    if (isRejected) {
         card.classList.add("floating-queue-card--rejected");
     }
 
     card.querySelector(".floating-queue-cancel").addEventListener("click", (e) => {
         e.stopPropagation();
-        const queuedRooms = JSON.parse(sessionStorage.getItem("queuedRooms") || "[]");
-        const updated = queuedRooms.filter(r => r.roomId !== room.roomId);
-        sessionStorage.setItem("queuedRooms", JSON.stringify(updated));
+        // เก็บไว้ใน localStorage เพื่อคงไว้ข้าม tab/reload
+        const dismissed = JSON.parse(localStorage.getItem("dismissedQueues") || "[]");
+        if (!dismissed.includes(room.roomId)) {
+            dismissed.push(room.roomId);
+            localStorage.setItem("dismissedQueues", JSON.stringify(dismissed));
+        }
         card.remove();
-        const countEl = document.getElementById("floating-queue-container")?.querySelector(".floating-queue-tab-count");
-        if (countEl) countEl.textContent = updated.length;
-        if (updated.length === 0) {
-            const container = document.getElementById("floating-queue-container");
+        const container = document.getElementById("floating-queue-container");
+        const remaining = container?.querySelectorAll(".floating-queue-card");
+        const countEl = container?.querySelector(".floating-queue-tab-count");
+        if (countEl && remaining) countEl.textContent = remaining.length;
+        if (!remaining || remaining.length === 0) {
             if (container) container.innerHTML = "";
         }
     });
@@ -142,13 +127,22 @@ function createQueueCard(room) {
     return card;
 }
 
-function initFloatingQueue() {
+async function initFloatingQueue() {
     const container = document.getElementById("floating-queue-container");
     if (!container) return;
 
     container.innerHTML = "";
 
-    const queuedRooms = JSON.parse(sessionStorage.getItem("queuedRooms") || "[]");
+    let queuedRooms = [];
+    try {
+        const res = await fetch("/api/rooms/my-queue-rooms");
+        if (res.ok) queuedRooms = await res.json();
+    } catch { return; }
+
+    // กรองสิ่งที่ dismiss ไว้แล้วใน localStorage
+    const dismissed = JSON.parse(localStorage.getItem("dismissedQueues") || "[]");
+    queuedRooms = queuedRooms.filter(r => !dismissed.includes(r.roomId));
+
     if (queuedRooms.length === 0) return;
 
     const panel = document.createElement("div");
@@ -186,84 +180,38 @@ function initFloatingQueue() {
     container.appendChild(tab);
 }
 
-function updateQueueCard(roomId, status, roomUrl) {
-    // อัปเดต sessionStorage
-    const queuedRooms = JSON.parse(sessionStorage.getItem("queuedRooms") || "[]");
-    const idx = queuedRooms.findIndex(r => r.roomId === roomId);
-    if (idx === -1) return;
-
-    if (status === "Active") {
-        queuedRooms[idx].accepted = true;
-        queuedRooms[idx].roomUrl = roomUrl;
-    } else if (status === "Rejected") {
-        queuedRooms[idx].rejected = true;
-    } else {
-        return; // ยัง Queue อยู่ ไม่ต้องทำอะไร
-    }
-    sessionStorage.setItem("queuedRooms", JSON.stringify(queuedRooms));
-
-    // อัปเดต card ที่แสดงอยู่
-    const container = document.getElementById("floating-queue-container");
-    const card = container?.querySelector(`[data-room-id="${roomId}"]`);
-    if (!card) return;
-
-    const statusEl = card.querySelector(".floating-queue-status");
-
-    if (status === "Active" && roomUrl) {
-        const { roomName, gameName } = queuedRooms[idx];
-        card.classList.add("floating-queue-card--accepted");
-        card.style.cursor = "pointer";
-        if (statusEl) statusEl.textContent = "\u2705 Accepted! Click to join.";
-        card.addEventListener("click", (e) => {
-            if (e.target.closest(".floating-queue-cancel")) return;
-            // ย้ายจาก queuedRooms → joinedRooms
-            const joinedRooms = JSON.parse(sessionStorage.getItem("joinedRooms") || "[]");
-            if (!joinedRooms.some(r => r.roomId === roomId)) {
-                joinedRooms.push({ roomId, roomName, gameName, roomUrl });
-                sessionStorage.setItem("joinedRooms", JSON.stringify(joinedRooms));
-            }
-            const currentQueue = JSON.parse(sessionStorage.getItem("queuedRooms") || "[]");
-            sessionStorage.setItem("queuedRooms", JSON.stringify(currentQueue.filter(r => r.roomId !== roomId)));
-            window.location.href = roomUrl;
-        });
-    } else if (status === "Rejected") {
-        card.classList.add("floating-queue-card--rejected");
-        card.style.cursor = "default";
-        if (statusEl) statusEl.textContent = "\u274c Request rejected.";
-    }
+async function updateQueueCard() {
+    await initFloatingCards();
+    await initFloatingQueue();
 }
 
-function initQueueNotifications() {
+async function initQueueNotifications() {
     if (typeof signalR === "undefined") return;
-    // match.js จัดการ QueueUpdated ไว้แล้วบน connection ของตัวเอง ไม่ต้องสร้างซ้ำ
     if (window._queueHandlerRegistered) return;
 
-    const queuedRooms = JSON.parse(sessionStorage.getItem("queuedRooms") || "[]");
-    const pending = queuedRooms.filter(r => !r.accepted && !r.rejected);
-    if (pending.length === 0) return;
+    let pendingRooms = [];
+    try {
+        const res = await fetch("/api/rooms/my-queue-rooms");
+        if (res.ok) {
+            const all = await res.json();
+            pendingRooms = all.filter(r => r.status === "Queue");
+        }
+    } catch { return; }
+
+    if (pendingRooms.length === 0) return;
 
     const notifConn = new signalR.HubConnectionBuilder()
         .withUrl("/roomhub")
         .withAutomaticReconnect()
         .build();
 
-    notifConn.on("QueueUpdated", async (roomId) => {
-        const rooms = JSON.parse(sessionStorage.getItem("queuedRooms") || "[]");
-        const target = rooms.find(r => r.roomId === roomId);
-        if (!target || target.accepted || target.rejected) return;
-
-        try {
-            const res = await fetch(`/api/rooms/${roomId}/my-queue-status`);
-            if (!res.ok) return;
-            const data = await res.json();
-            updateQueueCard(roomId, data.status, data.roomUrl);
-        } catch (e) {
-            console.error("Queue status check error:", e);
-        }
+    notifConn.on("QueueUpdated", async () => {
+        await initFloatingCards();
+        await initFloatingQueue();
     });
 
     notifConn.start().then(() => {
-        pending.forEach(r => notifConn.invoke("AcceptRejectQueue", String(r.roomId)));
+        pendingRooms.forEach(r => notifConn.invoke("AcceptRejectQueue", String(r.roomId)));
     }).catch(err => console.error("Queue notification error:", err));
 }
 

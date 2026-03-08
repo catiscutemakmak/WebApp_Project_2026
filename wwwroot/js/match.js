@@ -75,23 +75,10 @@ connection.on("PlayerJoinedRoom", async (updatedGameName) => {
 
 });
 
-connection.on("QueueUpdated", async (roomId) => {
-  const rooms = JSON.parse(sessionStorage.getItem("queuedRooms") || "[]");
-  const target = rooms.find(r => r.roomId === roomId);
-  if (!target || target.accepted || target.rejected) return;
-
-  try {
-    const res = await fetch(`/api/rooms/${roomId}/my-queue-status`);
-    if (!res.ok) return;
-    const data = await res.json();
-    if (typeof updateQueueCard === "function") {
-      updateQueueCard(roomId, data.status, data.roomUrl);
-    }
-  } catch (e) {
-    console.error("Queue status check error:", e);
-  }
+connection.on("QueueUpdated", async () => {
+  if (typeof initFloatingCards === "function") await initFloatingCards();
+  if (typeof initFloatingQueue === "function") await initFloatingQueue();
 });
-// บอก site.js ว่า match.js จัดการ QueueUpdated ไว้แล้ว ไม่ต้องสร้าง connection ซ้ำ
 window._queueHandlerRegistered = true;
 
 
@@ -392,17 +379,7 @@ function createJoinButton(roomId) {
       if (data.roomUrl) {
         window.location.href = data.roomUrl;
       } else {
-        // private room → บันทึกลง queuedRooms และแสดง tab ทันทีโดยไม่ต้อง reload
-        const queuedRooms = JSON.parse(sessionStorage.getItem("queuedRooms") || "[]");
-        if (!queuedRooms.some(r => r.roomId === data.roomId)) {
-          queuedRooms.push({
-            roomId: data.roomId,
-            roomName: data.roomName,
-            gameName: data.gameName
-          });
-          sessionStorage.setItem("queuedRooms", JSON.stringify(queuedRooms));
-        }
-        // เข้าร่วม SignalR group เพื่อรับ QueueUpdated
+        // private room → เข้าร่วม SignalR group และแสดง tab ทันที
         if (connection.state === "Connected") {
           connection.invoke("AcceptRejectQueue", String(data.roomId));
         }

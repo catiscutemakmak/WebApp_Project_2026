@@ -59,6 +59,7 @@ function registerChatEvents(){
             const messageElement = CreateChatMessage(new_message);
             chatBox.appendChild(messageElement);
 
+            // scroll ลงล่าง
             chatBox.scrollTop = chatBox.scrollHeight;
         }
     });
@@ -99,10 +100,11 @@ async function init() {
 
   try {
 
-    connection = new signalR.HubConnectionBuilder()
-      .withUrl("/chathub")
-      .withAutomaticReconnect()
-      .build();
+connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chathub", {
+            withCredentials: true
+        })
+        .build();
 
     connection_room = new signalR.HubConnectionBuilder()
       .withUrl("/roomhub")
@@ -113,6 +115,8 @@ async function init() {
     .withUrl("/roomhub")
     .withAutomaticReconnect()
     .build();
+
+
     registerChatEvents();
     registerRoomEvents();
     registerQueueEvent();
@@ -128,11 +132,23 @@ async function init() {
 
     // queue accept,reject
     await connection_queue.invoke("AcceptRejectQueue",roomId)
+
+        const roomsRes = await fetch(`/game/${gameName}/room/${roomId}/details`);
+    if (!roomsRes.ok) throw new Error("Rooms API error: " + roomsRes.status);
+    
+    rooms = await roomsRes.json();
+    renderRooms(rooms);
+
+    //โหลด chat history
+    const chatRes = await fetch(`/game/${gameName}/room/${roomId}/chat`);
+    const chatHistory = await chatRes.json();
+
+    chat_list = chatHistory;
+
+    RenderChatHistory();
+
     await reloadQueue();
     await reloadRooms();
-    const chatRes = await fetch(`/game/${gameName}/room/${roomId}/chat`);
-chat_list = await chatRes.json();
-RenderChatHistory();
     StartBtn()
     LeaveBtn()
 
@@ -185,11 +201,11 @@ function renderRooms(room) {
     }
 
     // chat
-    const chatbox = CreateChatBox();
-    playerRoom.appendChild(chatbox);
+
 
     const sent_box = CreateSentBox();
     playerRoom.appendChild(sent_box);
+    RenderChatHistory()
 
     // queue
     const queueBox = document.getElementById("queueBox");
@@ -238,24 +254,35 @@ function EmptySlot() {
     return div;
 }
 
-function CreateChatBox() {
-    const chatdiv = document.createElement("div");
-    chatdiv.classList.add("chat-dev");
-    let user_before = null;
+function RenderChatHistory() {
+    const chatBox = document.querySelector(".chat-dev");
+    if(!chatBox) return;
 
-    chat_list.forEach(chat => {
+    chatBox.innerHTML = "";
+
+    chat_list.forEach(msg => {
+        const messageElement = CreateChatMessage(msg);
+        chatBox.appendChild(messageElement);
+    });
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function CreateChatMessage(chat){
 
     const current_chat = document.createElement("div");
     current_chat.classList.add("chat-format");
 
+    const prevChat = chat_list[chat_list.length - 2];
+
     const avatar = document.createElement("div");
     avatar.classList.add("chat-avatar");
 
-    if (user_before !== chat.sender) {
+    if(!prevChat || prevChat.sender !== chat.sender){
         avatar.style.backgroundImage = `url(${chat.avatar})`;
         avatar.style.backgroundSize = "cover";
         avatar.style.backgroundPosition = "center";
-    } else {
+    }else{
         avatar.classList.add("avatar-hidden");
     }
 
@@ -264,6 +291,15 @@ function CreateChatBox() {
     const textBox = document.createElement("div");
     textBox.classList.add("chat-textbox");
 
+    if(!prevChat || prevChat.sender !== chat.sender){
+
+        const sender = document.createElement("p");
+        sender.classList.add("chat-sender");
+        sender.innerText = chat.sender;
+
+        current_chat.appendChild(sender);
+    }
+
     const message = document.createElement("p");
     message.classList.add("chat-message");
     message.innerText = chat.message;
@@ -271,11 +307,12 @@ function CreateChatBox() {
     textBox.appendChild(message);
     current_chat.appendChild(textBox);
 
-    chatdiv.appendChild(current_chat);
+    return current_chat;
+}
 
-    user_before = chat.sender;
-});
-
+function CreateChatBox() {
+    const chatdiv = document.createElement("div");
+    chatdiv.classList.add("chat-dev");
     return chatdiv;
 }
 
@@ -306,8 +343,6 @@ stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
         connection.invoke(
             "SendMessage",
             roomId,
-            user.name,
-            user.avatar,
             input.value
         ).catch(err => console.error(err));
 
@@ -319,6 +354,7 @@ stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
 
     return sent_box;
 }
+
 
 function renderQueue(queue) {
 
@@ -529,5 +565,4 @@ leaveBtn.onclick = async () => {
 
 };
 }
-
 

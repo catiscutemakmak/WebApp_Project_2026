@@ -9,6 +9,7 @@ async function reloadRooms() {
     }
 
     rooms = await res.json();
+    console.log(rooms)
     renderRooms(rooms);
 
   } catch (err) {
@@ -363,16 +364,19 @@ function createRequirementBar(room) {
   const bar = document.createElement("div");
   bar.classList.add("req-bar");
 
-  const s = room.roomSetting;
+  const s = room.roomSetting ?? {};
 
   const items = [
 
+    room.myStatus === "Active" ? "🟢 In Room" : null,
+    room.myStatus === "Queue" ? "🟡 In Queue" : null,
+
     s.minRank ? `Min Rank: ${s.minRank}` : null,
     s.maxRank ? `Max Rank: ${s.maxRank}` : null,
-    s.isPrivate ? "Private Room" : "Public Room",
+    s.isPrivate ? "🔒 Private Room" : "🌐 Public Room",
     s.allowDuplicateRole
-      ? "Duplicate Role Allowed"
-      : "No Duplicate Role"
+      ? "♻ Duplicate Role Allowed"
+      : "🚫 No Duplicate Role"
 
   ];
 
@@ -382,6 +386,15 @@ function createRequirementBar(room) {
 
     const div = document.createElement("div");
     div.classList.add("req-text");
+
+    if (text.includes("In Room")) {
+      div.classList.add("status-active");
+    }
+
+    if (text.includes("In Queue")) {
+      div.classList.add("status-queue");
+    }
+
     div.innerText = text;
 
     bar.appendChild(div);

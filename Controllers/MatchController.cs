@@ -36,40 +36,55 @@ public IActionResult Match(string gameName)
 [HttpGet("rooms")]
 
 
-public IActionResult GetRoomsByGameName(string gameName)
+public async Task<IActionResult> GetRoomsByGameName(string gameName)
 {
-    var rooms = _context.Rooms
-        .Where(r => r.Game != null && r.Game.GameName == gameName)
-        .Select(r => new RoomDTO
+
+    var currentUser = await _userManager.GetUserAsync(User);
+    if (currentUser == null)
+        return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+
+
+var rooms = _context.Rooms
+    .AsNoTracking()
+    .Where(r => r.Game != null && r.Game.GameName == gameName)
+    .Select(r => new RoomDTO
+    {
+        RoomId = r.Id,
+        GameName = r.Game!.GameName,
+        RoomName = r.RoomName,
+        OwnerUsername = r.RoomOwner!.UserId,
+        GameMode = r.GameMode,
+
+        RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
         {
-            RoomId = r.Id,
-            GameName = r.Game!.GameName,
-            RoomName = r.RoomName,
-            OwnerUsername = r.RoomOwner!.UserId,
-            GameMode = r.GameMode,
+            MinRank = r.RoomSetting.MinRank,
+            MaxRank = r.RoomSetting.MaxRank,
+            AllowDuplicateRole = r.RoomSetting.AllowDuplicateRole,
+            IsPrivate = r.RoomSetting.IsPrivate,
+            MaxPlayer = r.RoomSetting.MaxPlayer
+        },
 
-            RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
+        Players = r.Players
+            .Where(p => p.Status == PlayerStatus.Active)
+            .Select(p => new PlayerDTO
             {
-                MinRank = r.RoomSetting!.MinRank,
-                MaxRank = r.RoomSetting!.MaxRank,
-                AllowDuplicateRole = r.RoomSetting.AllowDuplicateRole,
-                IsPrivate = r.RoomSetting.IsPrivate,
-                MaxPlayer = r.RoomSetting.MaxPlayer
-            },
+                UserId = p.UserId,
+                Username = p.User != null ? p.User.Nickname : "",
+                RoleName = p.Role != null ? p.Role.RoleName : "",
+                RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
+                UserProfile = p.User != null ? p.User.ProfileImagePath : "",
+            })
+            .ToList(),
 
-            Players = r.Players
-                .Where(p => p.Status == PlayerStatus.Active)
-                .Select(p => new PlayerDTO
-                {
-                    UserId = p.UserId,
-                    Username = p.User != null ? p.User.Nickname : "",
-                    RoleName = p.Role != null ? p.Role.RoleName : "",
-                    RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
-                    UserProfile = p.User != null ? p.User.ProfileImagePath : "",
-                })
-                .ToList()
-        })
-        .ToList();
+        MyStatus = r.Players
+            .Where(p => p.UserId == userProfile.Id)
+            .Select(p => p.Status.ToString())
+            .FirstOrDefault()
+    })
+    .ToList();
 
     return Ok(rooms);
 }
@@ -128,9 +143,18 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     var alreadyInRoom = room.Players
         .Any(p => p.UserId == userProfile.Id);
 
-    if (alreadyInRoom)
-        return BadRequest("You already joined this room");
-
+    if (alreadyInRoom){
+    var alreadyInQueue = room.Players
+        .Any(p => p.UserId == userProfile.Id 
+               && p.Status == PlayerStatus.Queue);
+        if(alreadyInQueue){
+        return BadRequest("You are waiting for queue");
+        }
+                else
+                {
+                    return BadRequest("You already joined this room");
+                }
+    }
     var isPrivate = room.RoomSetting!.IsPrivate;
 
     // นับเฉพาะคนที่ join จริง

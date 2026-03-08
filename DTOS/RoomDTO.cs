@@ -12,5 +12,7 @@ namespace hateekub.DTOS
     public RoomSettingDTO? RoomSetting { get; set; }
 
     public List<PlayerDTO> Players { get; set; } = new();
+
+    public string MyStatus { get; set; }
 }
 }

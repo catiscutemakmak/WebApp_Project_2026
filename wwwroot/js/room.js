@@ -1,5 +1,6 @@
 let connection = null
 let connection_room = null
+let connection_queue = null
 let rooms = [];
 let queue = [];
 
@@ -87,6 +88,17 @@ function registerRoomEvents(){
 
 }
 
+function registerQueueEvent(){
+    connection_queue.on("QueueUpdated", async (updateroomId) => {
+
+        if (updateroomId != roomId) return;
+
+        await reloadQueue();
+        await reloadRooms();
+
+    });
+
+}
 
 async function init() {
 
@@ -102,18 +114,25 @@ async function init() {
       .withAutomaticReconnect()
       .build();
 
+    connection_queue = new signalR.HubConnectionBuilder()
+    .withUrl("/roomhub")
+    .withAutomaticReconnect()
+    .build();
     registerChatEvents();
     registerRoomEvents();
+    registerQueueEvent();
 
     await connection.start();
     await connection_room.start();
-
+    await connection_queue.start();
     // join chat room
     await connection.invoke("JoinRoom", roomId);
 
     // join realtime room group
     await connection_room.invoke("JoinGameGroup", gameName);
 
+    // queue accept,reject
+    await connection_queue.invoke("AcceptRejectQueue",roomId)
     await reloadQueue();
     await reloadRooms();
     

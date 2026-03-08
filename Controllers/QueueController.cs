@@ -68,6 +68,7 @@ public async Task<IActionResult> AcceptQueue(int roomId, int queuePlayerId)
     var room = await _context.Rooms
         .Include(r => r.Players)
         .Include(r => r.RoomSetting)
+        .Include(r => r.Game)
         .FirstOrDefaultAsync(r => r.Id == roomId);
 
     if (room == null)
@@ -94,6 +95,13 @@ public async Task<IActionResult> AcceptQueue(int roomId, int queuePlayerId)
 
     await _context.SaveChangesAsync();
 
+    await _hub.Clients
+    .Group($"room-{roomId}")
+    .SendAsync("QueueUpdated",roomId);
+
+    await _hub.Clients.Group(room.Game.GameName)
+        .SendAsync("PlayerJoinedRoom", room.Game.GameName);
+
     return Ok(new { message = "Player accepted" });
 }
 [HttpPut("{roomId}/reject/{queuePlayerId}")]
@@ -110,6 +118,7 @@ public async Task<IActionResult> RejectQueue(int roomId, int queuePlayerId)
     var room = await _context.Rooms
         .Include(r => r.Players)
         .Include(r => r.RoomSetting)
+        .Include(r => r.Game)
         .FirstOrDefaultAsync(r => r.Id == roomId);
 
     if (room == null)
@@ -118,11 +127,6 @@ public async Task<IActionResult> RejectQueue(int roomId, int queuePlayerId)
 
     if (room.OwnerId != userProfile!.Id)
         return Forbid();
-
-    if(room.ActivePlayers.Count() >= room.RoomSetting!.MaxPlayer)
-    {
-    return BadRequest("Room is full");
-    }
 
     var queuePlayer = await _context.RoomPlayers
         .FirstOrDefaultAsync(p => p.RoomId == roomId 
@@ -135,6 +139,12 @@ public async Task<IActionResult> RejectQueue(int roomId, int queuePlayerId)
     queuePlayer.Status = PlayerStatus.Rejected;
 
     await _context.SaveChangesAsync();
+    await _hub.Clients
+    .Group($"room-{roomId}")
+    .SendAsync("QueueUpdated",roomId);
+
+    await _hub.Clients.Group(room.Game.GameName)
+        .SendAsync("PlayerJoinedRoom", room.Game.GameName);
 
     return Ok(new { message = "Player rejected" });
 }

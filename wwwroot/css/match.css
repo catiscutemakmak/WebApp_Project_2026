@@ -6,6 +6,7 @@ body {
     background: radial-gradient(circle at top, #1a001f 0%, #000000 60%);
     color: white;
     font-family: 'Noto Sans Thai', sans-serif;
+    margin-bottom: 40px;
 }
 
 :root {
@@ -33,8 +34,41 @@ body {
     margin: 0 auto;
     padding: 0 20px;
     
-
 }
+body.game-Valorant {
+    background: 
+    linear-gradient(rgba(10,0,20,0.85), rgba(10,0,20,0.95)),
+    url("https://cdn1.epicgames.com/offer/cbd5b3d310a54b12bf3fe8c41994174f/EGS_VALORANT_RiotGames_S1_2560x1440-e1dab02ef10e4470a609affcfb8f1a1a");
+    background-size: cover;
+}
+body.game-Mobile-Legends{
+    background: 
+    linear-gradient(rgba(10,0,20,0.85), rgba(10,0,20,0.95)),
+    url("https://i0.wp.com/lavidaesunvideojuego.com/wp-content/uploads/2022/04/Mobile-Legends-Bang-Bang-se-lanza-de-forma-oficial-en-Ame%CC%81rica-Latina-lavidaesunvideojuego.png?fit=2167%2C967&ssl=1");
+    background-size: cover;
+}
+body.game-Overwatch{
+    background: 
+    linear-gradient(rgba(10,0,20,0.85), rgba(10,0,20,0.95)),
+    url("https://blz-contentstack-images.akamaized.net/v3/assets/blt2477dcaf4ebd440c/blt7f9eb794036a691f/6982abe2d4c1039cb50f8e91/S21_Thumbnail.png");
+    background-size: cover;
+}
+
+body.game-CS2{
+    background: 
+    linear-gradient(rgba(10,0,20,0.85), rgba(10,0,20,0.95)),
+    url("https://www.pcgamesn.com/wp-content/sites/pcgamesn/2024/02/best-cs2-settings.jpg");
+    background-size: cover;
+}
+
+.body::before {
+
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 0, 20, 0.75); /* dark overlay */
+    backdrop-filter: blur(4px);
+}
+
 .player-room {
     width: 100%; 
     display: grid;
@@ -356,5 +390,36 @@ select:focus {
     font-size: 16px;
     color: #86969c;
     
+}
 
+.pagination{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:20px;
+  margin-top:25px;
+}
+
+.pagination button{
+  background:#1b0124;
+  border:1px solid #b94cff;
+  color:white;
+  padding:8px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.pagination button:hover{
+  background:#7a00b8;
+}
+
+.pagination button:disabled{
+  opacity:0.4;
+  cursor:not-allowed;
+}
+
+.pagination span{
+  color:#d48cff;
+  font-weight:600;
 }

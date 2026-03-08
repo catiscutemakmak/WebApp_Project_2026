@@ -124,7 +124,6 @@ public async Task<IActionResult> Room(string gameName, int roomId)
 
         return Ok(chats);
     }
-
 [HttpPut("{roomId}/start")]
 public async Task<IActionResult> StartRoom(int roomId)
 {

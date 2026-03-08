@@ -148,5 +148,29 @@ public async Task<IActionResult> RejectQueue(int roomId, int queuePlayerId)
 
     return Ok(new { message = "Player rejected" });
 }
+
+[HttpGet("{roomId}/my-queue-status")]
+public async Task<IActionResult> MyQueueStatus(int roomId)
+{
+    var currentUser = await _userManager.GetUserAsync(User);
+    if (currentUser == null) return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+    if (userProfile == null) return NotFound();
+
+    var player = await _context.RoomPlayers
+        .Include(p => p.Room!).ThenInclude(r => r!.Game)
+        .FirstOrDefaultAsync(p => p.RoomId == roomId && p.UserId == userProfile.Id);
+
+    if (player == null)
+        return Ok(new { status = "NotFound" });
+
+    var roomUrl = player.Status == PlayerStatus.Active
+        ? $"/game/{player.Room!.Game!.GameName}/room/{roomId}"
+        : (string?)null;
+
+    return Ok(new { status = player.Status.ToString(), roomUrl });
+}
 }
 }

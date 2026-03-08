@@ -28,6 +28,32 @@ public class HomeController : Controller
         return View();
     }
 
+    [HttpGet]
+    [Route("api/user/games")]
+    public async Task<IActionResult> GetUserGames()
+    {
+        if (!User.Identity!.IsAuthenticated)
+            return Unauthorized();
+
+        var identityUser = await _userManager.GetUserAsync(User);
+        if (identityUser == null)
+            return Unauthorized();
+
+        var userProfile = await _db.UserProfiles
+            .Include(u => u.UserGames)
+            .ThenInclude(ug => ug.Game)
+            .FirstOrDefaultAsync(u => u.UserId == identityUser.Id);
+
+        if (userProfile == null)
+            return NotFound(new { message = "UserProfile not found" });
+
+        var games = userProfile.UserGames
+            .Select(ug => new { ug.Game.GameName, ug.InGameName })
+            .ToList();
+
+        return Json(games);
+    }
+
     [HttpPost]
     [Route("game/{gameName}")]
     public async Task<IActionResult> SubmitGame(string gameName, [FromForm] string gameKey, [FromForm] string gameID)

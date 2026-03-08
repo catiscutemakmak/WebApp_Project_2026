@@ -135,7 +135,8 @@ async function init() {
     await connection_queue.invoke("AcceptRejectQueue",roomId)
     await reloadQueue();
     await reloadRooms();
-    
+    StartBtn()
+    LeaveBtn()
 
   } catch (err) {
     console.error(err);
@@ -194,8 +195,7 @@ function renderRooms(room) {
 
     // queue
     const queueBox = document.getElementById("queueBox");
-
-    StartBtn()
+    
     renderQueue(queue);
     
     
@@ -485,7 +485,7 @@ startBtn.addEventListener("click", async () => {
 
     try {
 
-        const res = await fetch(`/api/rooms/${roomId}/start`, {
+        const res = await fetch(`/game/${gameName}/room/${roomId}/start`, {
             method: "PUT"
         });
 
@@ -503,6 +503,33 @@ startBtn.addEventListener("click", async () => {
     }
 
 });
+}
+function LeaveBtn(){
+
+const leaveBtn = document.getElementById("Leavebtn");
+
+leaveBtn.onclick = async () => {
+
+    try {
+
+        const res = await fetch(`/game/${gameName}/room/${roomId}/leave`, {
+            method: "PUT"
+        });
+
+        if (!res.ok) {
+
+            const error = await res.text();
+            alert(error);
+            return;
+        }
+
+        window.location.href = `/game/${gameName}`;
+
+    } catch (err) {
+        console.error(err);
+    }
+
+};
 }
 
 

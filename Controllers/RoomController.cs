@@ -14,11 +14,13 @@ public class RoomController : Controller
     private readonly AppDbContext _context;
     private readonly UserManager<IdentityUser> _userManager;
 
+    private readonly IHubContext<RoomHub> _hub;
 
-    public RoomController(AppDbContext context, UserManager<IdentityUser> userManager)
+    public RoomController(AppDbContext context, UserManager<IdentityUser> userManager,IHubContext<RoomHub> hub)
     {
         _context = context;
         _userManager = userManager;
+        _hub = hub;
     }
 
     // หน้า View ของ Room
@@ -126,5 +128,45 @@ public async Task<IActionResult> StartRoom(int roomId)
     await _context.SaveChangesAsync();
 
     return Ok(new { message = "Room started" });
+}
+
+[HttpPut("{roomId}/leave")]
+public async Task<IActionResult> LeaveRoom(int roomId)
+{
+    var currentUser = await _userManager.GetUserAsync(User);
+
+    if (currentUser == null)
+        return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+
+    if (userProfile == null)
+        return NotFound("User profile not found");
+
+    var player = await _context.RoomPlayers
+        .FirstOrDefaultAsync(p => p.RoomId == roomId
+                               && p.UserId == userProfile.Id
+                               && p.Status == PlayerStatus.Active);
+
+    if (player == null)
+        return NotFound("Player not in room");
+
+    player.Status = PlayerStatus.Left;
+
+        var room = await _context.Rooms
+        .Include(r => r.Game)
+        .FirstOrDefaultAsync(r => r.Id == roomId);
+
+
+    await _context.SaveChangesAsync();
+
+    await _hub.Clients
+        .Group($"room-{roomId}")
+        .SendAsync("RoomUpdated", roomId);
+
+    await _hub.Clients.Group(room.Game.GameName)
+        .SendAsync("PlayerJoinedRoom", room.Game.GameName);
+    return Ok(new { message = "Left room" });
 }
     }

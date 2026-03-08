@@ -31,7 +31,7 @@ function GameCard(key) {
         <img class="game-card-img" src="${gameImg[key]}">
         <div class="game-card-name">${gameList[key]}</div>
     `;
-    div.addEventListener("click", () => openModal(key));
+    div.addEventListener("click", () => handleGameClick(key));
     return div;
 }
 
@@ -40,6 +40,32 @@ function renderGameCards() {
     Object.keys(gameList).forEach(key => {
         container.appendChild(GameCard(key));
     });
+}
+
+async function handleGameClick(key) {
+    try {
+        // ดึงข้อมูล games ที่ user เคยใส่แล้ว
+        const response = await fetch('/api/user/games');
+        if (!response.ok) throw new Error('Failed to fetch user games');
+        
+        const userGames = await response.json();
+        const gameName = gameList[key];
+        
+        // ตรวจสอบว่า game นี้เคยใส่แล้วหรือไม่
+        const existingGame = userGames.find(g => g.gameName === gameName);
+        
+        if (existingGame) {
+            // เคยใส่แล้ว → redirect เลย ไม่ต้อง modal
+            window.location.href = `/game/${encodeURIComponent(gameName)}`;
+        } else {
+            // ยังไม่ใส่ → แสดง modal ให้ใส่
+            openModal(key);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        // ถ้า error → แสดง modal ปกติ
+        openModal(key);
+    }
 }
 
 function openModal(key) {

@@ -9,6 +9,11 @@ public class RoomHub : Hub
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, gameName);
     }
+
+    public async Task AcceptRejectQueue(string roomId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, $"room-{roomId}");
+        }
     
 }
 }

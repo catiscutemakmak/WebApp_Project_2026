@@ -6,7 +6,18 @@
     <link rel="stylesheet" href="~/css/match.css" />
 
 </head>
-<body class="game-@ViewBag.GameName">
+<body class="loading game-@ViewBag.GameName.Replace(" ", "-")">
+    <div id="loadingOverlay" class="cyber-loading hide">
+  <div class="cyber-box">
+    <div class="cyber-title">SYSTEM LOADING</div>
+
+    <div class="cyber-progress">
+      <div class="cyber-bar"></div>
+    </div>
+
+    <div class="cyber-text">Accessing server...</div>
+  </div>
+</div>
     <div class="back-btn-container"> 
         <a asp-controller="Home"
    asp-action="Index"
@@ -18,10 +29,22 @@
     BACK
 </a>
 </div> 
+
 <div id="MatchContainer" class="MatchContainer">
 
 
 
+</div>
+<div id="avatarPicker" class="avatar-picker hide">
+  <div class="avatar-box">
+
+    <h3>Select Character</h3>
+
+    <div id="avatarGrid" class="avatar-grid"></div>
+
+    <button id="avatarConfirm" disabled>Confirm</button>
+
+  </div>
 </div>
 <script>
     const gameName = "@ViewBag.GameName";

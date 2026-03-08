@@ -1,5 +1,9 @@
+let currentPage = 1;
+const roomsPerPage =5;
 async function reloadRooms() {
+
   try {
+
     const res = await fetch(`/game/${gameName}/rooms`);
 
     if (!res.ok) {
@@ -7,11 +11,15 @@ async function reloadRooms() {
     }
 
     rooms = await res.json();
+    console.log(rooms)
     renderRooms(rooms);
 
   } catch (err) {
+
     console.error("Reload rooms error:", err);
+
   }
+
 }
 
 /* ================================
@@ -48,6 +56,8 @@ connection.on("PlayerJoinedRoom", async (updatedGameName) => {
 });
 
 
+
+
 /* ================================
    GLOBAL STATE
 ================================ */
@@ -61,16 +71,21 @@ async function init() {
 
   try {
 
+    showLoading();
+
     const rolesRes = await fetch(`/game/${gameName}/roles`);
-
-    if (!rolesRes.ok) throw new Error("Roles API error");
-
     roles = await rolesRes.json();
 
     await reloadRooms();
 
-  } catch (err) {
-    console.error("Init error:", err);
+  } catch(err){
+
+    console.error(err);
+
+  } finally {
+
+    hideLoading();
+
   }
 
 }
@@ -125,18 +140,22 @@ function normalizeRoom(room) {
 /* ================================
    RENDER ROOMS
 ================================ */
-function renderRooms(rooms) {
+function renderRooms(allRooms) {
 
   const container = document.getElementById("MatchContainer");
   container.innerHTML = "";
 
-  rooms.forEach(room => {
+  const start = (currentPage - 1) * roomsPerPage;
+  const end = start + roomsPerPage;
 
+  const paginatedRooms = allRooms.slice(start, end);
+
+  paginatedRooms.forEach(room => {
     const safeRoom = normalizeRoom(room);
     container.appendChild(renderRoom(safeRoom));
-
   });
 
+  renderPagination(allRooms.length);
 }
 
 /* ================================
@@ -157,7 +176,7 @@ function renderRoom(room) {
   /* PLAYERS */
 
   room.players.forEach(player => {
-    wrapper.appendChild(PlayerCard(player, room.ownerUsername));
+    wrapper.appendChild(PlayerCard(player, room.ownerId));
   });
 
   /* EMPTY SLOTS */
@@ -187,7 +206,7 @@ function renderRoom(room) {
 /* ================================
    PLAYER CARD
 ================================ */
-function PlayerCard(player, ownerUsername) {
+function PlayerCard(player, OwnerId) {
 
   const div = document.createElement("div");
   div.classList.add("player-dev");
@@ -200,13 +219,13 @@ function PlayerCard(player, ownerUsername) {
   const rankImg =
     player.rankName
       ? `${player.rankName}`
-      : "/images/rank/unranked.webp";
+      : "/images/Amongus/Lime.webp";
 
   div.innerHTML = `
     <img class="player-profile"
       src="${player.userProfile ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj5K_Hlzgq-p_0Xfv_vykmcOtuXhBI7VFBxg&s'}">
 
-    ${player.username === ownerUsername
+    ${player.userId === OwnerId
       ? "<span class='empty-crown'>👑</span>"
       : "<span class='empty-crown'>🎮</span>"}
 
@@ -371,16 +390,19 @@ function createRequirementBar(room) {
   const bar = document.createElement("div");
   bar.classList.add("req-bar");
 
-  const s = room.roomSetting;
+  const s = room.roomSetting ?? {};
 
   const items = [
 
+    room.myStatus === "Active" ? "🟢 In Room" : null,
+    room.myStatus === "Queue" ? "🟡 In Queue" : null,
+
     s.minRank ? `Min Rank: ${s.minRank}` : null,
     s.maxRank ? `Max Rank: ${s.maxRank}` : null,
-    s.isPrivate ? "Private Room" : "Public Room",
+    s.isPrivate ? "🔒 Private Room" : "🌐 Public Room",
     s.allowDuplicateRole
-      ? "Duplicate Role Allowed"
-      : "No Duplicate Role"
+      ? "♻ Duplicate Role Allowed"
+      : "🚫 No Duplicate Role"
 
   ];
 
@@ -390,6 +412,15 @@ function createRequirementBar(room) {
 
     const div = document.createElement("div");
     div.classList.add("req-text");
+
+    if (text.includes("In Room")) {
+      div.classList.add("status-active");
+    }
+
+    if (text.includes("In Queue")) {
+      div.classList.add("status-queue");
+    }
+
     div.innerText = text;
 
     bar.appendChild(div);
@@ -398,4 +429,46 @@ function createRequirementBar(room) {
 
   return bar;
 
+}
+function renderPagination(totalRooms){
+
+  const totalPages = Math.ceil(totalRooms / roomsPerPage);
+
+  const nav = document.createElement("div");
+  nav.classList.add("pagination");
+
+  const prev = document.createElement("button");
+  prev.innerText = "<< Prev";
+  prev.disabled = currentPage === 1;
+
+  prev.onclick = () => {
+    currentPage--;
+    renderRooms(rooms);
+  };
+
+  const pageInfo = document.createElement("span");
+  pageInfo.innerText = `Page ${currentPage} / ${totalPages}`;
+
+  const next = document.createElement("button");
+  next.innerText = "Next >>";
+  next.disabled = currentPage === totalPages;
+
+  next.onclick = () => {
+    currentPage++;
+    renderRooms(rooms);
+  };
+
+  nav.appendChild(prev);
+  nav.appendChild(pageInfo);
+  nav.appendChild(next);
+
+  document.getElementById("MatchContainer").appendChild(nav);
+}
+
+function showLoading(){
+  document.body.classList.add("loading");
+}
+
+function hideLoading(){
+  document.body.classList.remove("loading");
 }

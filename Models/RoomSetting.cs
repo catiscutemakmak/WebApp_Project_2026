@@ -8,9 +8,9 @@ public class RoomSetting
 
         public int RoomId { get; set; }
 
-        public string MinRank { get; set; } = string.Empty;
+        public string? MinRank { get; set; } = string.Empty;
 
-        public string MaxRank { get; set; } = string.Empty;
+        public string? MaxRank { get; set; } = string.Empty;
 
         public bool AllowDuplicateRole { get; set; }
 

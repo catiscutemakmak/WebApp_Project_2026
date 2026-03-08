@@ -1,15 +1,47 @@
 let connection = null
+let connection_room = null
+let connection_queue = null
+let rooms = [];
+let queue = [];
 
-let rooms = null;
 
-async function init() {
+async function reloadRooms() {
+  try {
+    const res = await fetch(`/game/${gameName}/room/${roomId}/details`);
+
+    if (!res.ok) {
+      throw new Error("Reload rooms failed");
+    }
+
+    rooms = await res.json();
+    console.log(rooms)
+    renderRooms(rooms);
+
+  } catch (err) {
+    console.error("Reload rooms error:", err);
+  }
+}
+
+async function reloadQueue() {
   try {
 
-    connection = new signalR.HubConnectionBuilder()
-        .withUrl("/chathub", {
-            withCredentials: true
-        })
-        .build();
+    const res = await fetch(`/api/rooms/${roomId}/queue`);
+
+    if (!res.ok) {
+      throw new Error("Reload queue failed");
+    }
+
+    queue = await res.json();
+    console.log(queue)
+    renderQueue(queue);
+    
+  } catch (err) {
+    console.error("Reload queue error:", err);
+  }
+}
+
+
+function registerChatEvents(){
 
     connection.on("ReceiveMessage", function(username, avatar, message){
 
@@ -27,52 +59,91 @@ async function init() {
             const messageElement = CreateChatMessage(new_message);
             chatBox.appendChild(messageElement);
 
-            // scroll ลงล่าง
             chatBox.scrollTop = chatBox.scrollHeight;
         }
     });
 
+}
+
+function registerRoomEvents(){
+
+    connection_room.on("RoomCreated", async (updatedGameName) => {
+
+        if (updatedGameName !== gameName) return;
+
+        await reloadRooms();
+    });
+
+    connection_room.on("PlayerJoinedRoom", async (updatedGameName) => {
+
+        if (updatedGameName !== gameName) return;
+
+        await reloadRooms();
+    });
+
+}
+
+function registerQueueEvent(){
+    connection_queue.on("QueueUpdated", async (updateroomId) => {
+
+        if (updateroomId != roomId) return;
+
+        await reloadQueue();
+        await reloadRooms();
+
+    });
+
+}
+
+async function init() {
+
+  try {
+
+    connection = new signalR.HubConnectionBuilder()
+      .withUrl("/chathub")
+      .withAutomaticReconnect()
+      .build();
+
+    connection_room = new signalR.HubConnectionBuilder()
+      .withUrl("/roomhub")
+      .withAutomaticReconnect()
+      .build();
+
+    connection_queue = new signalR.HubConnectionBuilder()
+    .withUrl("/roomhub")
+    .withAutomaticReconnect()
+    .build();
+    registerChatEvents();
+    registerRoomEvents();
+    registerQueueEvent();
+
     await connection.start();
+    await connection_room.start();
+    await connection_queue.start();
+    // join chat room
     await connection.invoke("JoinRoom", roomId);
 
-    const roomsRes = await fetch(`/game/${gameName}/room/${roomId}/details`);
-    if (!roomsRes.ok) throw new Error("Rooms API error: " + roomsRes.status);
-    
-    rooms = await roomsRes.json();
-    renderRooms(rooms);
+    // join realtime room group
+    await connection_room.invoke("JoinGameGroup", gameName);
 
-    //โหลด chat history
+    // queue accept,reject
+    await connection_queue.invoke("AcceptRejectQueue",roomId)
+    await reloadQueue();
+    await reloadRooms();
     const chatRes = await fetch(`/game/${gameName}/room/${roomId}/chat`);
-    const chatHistory = await chatRes.json();
-
-    chat_list = chatHistory;
-
-    RenderChatHistory();
+chat_list = await chatRes.json();
+RenderChatHistory();
+    StartBtn()
+    LeaveBtn()
 
   } catch (err) {
-    console.error("Init error:", err);
+    console.error(err);
   }
 }
 
 init();
 
-  roomQueue = [
-    {
-      username: "Egg",
-      roleName: "Gold",
-      rankName: "/images/rank/legend.webp",
-      userProfile: "https://play-lh.googleusercontent.com/PCpXdqvUWfCW1mXhH1Y_98yBpgsWxuTSTofy3NGMo9yBTATDyzVkqU580bfSln50bFU=w600-h300-pc0xffffff-pd"
-    },
-    {
-      username: "Egga",
-      roleName: "Roam",
-      rankName: "/images/rank/mythic.webp",
-      userProfile: "https://s.france24.com/media/display/544355b0-45df-11f0-9098-005056a97e36/w:980/Part-GTY-GYI0061951038-1-1-0.jpg"
-    }
-  ]
-
-
-let chat_list = [];
+const chat_list = [];
 
 const rankImageMap = {
     Warrior: "/images/rank/warrior.webp",
@@ -101,7 +172,7 @@ function renderRooms(room) {
 
     // render players
     room.players.forEach(p => {
-        playerRoom.appendChild(PlayerCard(p, room.ownerUsername));
+        playerRoom.appendChild(PlayerCard(p, room.ownerId));
     });
 
     // calculate empty slot
@@ -121,12 +192,15 @@ function renderRooms(room) {
     playerRoom.appendChild(sent_box);
 
     // queue
-    renderQueue(roomQueue);
-
+    const queueBox = document.getElementById("queueBox");
+    
+    renderQueue(queue);
+    
+    
     return playerRoom;
 }
 
-function PlayerCard(player, ownerUsername) {
+function PlayerCard(player, OwnerId) {
 
     const div = document.createElement("div");
     div.classList.add("player-dev");
@@ -140,7 +214,7 @@ function PlayerCard(player, ownerUsername) {
         <img class="player-profile"
              src="${player.userProfile ?? 'https://as1.ftcdn.net/jpg/02/57/42/72/1000_F_257427286_Lp7c9XdPnvN46TyFKqUaZpPADJ77ZzUk.jpg'}">
 
-        ${player.username === ownerUsername
+        ${player.userId === OwnerId
         ? "<span class='empty-crown'>👑</span>"
         : "<span class='empty-crown'>🎮</span>"}
 
@@ -164,35 +238,24 @@ function EmptySlot() {
     return div;
 }
 
-function RenderChatHistory() {
-    const chatBox = document.querySelector(".chat-dev");
-    if(!chatBox) return;
+function CreateChatBox() {
+    const chatdiv = document.createElement("div");
+    chatdiv.classList.add("chat-dev");
+    let user_before = null;
 
-    chatBox.innerHTML = "";
-
-    chat_list.forEach(msg => {
-        const messageElement = CreateChatMessage(msg);
-        chatBox.appendChild(messageElement);
-    });
-
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function CreateChatMessage(chat){
+    chat_list.forEach(chat => {
 
     const current_chat = document.createElement("div");
     current_chat.classList.add("chat-format");
 
-    const prevChat = chat_list[chat_list.length - 2];
-
     const avatar = document.createElement("div");
     avatar.classList.add("chat-avatar");
 
-    if(!prevChat || prevChat.sender !== chat.sender){
+    if (user_before !== chat.sender) {
         avatar.style.backgroundImage = `url(${chat.avatar})`;
         avatar.style.backgroundSize = "cover";
         avatar.style.backgroundPosition = "center";
-    }else{
+    } else {
         avatar.classList.add("avatar-hidden");
     }
 
@@ -201,15 +264,6 @@ function CreateChatMessage(chat){
     const textBox = document.createElement("div");
     textBox.classList.add("chat-textbox");
 
-    if(!prevChat || prevChat.sender !== chat.sender){
-
-        const sender = document.createElement("p");
-        sender.classList.add("chat-sender");
-        sender.innerText = chat.sender;
-
-        current_chat.appendChild(sender);
-    }
-
     const message = document.createElement("p");
     message.classList.add("chat-message");
     message.innerText = chat.message;
@@ -217,12 +271,11 @@ function CreateChatMessage(chat){
     textBox.appendChild(message);
     current_chat.appendChild(textBox);
 
-    return current_chat;
-}
+    chatdiv.appendChild(current_chat);
 
-function CreateChatBox() {
-    const chatdiv = document.createElement("div");
-    chatdiv.classList.add("chat-dev");
+    user_before = chat.sender;
+});
+
     return chatdiv;
 }
 
@@ -253,6 +306,8 @@ stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
         connection.invoke(
             "SendMessage",
             roomId,
+            user.name,
+            user.avatar,
             input.value
         ).catch(err => console.error(err));
 
@@ -266,16 +321,24 @@ stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
 }
 
 function renderQueue(queue) {
+
     const queueBox = document.getElementById("queueBox");
+    queueBox.innerHTML = "";
+
+    
     const queueList = document.createElement("div");
     queueList.classList.add("queue-list");
+
     const queuebutton = document.createElement("button");
     queuebutton.innerText = "QUEUE";
     queuebutton.classList.add("queue-btn");
+
     queueBox.appendChild(queuebutton);
+
     queuebutton.addEventListener("click", () => {
         queueList.classList.toggle("show-queue");
     });
+
     queue.forEach(p => {
 
         const div = document.createElement("div");
@@ -286,54 +349,109 @@ function renderQueue(queue) {
 
         const imgDiv = document.createElement("img");
         imgDiv.classList.add("queue-profile");
-        imgDiv.src = p.profile;
+        imgDiv.src = p.profileImagePath;
 
-        const roleDiv = document.createElement("p");
-        roleDiv.classList.add("queue-role");
-        roleDiv.textContent = `${p.player_rank}/${p.role}`;
+        const nameDiv = document.createElement("p");
+        nameDiv.classList.add("queue-name");
+        nameDiv.textContent = p.nickname;
 
-        // 🔹 สร้างปุ่มรับ
-        const BtnDiv = document.createElement("div");
-        BtnDiv.classList.add("queue-btn-div");
-        const acceptBtn = document.createElement("button");
-        acceptBtn.innerHTML = "✓";
-        acceptBtn.classList.add("queue-circle-btn", "accept-btn");
-        acceptBtn.addEventListener("click", () => {
-            console.log("Accepted:", p.name);
-        });
-
-        // 🔹 สร้างปุ่มปฏิเสธ
-        const rejectBtn = document.createElement("button");
-        rejectBtn.innerHTML = "✕";
-        rejectBtn.classList.add("queue-circle-btn", "reject-btn");
-        rejectBtn.addEventListener("click", () => {
-            console.log("Rejected:", p.name);
-        });
-
-        BtnDiv.appendChild(acceptBtn);
-        BtnDiv.appendChild(rejectBtn);
+        topdiv.appendChild(imgDiv);
+        topdiv.appendChild(nameDiv);
 
         const botdiv = document.createElement("div");
         botdiv.classList.add("queue-bot");
 
-        const nameDiv = document.createElement("p");
-        nameDiv.classList.add("queue-name");
-        nameDiv.textContent = p.name;
-        topdiv.appendChild(imgDiv);
-        topdiv.appendChild(nameDiv);
+        const roleDiv = document.createElement("p");
+        roleDiv.classList.add("queue-role");
+        roleDiv.textContent = `${p.rankName}/${p.roleName}`;
+
         botdiv.appendChild(roleDiv);
-        botdiv.appendChild(BtnDiv);
+
+       // check Owner
+        if (rooms.isOwner) {
+
+            const BtnDiv = document.createElement("div");
+            BtnDiv.classList.add("queue-btn-div");
+
+            const acceptBtn = document.createElement("button");
+            acceptBtn.innerHTML = "✓";
+            acceptBtn.classList.add("queue-circle-btn", "accept-btn");
+
+            acceptBtn.addEventListener("click", async () => {
+        try {
+
+        const response = await fetch(
+            `/api/rooms/${roomId}/accept/${p.id}`,
+            {
+            method: "PUT"
+            }
+        );
+
+        if (response.ok) {
+
+            const data = await response.json();
+
+        } else {
+
+            const errorText = await response.text();
+            alert(errorText);
+
+        }
+
+        } catch (err) {
+        console.error(err);
+        }
+
+    });
+            const rejectBtn = document.createElement("button");
+            rejectBtn.innerHTML = "✕";
+            rejectBtn.classList.add("queue-circle-btn", "reject-btn");
+            rejectBtn.addEventListener("click", async () => {
+        try {
+
+        const response = await fetch(
+            `/api/rooms/${roomId}/reject/${p.id}`,
+            {
+            method: "PUT"
+            }
+        );
+
+        if (response.ok) {
+
+            const data = await response.json();
+
+        } else {
+
+            const errorText = await response.text();
+            alert(errorText);
+
+        }
+
+        } catch (err) {
+        console.error(err);
+        }
+
+    });
+
+            BtnDiv.appendChild(acceptBtn);
+            BtnDiv.appendChild(rejectBtn);
+
+            botdiv.appendChild(BtnDiv);
+        }
+
         div.appendChild(topdiv);
         div.appendChild(botdiv);
 
         queueList.appendChild(div);
-        queueBox.appendChild(queueList);
-        DragQueue()
     });
+
+    queueBox.appendChild(queueList);
+
+    DragQueue();
 }
 
 function DragQueue(){
-const box = document.querySelector(".queueBox");
+const box = document.getElementById("queueBox");
 
 box.style.position = "absolute";
 
@@ -358,5 +476,58 @@ box.addEventListener("mousedown", function(e){
 });
 }
 
+function StartBtn(){
+const startBtn = document.getElementById("Startbtn");
+
+startBtn.addEventListener("click", async () => {
+
+    try {
+
+        const res = await fetch(`/game/${gameName}/room/${roomId}/start`, {
+            method: "PUT"
+        });
+
+        if (!res.ok) {
+
+            const error = await res.text();
+            alert(error);
+            return;
+        }
+
+        alert("Game starting!");
+
+    } catch (err) {
+        console.error(err);
+    }
+
+});
+}
+function LeaveBtn(){
+
+const leaveBtn = document.getElementById("Leavebtn");
+
+leaveBtn.onclick = async () => {
+
+    try {
+
+        const res = await fetch(`/game/${gameName}/room/${roomId}/leave`, {
+            method: "PUT"
+        });
+
+        if (!res.ok) {
+
+            const error = await res.text();
+            alert(error);
+            return;
+        }
+
+        window.location.href = `/game/${gameName}`;
+
+    } catch (err) {
+        console.error(err);
+    }
+
+};
+}
 
 

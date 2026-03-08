@@ -5,8 +5,10 @@ namespace hateekub.Models
         public int Id { get; set; }
         public string Message { get; set; } = string.Empty;
         public int UserProfileId { get; set; }
+        public int? RoomId { get; set; }
         public bool IsRead { get; set; }
         public UserProfile? UserProfile { get; set; } = null!;
+        public Room? Room { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

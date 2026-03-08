@@ -56,15 +56,10 @@ function registerChatEvents(){
         const chatBox = document.querySelector(".chat-dev");
 
         if(chatBox){
-            chatBox.remove();
-        }
+            const messageElement = CreateChatMessage(new_message);
+            chatBox.appendChild(messageElement);
 
-        const newChatBox = CreateChatBox();
-        document.getElementById("roomContainer").appendChild(newChatBox);
-        
-        const chatContainer = document.querySelector(".chat-dev");
-        if(chatContainer){
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
     });
 
@@ -135,7 +130,11 @@ async function init() {
     await connection_queue.invoke("AcceptRejectQueue",roomId)
     await reloadQueue();
     await reloadRooms();
-    
+    const chatRes = await fetch(`/game/${gameName}/room/${roomId}/chat`);
+chat_list = await chatRes.json();
+RenderChatHistory();
+    StartBtn()
+    LeaveBtn()
 
   } catch (err) {
     console.error(err);
@@ -173,7 +172,7 @@ function renderRooms(room) {
 
     // render players
     room.players.forEach(p => {
-        playerRoom.appendChild(PlayerCard(p, room.ownerUsername));
+        playerRoom.appendChild(PlayerCard(p, room.ownerId));
     });
 
     // calculate empty slot
@@ -194,15 +193,14 @@ function renderRooms(room) {
 
     // queue
     const queueBox = document.getElementById("queueBox");
-
-    StartBtn()
+    
     renderQueue(queue);
     
     
     return playerRoom;
 }
 
-function PlayerCard(player, ownerUsername) {
+function PlayerCard(player, OwnerId) {
 
     const div = document.createElement("div");
     div.classList.add("player-dev");
@@ -216,7 +214,7 @@ function PlayerCard(player, ownerUsername) {
         <img class="player-profile"
              src="${player.userProfile ?? 'https://as1.ftcdn.net/jpg/02/57/42/72/1000_F_257427286_Lp7c9XdPnvN46TyFKqUaZpPADJ77ZzUk.jpg'}">
 
-        ${player.username === ownerUsername
+        ${player.userId === OwnerId
         ? "<span class='empty-crown'>👑</span>"
         : "<span class='empty-crown'>🎮</span>"}
 
@@ -485,7 +483,7 @@ startBtn.addEventListener("click", async () => {
 
     try {
 
-        const res = await fetch(`/api/rooms/${roomId}/start`, {
+        const res = await fetch(`/game/${gameName}/room/${roomId}/start`, {
             method: "PUT"
         });
 
@@ -503,6 +501,33 @@ startBtn.addEventListener("click", async () => {
     }
 
 });
+}
+function LeaveBtn(){
+
+const leaveBtn = document.getElementById("Leavebtn");
+
+leaveBtn.onclick = async () => {
+
+    try {
+
+        const res = await fetch(`/game/${gameName}/room/${roomId}/leave`, {
+            method: "PUT"
+        });
+
+        if (!res.ok) {
+
+            const error = await res.text();
+            alert(error);
+            return;
+        }
+
+        window.location.href = `/game/${gameName}`;
+
+    } catch (err) {
+        console.error(err);
+    }
+
+};
 }
 
 

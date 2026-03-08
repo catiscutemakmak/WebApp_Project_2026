@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using hateekub.Data;
@@ -11,9 +12,11 @@ using hateekub.Data;
 namespace hateekub.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260307201017_UpdateRoomChatUserId")]
+    partial class UpdateRoomChatUserId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,7 +251,7 @@ namespace hateekub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Games", (string)null);
+                    b.ToTable("Games");
 
                     b.HasData(
                         new
@@ -366,7 +369,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("GameRanks", (string)null);
+                    b.ToTable("GameRanks");
 
                     b.HasData(
                         new
@@ -436,7 +439,7 @@ namespace hateekub.Migrations
                         {
                             Id = 9,
                             GameId = 5,
-                            RankImageUrl = "/images/ranks/mlbb/Warrior.webp",
+                            RankImageUrl = "/images/ranks/mlbb/Iron.webp",
                             RankName = "Warrior"
                         },
                         new
@@ -789,7 +792,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("GameRoles", (string)null);
+                    b.ToTable("GameRoles");
 
                     b.HasData(
                         new
@@ -976,7 +979,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("Histories", (string)null);
+                    b.ToTable("Histories");
                 });
 
             modelBuilder.Entity("hateekub.Models.Notification", b =>
@@ -1004,7 +1007,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("hateekub.Models.ProfileGame", b =>
@@ -1030,7 +1033,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("ProfileGames", (string)null);
+                    b.ToTable("ProfileGames");
                 });
 
             modelBuilder.Entity("hateekub.Models.Review", b =>
@@ -1060,7 +1063,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("hateekub.Models.Room", b =>
@@ -1096,16 +1099,13 @@ namespace hateekub.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("GameId");
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Rooms", (string)null);
+                    b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("hateekub.Models.RoomChat", b =>
@@ -1136,7 +1136,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RoomChats", (string)null);
+                    b.ToTable("RoomChats");
                 });
 
             modelBuilder.Entity("hateekub.Models.RoomPlayer", b =>
@@ -1165,9 +1165,6 @@ namespace hateekub.Migrations
                     b.Property<int>("RoomId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
@@ -1181,7 +1178,7 @@ namespace hateekub.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RoomPlayers", (string)null);
+                    b.ToTable("RoomPlayers");
                 });
 
             modelBuilder.Entity("hateekub.Models.RoomSetting", b =>
@@ -1202,9 +1199,11 @@ namespace hateekub.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("MaxRank")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("MinRank")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("RoomId")
@@ -1215,7 +1214,7 @@ namespace hateekub.Migrations
                     b.HasIndex("RoomId")
                         .IsUnique();
 
-                    b.ToTable("RoomSettings", (string)null);
+                    b.ToTable("RoomSettings");
                 });
 
             modelBuilder.Entity("hateekub.Models.UserGame", b =>
@@ -1254,7 +1253,7 @@ namespace hateekub.Migrations
                     b.HasIndex("UserProfileId", "GameId")
                         .IsUnique();
 
-                    b.ToTable("UserGames", (string)null);
+                    b.ToTable("UserGames");
                 });
 
             modelBuilder.Entity("hateekub.Models.UserProfile", b =>
@@ -1293,7 +1292,7 @@ namespace hateekub.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserProfiles", (string)null);
+                    b.ToTable("UserProfiles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

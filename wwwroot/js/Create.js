@@ -351,5 +351,4 @@ async function createRoom(data){
     const roomId = await res.text();
 
     window.location.href = `/game/${data.game}/room/${roomId}`;
-
 }

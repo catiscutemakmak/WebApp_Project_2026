@@ -23,6 +23,32 @@ public class RoomController : Controller
         _hub = hub;
     }
 
+    [HttpGet("/api/my-active-rooms")]
+    public async Task<IActionResult> MyActiveRooms()
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+        if (currentUser == null) return Unauthorized();
+
+        var userProfile = await _context.UserProfiles
+            .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+        if (userProfile == null) return Ok(new List<object>());
+
+        var rooms = await _context.RoomPlayers
+            .Where(p => p.UserId == userProfile.Id && p.Status == PlayerStatus.Active)
+            .Include(p => p.Room!).ThenInclude(r => r!.Game)
+            .Where(p => p.Room != null && p.Room.Status != RoomStatus.Delete)
+            .Select(p => new
+            {
+                roomId = p.RoomId,
+                roomName = p.Room!.RoomName,
+                gameName = p.Room!.Game!.GameName,
+                roomUrl = $"/game/{p.Room!.Game!.GameName}/room/{p.RoomId}"
+            })
+            .ToListAsync();
+
+        return Ok(rooms);
+    }
+
     // หน้า View ของ Room
 [HttpGet("{roomId}")]
 public async Task<IActionResult> Room(string gameName, int roomId)

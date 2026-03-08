@@ -172,5 +172,36 @@ public async Task<IActionResult> MyQueueStatus(int roomId)
 
     return Ok(new { status = player.Status.ToString(), roomUrl });
 }
+
+[HttpGet("my-queue-rooms")]
+public async Task<IActionResult> MyQueueRooms()
+{
+    var currentUser = await _userManager.GetUserAsync(User);
+    if (currentUser == null) return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+    if (userProfile == null) return Ok(new List<object>());
+
+    var rooms = await _context.RoomPlayers
+        .Where(p => p.UserId == userProfile.Id
+                 && (p.Status == PlayerStatus.Queue || p.Status == PlayerStatus.Rejected))
+        .Include(p => p.Room!).ThenInclude(r => r!.Game)
+        .Include(p => p.Room!).ThenInclude(r => r!.RoomSetting)
+        .Where(p => p.Room != null
+                 && p.Room.Status != RoomStatus.Delete
+                 && p.Room.RoomSetting != null
+                 && p.Room.RoomSetting.IsPrivate)
+        .Select(p => new
+        {
+            roomId = p.RoomId,
+            roomName = p.Room!.RoomName,
+            gameName = p.Room!.Game!.GameName,
+            status = p.Status.ToString()
+        })
+        .ToListAsync();
+
+    return Ok(rooms);
+}
 }
 }

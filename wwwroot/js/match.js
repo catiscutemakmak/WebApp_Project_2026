@@ -232,7 +232,7 @@ function PlayerCard(player, OwnerId) {
   div.style.cursor = "pointer";
 
   div.addEventListener("click", () => {
-    window.location.href = `/Profile/View/${player.userId}`;
+    window.location.href = `/Profile/ViewProfile/${player.userId}`;
   });
 
   const rankImg =

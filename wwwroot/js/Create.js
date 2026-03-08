@@ -82,6 +82,7 @@ const maxRank = document.getElementById("max-rank");
 const roleSelect = document.getElementById("game-role");
 const roleContainer = document.getElementById("role-container");
 const rankRequirement = document.getElementById("rank-requirement");
+const playerSelect = document.getElementById("player-select"); // ⭐ เพิ่มบรรทัดนี้
 
 function fillSelect(select, items, placeholder) {
     select.innerHTML = `<option value="" selected hidden>${placeholder}</option>`;
@@ -197,4 +198,30 @@ form.addEventListener("submit", async function (e) {
     const error = await res.text();
     alert("Error: " + error);
     }
+});
+
+gameSelect.addEventListener("change", function () {
+
+    let gameName = this.value;
+
+    fetch(`/CreateTeam/GetPlayerRange?gameName=${gameName}`)
+    .then(res => res.json())
+    .then(data => {
+
+        console.log("player range:", data); // ⭐ debug
+
+        playerSelect.innerHTML = '<option disabled selected hidden>Choose Player</option>';
+
+        for (let i = data.min; i <= data.max; i++) {
+
+            let option = document.createElement("option");
+            option.value = i;
+            option.textContent = i + " Players";
+
+            playerSelect.appendChild(option);
+        }
+
+    })
+    .catch(err => console.error("Fetch error:", err));
+
 });

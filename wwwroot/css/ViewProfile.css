@@ -240,22 +240,8 @@ body::after {
 .history-footer {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     margin-top: 12px;
     font-size: 13px;
-}
-
-.teammates-preview {
-    display: flex;
-    gap: 6px;
-}
-
-.teammate-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid rgba(170, 0, 193, 0.5);
 }
 
 .score {

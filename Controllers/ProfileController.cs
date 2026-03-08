@@ -79,16 +79,6 @@ public class ProfileController : Controller
             currentUserForCheck != null &&
             profile.UserId == currentUserForCheck.Id;
 
-        var latestMatch = await _context.RoomPlayers
-            .Where(p => p.UserId == profile.Id
-                     && (p.Status == PlayerStatus.Active || p.Status == PlayerStatus.Left)
-                     && p.Room!.Status == RoomStatus.Close)
-            .Include(p => p.Room!).ThenInclude(r => r!.Game)
-            .Include(p => p.Room!).ThenInclude(r => r!.Players).ThenInclude(rp => rp.User)
-            .OrderByDescending(p => p.Room!.PlayDateTime)
-            .FirstOrDefaultAsync();
-        ViewBag.LatestMatch = latestMatch;
-
         return View(profile);
     }
 

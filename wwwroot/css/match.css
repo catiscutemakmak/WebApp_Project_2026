@@ -61,6 +61,40 @@ body.game-CS2{
     background-size: cover;
 }
 
+body.game-LoL{
+    background: 
+    linear-gradient(rgba(10,0,20,0.85), rgba(10,0,20,0.95)),
+    url("https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/AAW3H3YGWRBOTJ6OWY65HA3A4M.jpg&w=1440");
+    background-size: cover;
+}
+
+body.game-RoV{
+    background: 
+    linear-gradient(rgba(10,0,20,0.85), rgba(10,0,20,0.95)),
+    url("https://i.pinimg.com/originals/ea/d7/66/ead766c6d12e94f4824ef21a8af6273d.jpg");
+    background-size: cover;
+}
+
+body.game-Among-Us{
+    background: 
+    linear-gradient(rgba(10,0,20,0.85), rgba(10,0,20,0.95)),
+    url("https://images.wallpapersden.com/image/download/among-us_bGhpaW2UmZqaraWkpJRobWllrWdma2U.jpg");
+    background-size: cover;
+}
+
+body.game-Peak{
+    background: 
+    linear-gradient(rgba(10,0,20,0.85), rgba(10,0,20,0.95)),
+    url("/images/bg - peak.png");
+    background-size: cover;
+}
+
+body.game-PUBG{
+    background: 
+    linear-gradient(rgba(10,0,20,0.85), rgba(10,0,20,0.95)),
+    url("https://images.alphacoders.com/138/1389993.jpg");
+    background-size: cover;
+}
 .body::before {
 
     position: absolute;

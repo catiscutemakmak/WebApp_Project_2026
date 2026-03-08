@@ -150,3 +150,168 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* ================================
+   FLOATING QUEUE CARD
+================================ */
+.floating-queue-container {
+    position: fixed;
+    bottom: 0;
+    right: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 280px;
+}
+
+.floating-queue-tab {
+    background: #1a1a2e;
+    border: 1px solid #ffb34755;
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    padding: 11px 16px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.floating-queue-tab:hover {
+    background: #22203a;
+    border-color: #ffb34799;
+}
+
+.floating-queue-tab-label {
+    color: #ffb347;
+    font-family: sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.floating-queue-tab-count {
+    background: #ffb347;
+    color: #1a1a2e;
+    border-radius: 99px;
+    font-family: sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 9px;
+    margin-left: 9px;
+}
+
+.floating-queue-tab-arrow {
+    color: #aaa;
+    font-family: sans-serif;
+    font-size: 13px;
+    margin-left: auto;
+    padding-left: 10px;
+}
+
+.floating-queue-panel {
+    background: #13122099;
+    border: 1px solid #ffb34733;
+    border-bottom: none;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    max-height: 400px;
+    transition: max-height 0.3s ease, opacity 0.25s ease;
+    opacity: 1;
+}
+
+.floating-queue-panel.hidden {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.floating-queue-card {
+    background: #1a1a2e;
+    border-bottom: 1px solid #ffb34722;
+    padding: 13px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.floating-queue-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+}
+
+.floating-queue-game {
+    color: #ffb347;
+    font-family: sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.floating-queue-name {
+    color: #ffffff;
+    font-family: sans-serif;
+    font-size: 14px;
+    margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.floating-queue-status {
+    color: #aaaaaa;
+    font-family: sans-serif;
+    font-size: 11px;
+    margin-top: 3px;
+    font-style: italic;
+}
+
+.floating-queue-cancel {
+    background: none;
+    border: 1px solid #ff444466;
+    color: #ff6666;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.floating-queue-cancel:hover {
+    background: #ff444422;
+    border-color: #ff6666;
+}
+
+.floating-queue-card--accepted {
+    border-left: 3px solid #4caf50;
+    background: #1a2e1a;
+}
+
+.floating-queue-card--accepted:hover {
+    background: #1e3a1e;
+}
+
+.floating-queue-card--accepted .floating-queue-status {
+    color: #66bb6a;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.floating-queue-card--rejected {
+    border-left: 3px solid #f44336;
+    opacity: 0.7;
+}
+
+.floating-queue-card--rejected .floating-queue-status {
+    color: #ef9a9a;
+    font-style: normal;
+}

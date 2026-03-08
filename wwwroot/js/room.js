@@ -414,7 +414,7 @@ function renderQueue(queue) {
 
         const roleDiv = document.createElement("p");
         roleDiv.classList.add("queue-role");
-        roleDiv.textContent = `${p.rankName}/${p.roleName}`;
+        roleDiv.textContent = `${p.rankName || "-"}/${p.roleName || "-"}`;
 
         botdiv.appendChild(roleDiv);
 

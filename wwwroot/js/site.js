@@ -26,33 +26,18 @@ function createFloatingCard(room) {
     return card;
 }
 
-async function filterExistingRooms(rooms) {
-    const results = await Promise.all(rooms.map(async room => {
-        try {
-            const res = await fetch(`/game/${room.gameName}/room/${room.roomId}/details`);
-            return res.ok ? room : null;
-        } catch {
-            return null;
-        }
-    }));
-    return results.filter(Boolean);
-}
-
 async function initFloatingCards() {
     const container = document.getElementById("floating-room-container");
     if (!container) return;
 
-    // ล้าง container ก่อนเสมอ เพื่อป้องกัน duplicate เมื่อ init ซ้ำ
     container.innerHTML = "";
 
-    const saved = JSON.parse(sessionStorage.getItem("joinedRooms") || "[]");
-    if (saved.length === 0) return;
+    let joinedRooms = [];
+    try {
+        const res = await fetch("/api/my-active-rooms");
+        if (res.ok) joinedRooms = await res.json();
+    } catch { return; }
 
-    // กรองเฉพาะห้องที่ยังมีอยู่ใน DB
-    const joinedRooms = await filterExistingRooms(saved);
-    if (joinedRooms.length !== saved.length) {
-        sessionStorage.setItem("joinedRooms", JSON.stringify(joinedRooms));
-    }
     if (joinedRooms.length === 0) return;
 
     // สร้าง panel เก็บ cards

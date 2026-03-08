@@ -7,5 +7,7 @@ namespace hateekub.DTOS
         public string? RoleName { get; set; }
         public string? RankName { get; set; }
         public string? UserProfile { get; set; }
+
+        public string? Avatar { get; set; }
     }
 }   

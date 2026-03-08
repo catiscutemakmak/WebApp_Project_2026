@@ -228,6 +228,19 @@ function PlayerCard(player, OwnerId) {
     window.location.href = `/Profile/ViewProfile/${player.userId}`;
     });
 
+        let rankImg;
+
+  if (gameName === "Among Us") {
+
+    rankImg = player.avatar
+      ? player.avatar
+      : "/images/amongus/Lime.webp";
+  } else {
+    rankImg = player.rankName
+      ? player.rankName
+      : "/images/default-rank.png";
+  }
+
     div.innerHTML = `
         <img class="player-profile"
              src="${player.userProfile ?? 'https://as1.ftcdn.net/jpg/02/57/42/72/1000_F_257427286_Lp7c9XdPnvN46TyFKqUaZpPADJ77ZzUk.jpg'}">
@@ -241,7 +254,7 @@ function PlayerCard(player, OwnerId) {
         </p>
 
         <img class="rankImg"
-             src="${player.rankName ?? "/images/rank/default.png"}">
+             src="${rankImg ?? "/images/rank/default.png"}">
 
         <p class="rank-p">${player.roleName}</p>
     `;

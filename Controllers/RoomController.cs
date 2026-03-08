@@ -88,7 +88,8 @@ public async Task<IActionResult> Room(string gameName, int roomId)
                         Username = p.User != null ? p.User.Nickname : "",
                         RoleName = p.Role != null ? p.Role.RoleName : "",
                         RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
-                        UserProfile = p.User != null ? p.User.ProfileImagePath ?? "" : ""
+                        UserProfile = p.User != null ? p.User.ProfileImagePath ?? "" : "",
+                        Avatar = p.Avatar
                     })
                     .ToList()
             })

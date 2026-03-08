@@ -1,17 +1,35 @@
+let selectedAvatar = null;
+let selectedRoomId = null;
+let pendingRoomData = null;
+const amongUsAvatars = [
+"/images/amongus/Banana.webp",
+"/images/amongus/Blue.webp",
+"/images/amongus/Brown.webp",
+"/images/amongus/Coral.webp",
+"/images/amongus/Cyan.webp",
+"/images/amongus/Gray.webp",
+"/images/amongus/Green.webp",
+"/images/amongus/Lime.webp",
+"/images/amongus/Maroon.webp",
+"/images/amongus/Orange.webp",
+"/images/amongus/Pink.webp",
+"/images/amongus/Purple.webp",
+"/images/amongus/Red.webp",
+"/images/amongus/Tan.webp",
+"/images/amongus/White.webp",
+"/images/amongus/Yellow.webp"
+];
+
+/* =========================
+   DATE + TIME PICKER
+========================= */
+
 flatpickr("#play-date", {
     disableMobile: true,
-    altInput: true,          // แสดง input ใหม่สำหรับผู้ใช้
-    altFormat: "d M Y",      // รูปแบบที่ผู้ใช้เห็น → 24 Feb 2026
-    dateFormat: "Y-m-d"      // รูปแบบที่ส่ง backend → 2026-02-24
-});
-
-document.querySelector('.player-select').addEventListener('change', function () {
-    console.log("Players:", this.value);
-});
-
-
-flatpickr("#play-date", {
-    minDate: "today",
+    altInput: true,
+    altFormat: "d M Y",
+    dateFormat: "Y-m-d",
+    minDate: "today"
 });
 
 flatpickr("#play-time", {
@@ -22,6 +40,9 @@ flatpickr("#play-time", {
     minuteIncrement: 1
 });
 
+/* =========================
+   GAME DATA
+========================= */
 
 const gameData = {
     "Mobile Legends": {
@@ -80,6 +101,10 @@ const gameData = {
     }
 };
 
+/* =========================
+   SELECT ELEMENTS
+========================= */
+
 const gameSelect = document.getElementById("game-select");
 const modeSelect = document.getElementById("game-mode");
 const serverSelect = document.getElementById("game-server");
@@ -88,74 +113,122 @@ const maxRank = document.getElementById("max-rank");
 const roleSelect = document.getElementById("game-role");
 const roleContainer = document.getElementById("role-container");
 const rankRequirement = document.getElementById("rank-requirement");
-const playerSelect = document.getElementById("player-select"); // ⭐ เพิ่มบรรทัดนี้
+const playerSelect = document.getElementById("player-select");
 
 function fillSelect(select, items, placeholder) {
+
     select.innerHTML = `<option value="" selected hidden>${placeholder}</option>`;
 
     items.forEach(item => {
+
         const opt = document.createElement("option");
         opt.value = item;
         opt.textContent = item;
+
         select.appendChild(opt);
+
     });
 
     select.disabled = false;
 }
 
-function combineDateTime(date, time){
+function combineDateTime(date,time){
     return date + "T" + time;
 }
 
+/* =========================
+   GAME CHANGE
+========================= */
+
 gameSelect.addEventListener("change", () => {
+
     const game = gameSelect.value;
     const data = gameData[game];
 
     if (!data) return;
 
-    fillSelect(modeSelect, data.modes, "Choose Mode");
-    fillSelect(serverSelect, data.servers, "Choose Server");
+    fillSelect(modeSelect,data.modes,"Choose Mode");
+    fillSelect(serverSelect,data.servers,"Choose Server");
 
-
-    // ROLE LOGIC
     if (data.role.length === 1 && data.role[0] === "Any") {
-        roleContainer.style.display = "none"; // ซ่อน role
+
+        roleContainer.style.display = "none";
         roleSelect.value = "Any";
-        
+
     } else {
-        roleContainer.style.display = "block"; // แสดง role
-        fillSelect(roleSelect, data.role, "Choose Role");
+
+        roleContainer.style.display = "block";
+        fillSelect(roleSelect,data.role,"Choose Role");
+
     }
 
-        // RANK LOGIC
     if (data.ranks.length === 1 && data.ranks[0] === "Any") {
+
         rankRequirement.style.display = "none";
-            minRank.value = "Any";
-            maxRank.value = "Any";
+        minRank.value = "Any";
+        maxRank.value = "Any";
+
     } else {
+
         rankRequirement.style.display = "block";
-            fillSelect(minRank, data.ranks, "Min Rank");
-            fillSelect(maxRank, data.ranks, "Max Rank");
+        fillSelect(minRank,data.ranks,"Min Rank");
+        fillSelect(maxRank,data.ranks,"Max Rank");
 
     }
+
 });
 
-maxRank.addEventListener("change", () => {
-    if (minRank.selectedIndex > maxRank.selectedIndex) {
+/* =========================
+   RANK VALIDATION
+========================= */
+
+maxRank.addEventListener("change",()=>{
+
+    if(minRank.selectedIndex > maxRank.selectedIndex){
         minRank.selectedIndex = maxRank.selectedIndex;
     }
+
 });
 
-document.getElementById("create-room-form").addEventListener("submit", function () {
-    document.querySelectorAll("select:disabled").forEach(el => {
-        el.disabled = false;
+/* =========================
+   PLAYER RANGE
+========================= */
+
+gameSelect.addEventListener("change", function () {
+
+    let gameName = this.value;
+
+    fetch(`/CreateTeam/GetPlayerRange?gameName=${gameName}`)
+    .then(res=>res.json())
+    .then(data=>{
+
+        playerSelect.innerHTML =
+        '<option disabled selected hidden>Choose Player</option>';
+
+        for(let i=data.min;i<=data.max;i++){
+
+            let option = document.createElement("option");
+
+            option.value = i;
+            option.textContent = i + " Players";
+
+            playerSelect.appendChild(option);
+
+        }
+
     });
+
 });
+
+/* =========================
+   FORM SUBMIT
+========================= */
 
 const form = document.getElementById("create-room-form");
 
-form.addEventListener("submit", async function (e) {
-    e.preventDefault(); // กัน reload หน้า
+form.addEventListener("submit", async function(e){
+
+    e.preventDefault();
 
     const formData = new FormData(form);
 
@@ -167,7 +240,7 @@ form.addEventListener("submit", async function (e) {
         minRank: formData.get("minRank"),
         maxRank: formData.get("maxRank"),
         maxPlayer: formData.get("maxPlayer"),
-        roomPrivacy: formData.get("RoomPrivacy") === "true",
+        roomPrivacy: formData.get("RoomPrivacy")==="true",
         gameRole: formData.get("gameRole"),
         description: formData.get("description"),
 
@@ -176,58 +249,100 @@ form.addEventListener("submit", async function (e) {
             formData.get("playTime")
         )
     };
-    console.log("Submitting data:", data);
-    const res = await fetch("/CreateTeam/CreateTeam", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
+    console.log(data.game);
+    // ⭐ ถ้าเป็น Among Us ให้เปิด avatar picker ก่อน
+    if(data.game === "Among Us"){
+
+        pendingRoomData = data;
+        openAvatarPicker();
+        return;
+
+    }
+
+    // ⭐ เกมอื่นสร้างห้องเลย
+    createRoom(data);
+
+});
+
+/* =========================
+   AVATAR PICKER
+========================= */
+
+function openAvatarPicker(){
+    console.log("open avatar picker");
+    const picker = document.getElementById("avatarPicker");
+    const grid = document.getElementById("avatarGrid");
+    const confirmBtn = document.getElementById("avatarConfirm");
+
+    grid.innerHTML="";
+    confirmBtn.disabled = true;
+
+    amongUsAvatars.forEach(src=>{
+
+        const img = document.createElement("img");
+
+        img.src = src;
+
+        img.onclick=()=>{
+
+            document
+            .querySelectorAll("#avatarGrid img")
+            .forEach(i=>i.classList.remove("selected"));
+
+            img.classList.add("selected");
+
+            selectedAvatar = src;
+
+            confirmBtn.disabled = false;
+
+        };
+
+        grid.appendChild(img);
+
     });
 
-    if (res.ok) {
-        const roomId = await res.text();
+    picker.classList.remove("hide");
 
-        // บันทึกห้องลง sessionStorage สำหรับ floating card
-        const joinedRooms = JSON.parse(sessionStorage.getItem("joinedRooms") || "[]");
-        joinedRooms.push({
-            roomId: parseInt(roomId),
-            roomName: data.roomName,
-            gameName: data.game,
-            roomUrl: `/game/${data.game}/room/${roomId}`
-        });
-        sessionStorage.setItem("joinedRooms", JSON.stringify(joinedRooms));
+}
 
-        window.location.href = `/game/${data.game}/room/${roomId}`;
+/* =========================
+   AVATAR CONFIRM
+========================= */
+
+document.getElementById("avatarConfirm").onclick = async () => {
+    console.log(pendingRoomData)
+    if(!selectedAvatar || !pendingRoomData) return ;
+
+    const confirmBtn = document.getElementById("avatarConfirm");
+    confirmBtn.disabled = true;
+
+    pendingRoomData.avatar = selectedAvatar;
+    createRoom(pendingRoomData);
+
+};
+
+async function createRoom(data){
+    console.log("data");
+    const res = await fetch("/CreateTeam/CreateTeam",{
+
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(data)
+
+    });
+
+    if(!res.ok){
+
+        const error = await res.text();
+        alert(error);
+        return;
+
     }
-    if (!res.ok) {
-    const error = await res.text();
-    alert("Error: " + error);
-    }
-});
 
-gameSelect.addEventListener("change", function () {
+    const roomId = await res.text();
 
-    let gameName = this.value;
+    window.location.href = `/game/${data.game}/room/${roomId}`;
 
-    fetch(`/CreateTeam/GetPlayerRange?gameName=${gameName}`)
-    .then(res => res.json())
-    .then(data => {
-
-        console.log("player range:", data); // ⭐ debug
-
-        playerSelect.innerHTML = '<option disabled selected hidden>Choose Player</option>';
-
-        for (let i = data.min; i <= data.max; i++) {
-
-            let option = document.createElement("option");
-            option.value = i;
-            option.textContent = i + " Players";
-
-            playerSelect.appendChild(option);
-        }
-
-    })
-    .catch(err => console.error("Fetch error:", err));
-
-});
+}

@@ -116,7 +116,8 @@ public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request
                 Status = PlayerStatus.Active,
                 IsReady = false,
                 RoleId = roleId,
-                RankId = rankId
+                RankId = rankId,
+                Avatar = request.avatar,
             }
         }
     };

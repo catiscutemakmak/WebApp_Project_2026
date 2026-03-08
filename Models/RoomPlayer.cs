@@ -18,6 +18,7 @@ public class RoomPlayer
 
     public GameRank? Rank { get; set; }
 
+    public string? Avatar  { get; set; }
     public int? RankId { get; set; }
     public bool IsReady { get; set; }
     public bool IsInQueue { get; set; }

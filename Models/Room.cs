@@ -20,6 +20,7 @@ public class Room
 
     public DateTime PlayDateTime { get; set; }
 
+    public RoomStatus Status { get; set; }
     public string GameMode { get; set; } = string.Empty;
 
     public RoomSetting? RoomSetting { get; set; }
@@ -29,11 +30,11 @@ public class Room
 
     [NotMapped]
     public IEnumerable<RoomPlayer> ActivePlayers =>
-        Players.Where(p => !p.IsInQueue);
+        Players.Where(p => p.Status == PlayerStatus.Active);
 
     [NotMapped]
     public IEnumerable<RoomPlayer> Queue =>
-        Players.Where(p => p.IsInQueue);
+        Players.Where(p => p.Status == PlayerStatus.Queue);
     public ICollection<RoomChat> Chats { get; set; } = new List<RoomChat>();
 
     }

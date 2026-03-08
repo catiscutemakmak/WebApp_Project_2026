@@ -77,7 +77,7 @@ public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request
         Server = request.GameServer,
         OwnerId = userProfile.Id,
         Description = request.Description,
-        PlayDateTime = request.PlayDateTime = request.PlayDateTime.ToUniversalTime(),
+        PlayDateTime = request.PlayDateTime.ToUniversalTime(),
 
         RoomSetting = new RoomSetting
         {
@@ -95,6 +95,7 @@ public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request
                 UserId = userProfile.Id,
                 IsInQueue = false,
                 JoinedAt = DateTime.UtcNow,
+                Status = PlayerStatus.Active,
                 IsReady = false,
                 RoleId = roleId,
                 RankId = rankId

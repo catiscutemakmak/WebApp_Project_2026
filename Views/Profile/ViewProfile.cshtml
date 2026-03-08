@@ -103,17 +103,40 @@ if (document.referrer.includes("EditProfile")) {
 
             <!-- HISTORY -->
             <section class="history-section">
-                <h3>History</h3>
-                <div class="history-card">
-                    <div class="history-title">MLBB played as Support</div>
-                    <div class="history-desc">
-                        Your post "หาเล่นกดแรงค์ครับ ผมแบกได้ ตอนนี้"
-                    </div>
-                    <div class="history-footer">
-                        <span class="score">2/5/15</span>
-                        <span class="date">10-2-2026</span>
-                    </div>
+                <div class="review-header">
+                    <h3>History</h3>
+                    <a asp-controller="User" asp-action="History" asp-route-id="@Model.Id" class="review-btn">
+                        View All
+                    </a>
                 </div>
+                @if (ViewBag.LatestHistory != null)
+                {
+                    var h = (hateekub.Models.RoomPlayer)ViewBag.LatestHistory;
+                    <div class="history-card">
+                        <div class="history-title">@h.Room?.Game?.GameName - @h.Room?.GameMode</div>
+                        <div class="history-desc">
+                            @{
+                                var teammates = h.Room?.Players
+                                    .Where(p => p.UserId != h.UserId && (p.Status == hateekub.Models.PlayerStatus.Active || p.Status == hateekub.Models.PlayerStatus.Left))
+                                    .Take(3)
+                                    .ToList();
+                            }
+                            @if (teammates != null && teammates.Any())
+                            {
+                                <span>Played with: @string.Join(", ", teammates.Select(p => p.User?.Nickname ?? p.User?.Username ?? "Unknown"))</span>
+                            }
+                        </div>
+                        <div class="history-footer">
+                            <span class="date">@h.Room?.PlayDateTime.ToString("dd-MM-yyyy")</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="history-card">
+                        <div class="history-desc">No history yet.</div>
+                    </div>
+                }
             </section>
 
             <!-- REVIEW -->

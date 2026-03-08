@@ -383,10 +383,6 @@ function createJoinButton(roomId) {
         if (connection.state === "Connected") {
           connection.invoke("AcceptRejectQueue", String(data.roomId));
         }
-        // ลบ dismissed entry ถ้าเคย dismiss room นี้ไปแล้ว (กรณี re-join หลังโดน reject)
-        const dismissed = JSON.parse(localStorage.getItem("dismissedQueues") || "[]");
-        const filtered = dismissed.filter(id => id !== data.roomId);
-        localStorage.setItem("dismissedQueues", JSON.stringify(filtered));
         if (typeof initFloatingQueue === "function") initFloatingQueue();
       }
       } else {

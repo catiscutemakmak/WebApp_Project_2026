@@ -60,6 +60,20 @@ public class ProfileController : Controller
         if (profile == null)
             return NotFound();
 
+        var latestHistory = await _context.RoomPlayers
+            .Where(rp => rp.UserId == profile.Id
+                && (rp.Status == PlayerStatus.Active || rp.Status == PlayerStatus.Left)
+                && rp.Room!.Status == RoomStatus.Close)
+            .Include(rp => rp.Room)
+                .ThenInclude(r => r!.Game)
+            .Include(rp => rp.Room)
+                .ThenInclude(r => r!.Players)
+                    .ThenInclude(p => p.User)
+            .OrderByDescending(rp => rp.Room!.PlayDateTime)
+            .FirstOrDefaultAsync();
+
+        ViewBag.LatestHistory = latestHistory;
+
         var currentUserForCheck = await _userManager.GetUserAsync(User);
         ViewBag.IsOwnProfile =
             currentUserForCheck != null &&

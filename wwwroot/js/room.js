@@ -201,13 +201,13 @@ function renderRooms(room) {
     }
 
     // chat
-    const chatbox = CreateChatBox();
-    playerRoom.appendChild(chatbox);
+
 
     RenderChatHistory();
 
     const sent_box = CreateSentBox();
     playerRoom.appendChild(sent_box);
+    RenderChatHistory()
 
     // queue
     const queueBox = document.getElementById("queueBox");

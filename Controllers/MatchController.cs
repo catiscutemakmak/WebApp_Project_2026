@@ -124,9 +124,10 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     if (userProfile == null)
         return BadRequest("User profile not found");
 
-    // กัน join ซ้ำ
+    // กัน join ซ้ำ (ไม่นับ Rejected — คนที่โดน reject สามารถขอใหม่ได้)
     var alreadyInRoom = room.Players
-        .Any(p => p.UserId == userProfile.Id);
+        .Any(p => p.UserId == userProfile.Id
+               && p.Status != PlayerStatus.Rejected);
 
     if (alreadyInRoom)
         return BadRequest("You already joined this room");
@@ -153,21 +154,34 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     .Select(p => p.Id)
     .FirstOrDefaultAsync();
 
+    // ถ้าเคยโดน reject → update record เดิม แทนสร้างใหม่ (หลีกเลี่ยง duplicate)
+    var rejectedRecord = room.Players
+        .FirstOrDefault(p => p.UserId == userProfile.Id
+                          && p.Status == PlayerStatus.Rejected);
 
-    var newPlayer = new RoomPlayer
+    if (rejectedRecord != null)
     {
-        UserId = userProfile.Id,
-        RoomId = room.Id,
-        RoleId = gameRole.Id,
-        RankId = rankId,
-        JoinedAt = DateTime.UtcNow,
-        IsReady = false,
-        Status = isPrivate 
-        ? PlayerStatus.Queue 
-        : PlayerStatus.Active
-    };
-
-    room.Players.Add(newPlayer);
+        rejectedRecord.RoleId = gameRole.Id;
+        rejectedRecord.JoinedAt = DateTime.UtcNow;
+        rejectedRecord.IsReady = false;
+        rejectedRecord.Status = isPrivate ? PlayerStatus.Queue : PlayerStatus.Active;
+    }
+    else
+    {
+        var newPlayer = new RoomPlayer
+        {
+            UserId = userProfile.Id,
+            RoomId = room.Id,
+            RoleId = gameRole.Id,
+            RankId = rankId,
+            JoinedAt = DateTime.UtcNow,
+            IsReady = false,
+            Status = isPrivate
+            ? PlayerStatus.Queue
+            : PlayerStatus.Active
+        };
+        room.Players.Add(newPlayer);
+    }
 
     await _context.SaveChangesAsync();
     await _hub.Clients.Group(room.Game.GameName)

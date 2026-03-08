@@ -529,3 +529,39 @@ body.loading > *:not(#loadingOverlay) {
 body.loading #loadingOverlay {
   display: flex;
 }
+.avatar-picker{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.8);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.avatar-box{
+  background:#111;
+  padding:25px;
+  border:2px solid #00ff9c;
+}
+
+.avatar-grid{
+  display:grid;
+  grid-template-columns:repeat(4,70px);
+  gap:10px;
+  margin:15px 0;
+}
+
+.avatar-grid img{
+  width:70px;
+  cursor:pointer;
+  border:2px solid transparent;
+}
+
+.avatar-grid img.selected{
+  border:2px solid #00ff9c;
+}
+
+.hide{
+  display:none;
+}

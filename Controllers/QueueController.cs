@@ -45,8 +45,8 @@ public async Task<IActionResult> GetQueueInRoom(int roomId)
         .Select(p => new
         {
             p.User!.Nickname,
-            p.Role!.RoleName,
-            p.Rank!.RankName,
+            RoleName = p.Role != null ? p.Role.RoleName : null,
+            RankName = p.Rank != null ? p.Rank.RankName : null,
             p.User!.ProfileImagePath,
             p.User!.Id
         })
@@ -190,6 +190,7 @@ public async Task<IActionResult> MyQueueRooms()
         .Include(p => p.Room!).ThenInclude(r => r!.RoomSetting)
         .Where(p => p.Room != null
                  && p.Room.Status != RoomStatus.Delete
+                 && p.Room.Status != RoomStatus.Close
                  && p.Room.RoomSetting != null
                  && p.Room.RoomSetting.IsPrivate)
         .Select(p => new

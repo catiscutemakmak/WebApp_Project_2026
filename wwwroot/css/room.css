@@ -242,11 +242,12 @@ overflow-y:auto;
 
 .chat-format{
 
-display:flex;
-gap:10px;
+display:grid;
+grid-template-columns:30px 1fr;
+
+column-gap:10px;
 
 margin:10px;
-align-items:flex-start;
 
 animation:chatIn .2s ease;
 }
@@ -276,9 +277,26 @@ background-size:cover;
 background-position:center;
 
 margin-top:8px;
+
+grid-column:1;
+grid-row:1 / span 2;
+
+}
+
+.chat-sender{
+
+grid-column:2;
+
+font-size:12px;
+margin:0 0 2px 0;
+
 }
 
 .chat-textbox{
+
+grid-column:2;
+
+justify-self:start;
 
 background:linear-gradient(135deg,#1a1a1c,#2a002f);
 

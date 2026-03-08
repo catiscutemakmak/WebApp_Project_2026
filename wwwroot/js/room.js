@@ -59,7 +59,6 @@ function registerChatEvents(){
             const messageElement = CreateChatMessage(new_message);
             chatBox.appendChild(messageElement);
 
-            // scroll ลงล่าง
             chatBox.scrollTop = chatBox.scrollHeight;
         }
     });
@@ -100,7 +99,7 @@ async function init() {
 
   try {
 
-connection = new signalR.HubConnectionBuilder()
+    connection = new signalR.HubConnectionBuilder()
         .withUrl("/chathub", {
             withCredentials: true
         })
@@ -159,7 +158,7 @@ connection = new signalR.HubConnectionBuilder()
 
 init();
 
-const chat_list = [];
+let chat_list = [];
 
 const rankImageMap = {
     Warrior: "/images/rank/warrior.webp",
@@ -201,11 +200,13 @@ function renderRooms(room) {
     }
 
     // chat
-
+    const chatbox = CreateChatBox();
+    playerRoom.appendChild(chatbox);
+    
+    RenderChatHistory();
 
     const sent_box = CreateSentBox();
     playerRoom.appendChild(sent_box);
-    RenderChatHistory()
 
     // queue
     const queueBox = document.getElementById("queueBox");
@@ -254,35 +255,24 @@ function EmptySlot() {
     return div;
 }
 
-function RenderChatHistory() {
-    const chatBox = document.querySelector(".chat-dev");
-    if(!chatBox) return;
+function CreateChatBox() {
+    const chatdiv = document.createElement("div");
+    chatdiv.classList.add("chat-dev");
+    let user_before = null;
 
-    chatBox.innerHTML = "";
-
-    chat_list.forEach(msg => {
-        const messageElement = CreateChatMessage(msg);
-        chatBox.appendChild(messageElement);
-    });
-
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function CreateChatMessage(chat){
+    chat_list.forEach(chat => {
 
     const current_chat = document.createElement("div");
     current_chat.classList.add("chat-format");
 
-    const prevChat = chat_list[chat_list.length - 2];
-
     const avatar = document.createElement("div");
     avatar.classList.add("chat-avatar");
 
-    if(!prevChat || prevChat.sender !== chat.sender){
+    if (user_before !== chat.sender) {
         avatar.style.backgroundImage = `url(${chat.avatar})`;
         avatar.style.backgroundSize = "cover";
         avatar.style.backgroundPosition = "center";
-    }else{
+    } else {
         avatar.classList.add("avatar-hidden");
     }
 
@@ -291,15 +281,6 @@ function CreateChatMessage(chat){
     const textBox = document.createElement("div");
     textBox.classList.add("chat-textbox");
 
-    if(!prevChat || prevChat.sender !== chat.sender){
-
-        const sender = document.createElement("p");
-        sender.classList.add("chat-sender");
-        sender.innerText = chat.sender;
-
-        current_chat.appendChild(sender);
-    }
-
     const message = document.createElement("p");
     message.classList.add("chat-message");
     message.innerText = chat.message;
@@ -307,12 +288,11 @@ function CreateChatMessage(chat){
     textBox.appendChild(message);
     current_chat.appendChild(textBox);
 
-    return current_chat;
-}
+    chatdiv.appendChild(current_chat);
 
-function CreateChatBox() {
-    const chatdiv = document.createElement("div");
-    chatdiv.classList.add("chat-dev");
+    user_before = chat.sender;
+});
+
     return chatdiv;
 }
 
@@ -343,6 +323,8 @@ stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
         connection.invoke(
             "SendMessage",
             roomId,
+            user.name,
+            user.avatar,
             input.value
         ).catch(err => console.error(err));
 
@@ -565,4 +547,3 @@ leaveBtn.onclick = async () => {
 
 };
 }
-

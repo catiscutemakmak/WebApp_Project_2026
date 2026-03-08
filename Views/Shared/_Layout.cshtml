@@ -1,14 +1,18 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-
+    <title>@ViewData["Title"]  HateeKub</title>
     <link rel="stylesheet" href="~/css/NavBar_style.css" asp-append-version="true" />
+    <link rel="icon" type="image/png" href="/images/catlogo.png">
     @RenderSection("Styles", required: false)
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    @await Html.PartialAsync("~/Views/NavBar/navbar.cshtml")
+    @if (ViewData["HideNavbar"] == null)
+    {
+        @await Html.PartialAsync("~/Views/NavBar/navbar.cshtml")
+    }
 
     @RenderBody()
 

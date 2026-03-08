@@ -66,6 +66,7 @@ public async Task<IActionResult> Room(string gameName, int roomId)
                 RoomId = r.Id,
                 GameName = r.Game!.GameName,
                 RoomName = r.RoomName,
+                OwnerId = r.RoomOwner!.Id,
                 OwnerUsername = r.RoomOwner!.Nickname,
                 GameMode = r.GameMode,
                 IsOwner = r.RoomOwner!.UserId == currentUserId,
@@ -130,6 +131,7 @@ public async Task<IActionResult> StartRoom(int roomId)
     return Ok(new { message = "Room started" });
 }
 
+// กดออกห้อง
 [HttpPut("{roomId}/leave")]
 public async Task<IActionResult> LeaveRoom(int roomId)
 {
@@ -144,20 +146,44 @@ public async Task<IActionResult> LeaveRoom(int roomId)
     if (userProfile == null)
         return NotFound("User profile not found");
 
-    var player = await _context.RoomPlayers
-        .FirstOrDefaultAsync(p => p.RoomId == roomId
-                               && p.UserId == userProfile.Id
-                               && p.Status == PlayerStatus.Active);
+    var room = await _context.Rooms
+        .Include(r => r.Players)
+        .Include(r => r.Game)
+        .FirstOrDefaultAsync(r => r.Id == roomId);
+
+    if (room == null)
+        return NotFound("Room not found");
+
+    var player = room.Players
+        .FirstOrDefault(p => p.UserId == userProfile.Id 
+                          && p.Status == PlayerStatus.Active);
 
     if (player == null)
         return NotFound("Player not in room");
 
+    // player leave
     player.Status = PlayerStatus.Left;
 
-        var room = await _context.Rooms
-        .Include(r => r.Game)
-        .FirstOrDefaultAsync(r => r.Id == roomId);
+    // หา player ที่ยังอยู่
+    var activePlayers = room.Players
+        .Where(p => p.Status == PlayerStatus.Active && p.UserId != userProfile.Id)
+        .ToList();
 
+    // ถ้า owner ออก
+    if (room.OwnerId == userProfile.Id)
+    {
+        if (activePlayers.Count > 0)
+        {
+            // ย้าย owner ให้ player คนถัดไป
+            room.OwnerId = activePlayers.First().UserId;
+        }
+    }
+
+    // ถ้าไม่มี player เหลือ
+    if (activePlayers.Count == 0)
+    {
+        room.Status = RoomStatus.Delete;
+    }
 
     await _context.SaveChangesAsync();
 
@@ -165,8 +191,10 @@ public async Task<IActionResult> LeaveRoom(int roomId)
         .Group($"room-{roomId}")
         .SendAsync("RoomUpdated", roomId);
 
-    await _hub.Clients.Group(room.Game.GameName)
+    await _hub.Clients
+        .Group(room.Game.GameName)
         .SendAsync("PlayerJoinedRoom", room.Game.GameName);
+
     return Ok(new { message = "Left room" });
 }
     }

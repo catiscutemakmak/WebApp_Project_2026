@@ -174,7 +174,7 @@ function renderRooms(room) {
 
     // render players
     room.players.forEach(p => {
-        playerRoom.appendChild(PlayerCard(p, room.ownerUsername));
+        playerRoom.appendChild(PlayerCard(p, room.ownerId));
     });
 
     // calculate empty slot
@@ -202,7 +202,7 @@ function renderRooms(room) {
     return playerRoom;
 }
 
-function PlayerCard(player, ownerUsername) {
+function PlayerCard(player, OwnerId) {
 
     const div = document.createElement("div");
     div.classList.add("player-dev");
@@ -216,7 +216,7 @@ function PlayerCard(player, ownerUsername) {
         <img class="player-profile"
              src="${player.userProfile ?? 'https://as1.ftcdn.net/jpg/02/57/42/72/1000_F_257427286_Lp7c9XdPnvN46TyFKqUaZpPADJ77ZzUk.jpg'}">
 
-        ${player.username === ownerUsername
+        ${player.userId === OwnerId
         ? "<span class='empty-crown'>👑</span>"
         : "<span class='empty-crown'>🎮</span>"}
 

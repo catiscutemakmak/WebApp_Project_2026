@@ -49,13 +49,15 @@ public async Task<IActionResult> GetRoomsByGameName(string gameName)
 
 var rooms = _context.Rooms
     .AsNoTracking()
-    .Where(r => r.Game != null && r.Game.GameName == gameName)
+    .Where(r => r.Game != null && r.Game.GameName == gameName &&
+    r.Status == RoomStatus.Waiting)
     .Select(r => new RoomDTO
     {
         RoomId = r.Id,
         GameName = r.Game!.GameName,
         RoomName = r.RoomName,
         OwnerUsername = r.RoomOwner!.UserId,
+        OwnerId = r.RoomOwner!.Id,
         GameMode = r.GameMode,
 
         RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO

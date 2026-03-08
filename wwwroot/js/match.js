@@ -11,7 +11,7 @@ async function reloadRooms() {
     }
 
     rooms = await res.json();
-
+    console.log(rooms)
     renderRooms(rooms);
 
   } catch (err) {
@@ -176,7 +176,7 @@ function renderRoom(room) {
   /* PLAYERS */
 
   room.players.forEach(player => {
-    wrapper.appendChild(PlayerCard(player, room.ownerUsername));
+    wrapper.appendChild(PlayerCard(player, room.ownerId));
   });
 
   /* EMPTY SLOTS */
@@ -206,7 +206,7 @@ function renderRoom(room) {
 /* ================================
    PLAYER CARD
 ================================ */
-function PlayerCard(player, ownerUsername) {
+function PlayerCard(player, OwnerId) {
 
   const div = document.createElement("div");
   div.classList.add("player-dev");
@@ -225,7 +225,7 @@ function PlayerCard(player, ownerUsername) {
     <img class="player-profile"
       src="${player.userProfile ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj5K_Hlzgq-p_0Xfv_vykmcOtuXhBI7VFBxg&s'}">
 
-    ${player.username === ownerUsername
+    ${player.userId === OwnerId
       ? "<span class='empty-crown'>👑</span>"
       : "<span class='empty-crown'>🎮</span>"}
 

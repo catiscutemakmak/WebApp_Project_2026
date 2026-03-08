@@ -56,15 +56,10 @@ function registerChatEvents(){
         const chatBox = document.querySelector(".chat-dev");
 
         if(chatBox){
-            chatBox.remove();
-        }
+            const messageElement = CreateChatMessage(new_message);
+            chatBox.appendChild(messageElement);
 
-        const newChatBox = CreateChatBox();
-        document.getElementById("roomContainer").appendChild(newChatBox);
-        
-        const chatContainer = document.querySelector(".chat-dev");
-        if(chatContainer){
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
     });
 
@@ -135,6 +130,9 @@ async function init() {
     await connection_queue.invoke("AcceptRejectQueue",roomId)
     await reloadQueue();
     await reloadRooms();
+    const chatRes = await fetch(`/game/${gameName}/room/${roomId}/chat`);
+chat_list = await chatRes.json();
+RenderChatHistory();
     StartBtn()
     LeaveBtn()
 

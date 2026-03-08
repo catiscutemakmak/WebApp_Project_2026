@@ -153,6 +153,10 @@ body.game-CS2 .rankImg{
 width:100px;
 }
 
+body.game-Among-Us .rankImg{
+    width: 50px;
+    height: 60px;
+}
 
 .player-dev:hover .rankImg{
 

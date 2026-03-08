@@ -1,5 +1,25 @@
+const amongUsAvatars = [
+"/images/amongus/Banana.webp",
+"/images/amongus/Blue.webp",
+"/images/amongus/Brown.webp",
+"/images/amongus/Coral.webp",
+"/images/amongus/Cyan.webp",
+"/images/amongus/Gray.webp",
+"/images/amongus/Green.webp",
+"/images/amongus/Lime.webp",
+"/images/amongus/Maroon.webp",
+"/images/amongus/Orange.webp",
+"/images/amongus/Pink.webp",
+"/images/amongus/Purple.webp",
+"/images/amongus/Red.webp",
+"/images/amongus/Tan.webp",
+"/images/amongus/White.webp",
+"/images/amongus/Yellow.webp"
+];
 let currentPage = 1;
 const roomsPerPage =5;
+let selectedAvatar = null;
+let selectedRoomId = null;
 async function reloadRooms() {
 
   try {
@@ -143,18 +163,7 @@ function normalizeRoom(room) {
 
 }
 
-/* ================================
-   NORMALIZE ROOM
-================================ */
-function normalizeRoom(room) {
 
-  return {
-    ...room,
-    players: room.players ?? [],
-    roomSetting: room.roomSetting ?? {},
-  };
-
-}
 
 /* ================================
    RENDER ROOMS
@@ -235,10 +244,18 @@ function PlayerCard(player, OwnerId) {
     window.location.href = `/Profile/ViewProfile/${player.userId}`;
   });
 
-  const rankImg =
-    player.rankName
-      ? `${player.rankName}`
-      : "/images/Amongus/Lime.webp";
+    let rankImg;
+
+  if (gameName === "Among Us") {
+
+    rankImg = player.avatar
+      ? player.avatar
+      : "/images/amongus/Lime.webp";
+  } else {
+    rankImg = player.rankName
+      ? player.rankName
+      : "/images/default-rank.png";
+  }
 
   div.innerHTML = `
     <img class="player-profile"
@@ -342,6 +359,11 @@ function createJoinButton(roomId) {
 
   btn.addEventListener("click", async () => {
 
+      if(gameName === "Among Us"){
+      selectedRoomId = roomId;
+      openAvatarPicker();
+      return;
+  }
     const selectedRole = document.querySelector(
       `input[name="role-${roomId}"]:checked`
     );
@@ -504,4 +526,90 @@ function showLoading(){
 
 function hideLoading(){
   document.body.classList.remove("loading");
+}
+function openAvatarPicker(){
+  const room = rooms.find(r => r.roomId === selectedRoomId);
+
+  const takenAvatars = room.players
+    .map(p => p.avatar)
+    .filter(a => a);
+
+  const picker = document.getElementById("avatarPicker");
+  const grid = document.getElementById("avatarGrid");
+  const confirmBtn = document.getElementById("avatarConfirm");
+
+  grid.innerHTML = "";
+
+  amongUsAvatars.forEach(src => {
+
+    const img = document.createElement("img");
+    img.src = src;
+
+    if (takenAvatars.includes(src)) {
+      img.classList.add("taken");
+      img.style.opacity = "0.3";
+      img.style.pointerEvents = "none";
+    }
+
+    img.onclick = () => {
+
+      document.querySelectorAll("#avatarGrid img")
+        .forEach(i => i.classList.remove("selected"));
+
+      img.classList.add("selected");
+
+      selectedAvatar = src;
+      confirmBtn.disabled = false;
+
+    };
+
+    grid.appendChild(img);
+
+  });
+
+  picker.classList.remove("hide");
+
+}
+document.getElementById("avatarConfirm").onclick = async () => {
+
+  if(!selectedAvatar) return;
+
+  document.getElementById("avatarPicker").classList.add("hide");
+
+  await joinRoomWithAvatar(selectedAvatar);
+
+};
+
+async function joinRoomWithAvatar(avatar){
+
+  try {
+
+    const response = await fetch(
+      `/game/${gameName}/JoinRoom/${selectedRoomId}`,
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+          roleName:null,
+          avatar:avatar
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Join room failed");
+    }
+
+    const data = await response.json();
+
+    window.location.href = data.roomUrl;
+
+  } catch (err) {
+
+    console.error("Join room error:", err);
+    alert(err.message);
+
+  }
+
 }

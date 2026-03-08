@@ -19,5 +19,7 @@ public class CreateRoomRequest
     public string? Description { get; set; }
 
     public DateTime PlayDateTime { get; set; }
+
+    public string? avatar {get;set;}
 }
 }

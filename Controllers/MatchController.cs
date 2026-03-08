@@ -78,6 +78,7 @@ var rooms = _context.Rooms
                 RoleName = p.Role != null ? p.Role.RoleName : "",
                 RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
                 UserProfile = p.User != null ? p.User.ProfileImagePath : "",
+                Avatar = p.Avatar, 
             })
             .ToList(),
 
@@ -117,7 +118,8 @@ public IActionResult GetGameRoleByGameName(string gameName)
 [HttpPost("JoinRoom/{roomId}")]
 public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest request)
 {
-
+    if (request == null)
+        return BadRequest("Invalid request");
 
     var room = await _context.Rooms
         .Include(r => r.Players)
@@ -125,18 +127,9 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         .Include(r => r.Game)
         .FirstOrDefaultAsync(r => r.Id == roomId);
 
-    
-
     if (room == null)
         return NotFound("Room not found");
 
-    var gameHasRoles = await _context.GameRoles
-        .AnyAsync(r => r.GameId == room.GameId);
-
-    if (gameHasRoles && string.IsNullOrEmpty(request.RoleName))
-    {
-        return BadRequest("Role is required");
-    }
     var currentUser = await _userManager.GetUserAsync(User);
     if (currentUser == null)
         return Unauthorized();
@@ -147,26 +140,42 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     if (userProfile == null)
         return BadRequest("User profile not found");
 
-    // กัน join ซ้ำ (ไม่นับ Rejected — คนที่โดน reject สามารถขอใหม่ได้)
+    bool isAmongUs = room.Game!.GameName == "Among Us";
+
+    var gameHasRoles = await _context.GameRoles
+        .AnyAsync(r => r.GameId == room.GameId);
+
+    // Role required only for games with roles (except Among Us)
+    if (gameHasRoles && !isAmongUs && string.IsNullOrEmpty(request.RoleName))
+    {
+        return BadRequest("Role is required");
+    }
+
+    // Avatar required for Among Us
+    if (isAmongUs && string.IsNullOrEmpty(request.Avatar))
+    {
+        return BadRequest("Avatar is required");
+    }
+
+    // กัน join ซ้ำ
     var alreadyInRoom = room.Players
         .Any(p => p.UserId == userProfile.Id
                && p.Status != PlayerStatus.Rejected);
 
-    if (alreadyInRoom){
-    var alreadyInQueue = room.Players
-        .Any(p => p.UserId == userProfile.Id 
-               && p.Status == PlayerStatus.Queue);
-        if(alreadyInQueue){
-        return BadRequest("You are waiting for queue");
-        }
-                else
-                {
-                    return BadRequest("You already joined this room");
-                }
+    if (alreadyInRoom)
+    {
+        var alreadyInQueue = room.Players
+            .Any(p => p.UserId == userProfile.Id
+                   && p.Status == PlayerStatus.Queue);
+
+        if (alreadyInQueue)
+            return BadRequest("You are waiting for queue");
+
+        return BadRequest("You already joined this room");
     }
+
     var isPrivate = room.RoomSetting!.IsPrivate;
 
-    // นับเฉพาะคนที่ join จริง
     var activePlayerCount = room.Players
         .Count(p => p.Status == PlayerStatus.Active);
 
@@ -175,7 +184,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
 
     GameRole? gameRole = null;
 
-    if (gameHasRoles)
+    if (gameHasRoles && !isAmongUs)
     {
         gameRole = await _context.GameRoles
             .FirstOrDefaultAsync(gr =>
@@ -186,6 +195,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
             return BadRequest("Invalid role");
     }
 
+    // Rank (optional)
     var gameHasRanks = await _context.GameRanks
         .AnyAsync(r => r.GameId == room.GameId);
 
@@ -199,7 +209,18 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
             .FirstOrDefaultAsync();
     }
 
-    // ถ้าเคยโดน reject → update record เดิม แทนสร้างใหม่ (หลีกเลี่ยง duplicate)
+    // Prevent duplicate avatar (Among Us)
+    if (isAmongUs)
+    {
+        var avatarTaken = room.Players
+            .Any(p => p.Avatar == request.Avatar &&
+                      p.Status == PlayerStatus.Active);
+
+        if (avatarTaken)
+            return BadRequest("Avatar already taken");
+    }
+
+    // ถ้าเคยโดน reject → update record เดิม
     var rejectedRecord = room.Players
         .FirstOrDefault(p => p.UserId == userProfile.Id
                           && p.Status == PlayerStatus.Rejected);
@@ -207,9 +228,12 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     if (rejectedRecord != null)
     {
         rejectedRecord.RoleId = gameRole?.Id;
+        rejectedRecord.Avatar = request.Avatar;
         rejectedRecord.JoinedAt = DateTime.UtcNow;
         rejectedRecord.IsReady = false;
-        rejectedRecord.Status = isPrivate ? PlayerStatus.Queue : PlayerStatus.Active;
+        rejectedRecord.Status = isPrivate
+            ? PlayerStatus.Queue
+            : PlayerStatus.Active;
     }
     else
     {
@@ -219,32 +243,37 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
             RoomId = room.Id,
             RoleId = gameRole?.Id,
             RankId = rankId,
+            Avatar = request.Avatar,
             JoinedAt = DateTime.UtcNow,
             IsReady = false,
             Status = isPrivate
-            ? PlayerStatus.Queue
-            : PlayerStatus.Active
+                ? PlayerStatus.Queue
+                : PlayerStatus.Active
         };
+
         room.Players.Add(newPlayer);
     }
 
     await _context.SaveChangesAsync();
+
+    // realtime update rooms list
     await _hub.Clients.Group(room.Game.GameName)
         .SendAsync("PlayerJoinedRoom", room.Game.GameName);
-    
-        await _hub.Clients
-    .Group($"room-{roomId}")
-    .SendAsync("QueueUpdated",roomId);
+
+    // queue update
+    await _hub.Clients
+        .Group($"room-{roomId}")
+        .SendAsync("QueueUpdated", roomId);
 
     return Ok(new
     {
         success = true,
         roomId = room.Id,
         roomName = room.RoomName,
-        gameName = room.Game!.GameName,
+        gameName = room.Game.GameName,
         roomUrl = isPrivate
             ? null
-            : $"/game/{room.Game!.GameName}/room/{room.Id}",
+            : $"/game/{room.Game.GameName}/room/{room.Id}",
         message = isPrivate
             ? "Added to queue"
             : "Joined room"

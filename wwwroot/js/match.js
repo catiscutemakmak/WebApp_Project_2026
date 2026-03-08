@@ -1,7 +1,11 @@
 let currentPage = 1;
 const roomsPerPage =5;
 async function reloadRooms() {
+
   try {
+
+    showLoading();
+
     const res = await fetch(`/game/${gameName}/rooms`);
 
     if (!res.ok) {
@@ -9,12 +13,19 @@ async function reloadRooms() {
     }
 
     rooms = await res.json();
-    console.log(rooms)
+
     renderRooms(rooms);
 
   } catch (err) {
+
     console.error("Reload rooms error:", err);
+
+  } finally {
+
+    hideLoading();
+
   }
+
 }
 
 /* ================================
@@ -437,4 +448,12 @@ function renderPagination(totalRooms){
   nav.appendChild(next);
 
   document.getElementById("MatchContainer").appendChild(nav);
+}
+
+function showLoading(){
+  document.body.classList.add("loading");
+}
+
+function hideLoading(){
+  document.body.classList.remove("loading");
 }

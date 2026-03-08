@@ -22,19 +22,35 @@ public class RoomController : Controller
     }
 
     // หน้า View ของ Room
-    [HttpGet("{roomId}")]
-    public IActionResult Room(string gameName, int roomId)
-    {
-        ViewBag.GameName = gameName;
-        ViewBag.RoomId = roomId;
-        return View();
-    }
-    [HttpGet("testroom")]
-    public IActionResult testroom()
-    {
+[HttpGet("{roomId}")]
+public async Task<IActionResult> Room(string gameName, int roomId)
+{
+    var currentUser = await _userManager.GetUserAsync(User);
 
-        return View();
+    if (currentUser == null)
+        return RedirectToAction("Login", "Account");
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+
+    if (userProfile == null)
+        return Redirect($"/game/{gameName}");
+
+    var isInRoom = await _context.RoomPlayers
+        .AnyAsync(p => p.RoomId == roomId 
+                    && p.UserId == userProfile.Id
+                    && p.Status == PlayerStatus.Active);
+
+    if (!isInRoom)
+    {
+        return Redirect($"/game/{gameName}");
     }
+
+    ViewBag.GameName = gameName;
+    ViewBag.RoomId = roomId;
+
+    return View();
+}
 
     // API ดึงข้อมูล room
     [HttpGet("{roomId}/details")]

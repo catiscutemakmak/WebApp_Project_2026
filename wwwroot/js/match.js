@@ -4,8 +4,6 @@ async function reloadRooms() {
 
   try {
 
-    showLoading();
-
     const res = await fetch(`/game/${gameName}/rooms`);
 
     if (!res.ok) {
@@ -19,10 +17,6 @@ async function reloadRooms() {
   } catch (err) {
 
     console.error("Reload rooms error:", err);
-
-  } finally {
-
-    hideLoading();
 
   }
 
@@ -77,16 +71,21 @@ async function init() {
 
   try {
 
+    showLoading();
+
     const rolesRes = await fetch(`/game/${gameName}/roles`);
-
-    if (!rolesRes.ok) throw new Error("Roles API error");
-
     roles = await rolesRes.json();
 
     await reloadRooms();
 
-  } catch (err) {
-    console.error("Init error:", err);
+  } catch(err){
+
+    console.error(err);
+
+  } finally {
+
+    hideLoading();
+
   }
 
 }
@@ -220,7 +219,7 @@ function PlayerCard(player, ownerUsername) {
   const rankImg =
     player.rankName
       ? `${player.rankName}`
-      : "/images/rank/unranked.webp";
+      : "/images/Amongus/Lime.webp";
 
   div.innerHTML = `
     <img class="player-profile"

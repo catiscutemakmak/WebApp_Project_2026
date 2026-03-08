@@ -115,8 +115,7 @@ public IActionResult GetGameRoleByGameName(string gameName)
 [HttpPost("JoinRoom/{roomId}")]
 public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest request)
 {
-    if (string.IsNullOrEmpty(request.RoleName))
-        return BadRequest("Role is required");
+
 
     var room = await _context.Rooms
         .Include(r => r.Players)
@@ -129,6 +128,13 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     if (room == null)
         return NotFound("Room not found");
 
+    var gameHasRoles = await _context.GameRoles
+        .AnyAsync(r => r.GameId == room.GameId);
+
+    if (gameHasRoles && string.IsNullOrEmpty(request.RoleName))
+    {
+        return BadRequest("Role is required");
+    }
     var currentUser = await _userManager.GetUserAsync(User);
     if (currentUser == null)
         return Unauthorized();
@@ -164,25 +170,38 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     if (!isPrivate && activePlayerCount >= room.RoomSetting.MaxPlayer)
         return BadRequest("Room is full");
 
-    var gameRole = await _context.GameRoles
-        .FirstOrDefaultAsync(gr =>
-            gr.RoleName == request.RoleName &&
-            gr.GameId == room.GameId);
+    GameRole? gameRole = null;
 
-    if (gameRole == null)
-        return BadRequest("Invalid role");
+    if (gameHasRoles)
+    {
+        gameRole = await _context.GameRoles
+            .FirstOrDefaultAsync(gr =>
+                gr.RoleName == request.RoleName &&
+                gr.GameId == room.GameId);
 
-    var rankId = await _context.GameRanks
-    .Where(p => p.GameId == room.GameId)
-    .Select(p => p.Id)
-    .FirstOrDefaultAsync();
+        if (gameRole == null)
+            return BadRequest("Invalid role");
+    }
+
+    var gameHasRanks = await _context.GameRanks
+        .AnyAsync(r => r.GameId == room.GameId);
+
+    int? rankId = null;
+
+    if (gameHasRanks)
+    {
+        rankId = await _context.GameRanks
+            .Where(r => r.GameId == room.GameId)
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
+    }
 
 
     var newPlayer = new RoomPlayer
     {
         UserId = userProfile.Id,
         RoomId = room.Id,
-        RoleId = gameRole.Id,
+        RoleId = gameRole?.Id,
         RankId = rankId,
         JoinedAt = DateTime.UtcNow,
         IsReady = false,

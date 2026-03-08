@@ -28,6 +28,24 @@ public class CreateTeamController: Controller
         return View();
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetPlayerRange(string gameName)
+    {
+        var game = await _context.Games
+            .Where(g => g.GameName == gameName)
+            .Select(g => new
+            {
+                min = g.MinPlayers,
+                max = g.MaxPlayers
+            })
+            .FirstOrDefaultAsync();
+
+        if (game == null)
+            return NotFound();
+
+        return Json(game);
+    }
+
 [HttpPost]
 public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request)
 {

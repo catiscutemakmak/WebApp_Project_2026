@@ -1,3 +1,5 @@
+let currentPage = 1;
+const roomsPerPage =5;
 async function reloadRooms() {
   try {
     const res = await fetch(`/game/${gameName}/rooms`);
@@ -46,6 +48,8 @@ connection.on("PlayerJoinedRoom", async (updatedGameName) => {
   }
 
 });
+
+
 
 
 /* ================================
@@ -125,18 +129,22 @@ function normalizeRoom(room) {
 /* ================================
    RENDER ROOMS
 ================================ */
-function renderRooms(rooms) {
+function renderRooms(allRooms) {
 
   const container = document.getElementById("MatchContainer");
   container.innerHTML = "";
 
-  rooms.forEach(room => {
+  const start = (currentPage - 1) * roomsPerPage;
+  const end = start + roomsPerPage;
 
+  const paginatedRooms = allRooms.slice(start, end);
+
+  paginatedRooms.forEach(room => {
     const safeRoom = normalizeRoom(room);
     container.appendChild(renderRoom(safeRoom));
-
   });
 
+  renderPagination(allRooms.length);
 }
 
 /* ================================
@@ -398,4 +406,38 @@ function createRequirementBar(room) {
 
   return bar;
 
+}
+function renderPagination(totalRooms){
+
+  const totalPages = Math.ceil(totalRooms / roomsPerPage);
+
+  const nav = document.createElement("div");
+  nav.classList.add("pagination");
+
+  const prev = document.createElement("button");
+  prev.innerText = "<< Prev";
+  prev.disabled = currentPage === 1;
+
+  prev.onclick = () => {
+    currentPage--;
+    renderRooms(rooms);
+  };
+
+  const pageInfo = document.createElement("span");
+  pageInfo.innerText = `Page ${currentPage} / ${totalPages}`;
+
+  const next = document.createElement("button");
+  next.innerText = "Next >>";
+  next.disabled = currentPage === totalPages;
+
+  next.onclick = () => {
+    currentPage++;
+    renderRooms(rooms);
+  };
+
+  nav.appendChild(prev);
+  nav.appendChild(pageInfo);
+  nav.appendChild(next);
+
+  document.getElementById("MatchContainer").appendChild(nav);
 }

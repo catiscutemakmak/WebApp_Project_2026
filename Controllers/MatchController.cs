@@ -173,6 +173,10 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     await _hub.Clients.Group(room.Game.GameName)
         .SendAsync("PlayerJoinedRoom", room.Game.GameName);
     
+        await _hub.Clients
+    .Group($"room-{roomId}")
+    .SendAsync("QueueUpdated",roomId);
+
     return Ok(new
     {
         success = true,

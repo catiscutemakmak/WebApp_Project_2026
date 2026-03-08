@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="~/css/match.css" />
 
 </head>
-<body class="game-@ViewBag.GameName">
+<body class="game-@ViewBag.GameName.Replace(" ", "-")">
     <div class="back-btn-container"> 
         <a asp-controller="Home"
    asp-action="Index"

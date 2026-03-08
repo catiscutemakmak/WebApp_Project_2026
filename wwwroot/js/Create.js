@@ -154,9 +154,12 @@ gameSelect.addEventListener("change", () => {
 
         roleContainer.style.display = "none";
         roleSelect.value = "Any";
+        roleSelect.disabled = true;      
+        roleSelect.required = false;     
 
     } else {
-
+        roleSelect.disabled = false;     
+        roleSelect.required = true; 
         roleContainer.style.display = "block";
         fillSelect(roleSelect,data.role,"Choose Role");
 
@@ -165,12 +168,16 @@ gameSelect.addEventListener("change", () => {
     if (data.ranks.length === 1 && data.ranks[0] === "Any") {
 
         rankRequirement.style.display = "none";
+        rankRequirement.disabled = true;      
+        rankRequirement.required = false;     
         minRank.value = "Any";
         maxRank.value = "Any";
 
     } else {
 
         rankRequirement.style.display = "block";
+        rankRequirement.disabled = flase;      
+        rankRequirement.required = ture;   
         fillSelect(minRank,data.ranks,"Min Rank");
         fillSelect(maxRank,data.ranks,"Max Rank");
 

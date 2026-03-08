@@ -16,7 +16,7 @@
             <form id="create-room-form" class="container">
             <!-- LEFT -->
             <div class="left-panel">
-                <a href="" class="back-btn">
+                <a asp-controller="Home" asp-action = "Index" class="back-btn">
                     <span class="icon">
                         &#x2039; <!-- ❮ -->
                     </span>
@@ -75,13 +75,8 @@
                 </div>
                 </div>
                 <label>Number of players</label>
-                <select name="maxPlayer" class="player-select" required>
+                <select name="maxPlayer" id="player-select" class="player-select" required>
                     <option value="" disabled selected hidden>Choose Player</option>
-                    <option value="1">1 Player</option>
-                    <option value="2">2 Players</option>
-                    <option value="3">3 Players</option>
-                    <option value="4">4 Players</option>
-                    <option value="5">5 Players</option>
                 </select>
 
                                 <label>Room Privacy</label>

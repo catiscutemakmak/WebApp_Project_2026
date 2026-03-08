@@ -9,6 +9,12 @@
     <link rel="stylesheet" href="~/css/ViewProfile.css" />
 </head>
 
+<script>
+if (document.referrer.includes("EditProfile")) {
+    history.go(-2);
+}
+</script>
+
 <body>
     <div id="particles"></div>
     <div class="container">

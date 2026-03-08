@@ -159,7 +159,7 @@ connection = new signalR.HubConnectionBuilder()
 
 init();
 
-const chat_list = [];
+let chat_list = [];
 
 const rankImageMap = {
     Warrior: "/images/rank/warrior.webp",
@@ -202,6 +202,8 @@ function renderRooms(room) {
 
     // chat
 
+
+    RenderChatHistory();
 
     const sent_box = CreateSentBox();
     playerRoom.appendChild(sent_box);
@@ -565,4 +567,3 @@ leaveBtn.onclick = async () => {
 
 };
 }
-

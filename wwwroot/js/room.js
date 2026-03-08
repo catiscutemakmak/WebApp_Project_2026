@@ -99,7 +99,7 @@ function registerQueueEvent(){
 async function init() {
 
   try {
-
+showLoading();
 connection = new signalR.HubConnectionBuilder()
         .withUrl("/chathub", {
             withCredentials: true
@@ -154,6 +154,11 @@ connection = new signalR.HubConnectionBuilder()
 
   } catch (err) {
     console.error(err);
+  }
+  finally {
+
+    hideLoading();
+
   }
 }
 
@@ -579,4 +584,12 @@ leaveBtn.onclick = async () => {
     }
 
 };
+}
+
+function showLoading(){
+  document.body.classList.add("loading");
+}
+
+function hideLoading(){
+  document.body.classList.remove("loading");
 }

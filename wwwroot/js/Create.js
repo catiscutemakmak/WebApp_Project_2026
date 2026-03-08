@@ -71,6 +71,12 @@ const gameData = {
         servers: ["TH", "SG", "JP", "KR"],
         ranks: ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Grandmaster", "Challenger"],
         role: ["Top Lane", "Jungle", "Mid Lane", "ADC", "Support"]
+    },
+    "Peak": {
+        modes: ["Classic"],
+        servers: ["Asia"],
+        ranks: ["Any"],
+        role: ["Any"]
     }
 };
 

@@ -87,9 +87,43 @@ namespace hateekub.Controllers
                 new { id = model.UserProfileId });
         }
 
-        public IActionResult History()
+        public async Task<IActionResult> History(int? id)
         {
-            return View();
+            UserProfile? profile;
+
+            if (id.HasValue)
+            {
+                profile = await _context.UserProfiles
+                    .FirstOrDefaultAsync(p => p.Id == id.Value);
+            }
+            else
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+                if (currentUser == null)
+                    return RedirectToAction("Login", "Account");
+
+                profile = await _context.UserProfiles
+                    .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+            }
+
+            if (profile == null)
+                return NotFound();
+
+            var historyEntries = await _context.RoomPlayers
+                .Where(rp => rp.UserId == profile.Id
+                    && (rp.Status == PlayerStatus.Active || rp.Status == PlayerStatus.Left)
+                    && rp.Room!.Status == RoomStatus.Close)
+                .Include(rp => rp.Room)
+                    .ThenInclude(r => r!.Game)
+                .Include(rp => rp.Room)
+                    .ThenInclude(r => r!.Players)
+                        .ThenInclude(p => p.User)
+                .OrderByDescending(rp => rp.Room!.PlayDateTime)
+                .ToListAsync();
+
+            ViewBag.ProfileNickname = profile.Nickname ?? profile.Username;
+            ViewBag.ProfileId = profile.Id;
+            return View(historyEntries);
         }
     }
 }

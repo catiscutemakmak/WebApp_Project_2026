@@ -6,6 +6,8 @@ namespace hateekub.Models
     Active,
     Rejected,
     Left,
-    Kicked
+    Kicked,
+
+    Cancel
 }
 }

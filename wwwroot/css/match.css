@@ -440,6 +440,24 @@ select:focus {
     border:1px solid #ffaa00;
     color:#ffaa00;
 }
+
+.status-waiting{
+    background:#0f2a44;      /* dark blue background */
+    border:1px solid #3b82f6; /* blue like 🔵 */
+    color:#60a5fa;
+}
+
+.status-full{
+    background:#3a1f00;      /* dark orange bg */
+    border:1px solid #f59e0b; /* orange like 🟠 */
+    color:#fbbf24;
+}
+
+.status-start{
+    background:#3a0f0f;      /* dark red bg */
+    border:1px solid #ef4444; /* red like 🔴 */
+    color:#f87171;
+}
 .pagination{
   display:flex;
   justify-content:center;

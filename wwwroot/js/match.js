@@ -416,7 +416,10 @@ function createRequirementBar(room) {
   const s = room.roomSetting ?? {};
 
   const items = [
-
+    room.roomStatus === 0 ? "🔵 Waiting Room" : null,
+    room.roomStatus === 1 ? "🟠 Room Full" : null,
+    room.roomStatus === 2 ? "🔴 Room Start" : null,
+ 
     room.myStatus === "Active" ? "🟢 In Room" : null,
     room.myStatus === "Queue" ? "🟡 In Queue" : null,
 
@@ -444,6 +447,18 @@ function createRequirementBar(room) {
       div.classList.add("status-queue");
     }
 
+    
+    if (text.includes("Waiting Room")) {
+      div.classList.add("status-waiting");
+    }
+
+    if (text.includes("Room Full")) {
+      div.classList.add("status-full");
+    }
+
+    if (text.includes("Room Start")) {
+      div.classList.add("status-start");
+    }
     div.innerText = text;
 
     bar.appendChild(div);

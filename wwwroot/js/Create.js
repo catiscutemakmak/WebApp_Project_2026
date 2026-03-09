@@ -176,8 +176,8 @@ gameSelect.addEventListener("change", () => {
     } else {
 
         rankRequirement.style.display = "block";
-        rankRequirement.disabled = flase;      
-        rankRequirement.required = ture;   
+        rankRequirement.disabled = false;      
+        rankRequirement.required = true;   
         fillSelect(minRank,data.ranks,"Min Rank");
         fillSelect(maxRank,data.ranks,"Max Rank");
 

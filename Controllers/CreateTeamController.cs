@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using hateekub.Hubs;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace hateekub.Controllers;
 
@@ -85,7 +86,7 @@ public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request
             .Where(r => r.RankName == request.MinRank && r.GameId == game.Id)
             .Select(r => r.Id)
             .FirstOrDefaultAsync();
-    }
+    } 
 
     var newRoom = new Room
     {
@@ -96,6 +97,7 @@ public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request
         OwnerId = userProfile.Id,
         Description = request.Description,
         PlayDateTime = request.PlayDateTime.ToUniversalTime(),
+        Status = request.MaxPlayer == 1  ? RoomStatus.Full : RoomStatus.Waiting,
 
         RoomSetting = new RoomSetting
         {

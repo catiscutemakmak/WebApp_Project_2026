@@ -1,3 +1,5 @@
+using hateekub.Models;
+
 namespace hateekub.DTOS
 {
     public class RoomDTO
@@ -15,5 +17,7 @@ namespace hateekub.DTOS
     public List<PlayerDTO> Players { get; set; } = new();
 
     public string MyStatus { get; set; }
+
+    public RoomStatus RoomStatus {get; set;}
 }
 }

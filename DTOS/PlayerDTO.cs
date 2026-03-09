@@ -9,5 +9,7 @@ namespace hateekub.DTOS
         public string? UserProfile { get; set; }
 
         public string? Avatar { get; set; }
+
+        public bool Status { get; set; }
     }
 }   

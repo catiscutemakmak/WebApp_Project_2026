@@ -94,6 +94,15 @@ function registerQueueEvent(){
 
     });
 
+        connection_queue.on("PlayerReady", async (updateroomId) => {
+
+        if (updateroomId != roomId) return;
+
+        await reloadQueue();
+        await reloadRooms();
+
+    });
+
 }
 
 async function init() {
@@ -151,6 +160,7 @@ connection = new signalR.HubConnectionBuilder()
     await reloadRooms();
     StartBtn()
     LeaveBtn()
+    ReadyBtn()
 
   } catch (err) {
     console.error(err);
@@ -254,7 +264,7 @@ function PlayerCard(player, OwnerId) {
         ? "<span class='empty-crown'>👑</span>"
         : "<span class='empty-crown'>🎮</span>"}
 
-        <p class="${player.status === "Ready" ? "yellow" : "white"}">
+        <p class="${player.status ? "yellow" : "white"}">
             ${player.username}
         </p>
 
@@ -424,7 +434,7 @@ function renderQueue(queue) {
         botdiv.appendChild(roleDiv);
 
        // check Owner
-        if (rooms.isOwner) {
+        if (room.isOwner) {
 
             const BtnDiv = document.createElement("div");
             BtnDiv.classList.add("queue-btn-div");
@@ -584,6 +594,34 @@ leaveBtn.onclick = async () => {
     }
 
 };
+}
+
+function ReadyBtn(){
+const startBtn = document.getElementById("Readybtn");
+
+startBtn.addEventListener("click", async () => {
+
+    try {
+
+        const res = await fetch(`/game/${gameName}/room/${roomId}/ready`, {
+            method: "PUT"
+        });
+
+        if (!res.ok) {
+
+            const error = await res.text();
+            alert(res.status);
+            return;
+        }
+
+        alert("PlayerReady");
+
+    } catch (err) {
+        console.error(err);
+        alert(err)
+    }
+
+});
 }
 
 function showLoading(){

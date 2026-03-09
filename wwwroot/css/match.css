@@ -78,14 +78,14 @@ body.game-RoV{
 body.game-Among-Us{
     background: 
     linear-gradient(rgba(10,0,20,0.85), rgba(10,0,20,0.95)),
-    url("https://images.wallpapersden.com/image/download/among-us_bGhpaW2UmZqaraWkpJRobWllrWdma2U.jpg");
+    url("https://media.wired.com/photos/5fc98bb7fa6177d4dcb45554/4:3/w_1064,h_798,c_limit/games_among-us.jpg");
     background-size: cover;
 }
 
 body.game-Peak{
     background: 
     linear-gradient(rgba(10,0,20,0.85), rgba(10,0,20,0.95)),
-    url("/images/bg - peak.png");
+    url("https://i.ytimg.com/vi/StfT36_-b3Q/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDZko6RRv0Du_3iDtnJ9Wgrtn-e4w");
     background-size: cover;
 }
 

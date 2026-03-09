@@ -272,7 +272,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         roomName = room.RoomName,
         gameName = room.Game.GameName,
         roomUrl = isPrivate
-            ? null
+            ? $"/game/{room.Game.GameName}"
             : $"/game/{room.Game.GameName}/room/{room.Id}",
         message = isPrivate
             ? "Added to queue"

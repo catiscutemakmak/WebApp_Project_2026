@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using hateekub.Hubs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 [Route("game/{gameName}/room")]
 public class RoomController : Controller
@@ -115,7 +116,8 @@ public async Task<IActionResult> Room(string gameName, int roomId)
                         RoleName = p.Role != null ? p.Role.RoleName : "",
                         RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
                         UserProfile = p.User != null ? p.User.ProfileImagePath ?? "" : "",
-                        Avatar = p.Avatar
+                        Avatar = p.Avatar,
+                        Status = p.IsReady
                     })
                     .ToList()
             })
@@ -258,4 +260,48 @@ public async Task<IActionResult> LeaveRoom(int roomId)
 
     return Ok(new { message = "Left room" });
 }
+
+[HttpPut("{roomId}/ready")]
+public async Task<IActionResult> PlayerReady(int roomId)
+    {
+    var currentUser = await _userManager.GetUserAsync(User);
+
+    if (currentUser == null)
+        return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+
+    if (userProfile == null)
+        return NotFound("User profile not found");
+
+
+    var room = await _context.Rooms
+        .Include(r => r.Players)
+        .Include(r => r.Game)
+        .FirstOrDefaultAsync(r => r.Id == roomId);
+
+    if (room == null)
+        return NotFound("Room not found");
+    
+    
+    var player = await _context.RoomPlayers
+        .FirstOrDefaultAsync(p =>
+            p.RoomId == roomId &&
+            p.UserId == userProfile.Id &&
+            p.Status == PlayerStatus.Active);
+
+    if (player == null)
+        return NotFound("Player not found");
+
+    player.IsReady = !player.IsReady;
+
+    await _context.SaveChangesAsync();
+
+    await _hub.Clients
+            .Group($"room-{roomId}")
+            .SendAsync("PlayerReady", roomId);
+
+    return Ok("Ok");
     }
+        }

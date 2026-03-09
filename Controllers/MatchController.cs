@@ -49,8 +49,7 @@ public async Task<IActionResult> GetRoomsByGameName(string gameName)
 
 var rooms = _context.Rooms
     .AsNoTracking()
-    .Where(r => r.Game != null && r.Game.GameName == gameName &&
-    r.Status == RoomStatus.Waiting)
+    .Where(r => r.Game != null && r.Game.GameName == gameName && (r.Status != RoomStatus.Close && r.Status != RoomStatus.Delete))
     .Select(r => new RoomDTO
     {
         RoomId = r.Id,
@@ -59,6 +58,7 @@ var rooms = _context.Rooms
         OwnerUsername = r.RoomOwner!.UserId,
         OwnerId = r.RoomOwner!.Id,
         GameMode = r.GameMode,
+        RoomStatus = r.Status,
 
         RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
         {
@@ -125,10 +125,14 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         .Include(r => r.Players)
         .Include(r => r.RoomSetting)
         .Include(r => r.Game)
+    
         .FirstOrDefaultAsync(r => r.Id == roomId);
 
     if (room == null)
         return NotFound("Room not found");
+
+    if (room.Status != RoomStatus.Waiting)
+        return BadRequest("Can't Join This Room");
 
     var currentUser = await _userManager.GetUserAsync(User);
     if (currentUser == null)

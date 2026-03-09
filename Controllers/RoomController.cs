@@ -202,6 +202,7 @@ public async Task<IActionResult> LeaveRoom(int roomId)
     var room = await _context.Rooms
         .Include(r => r.Players)
         .Include(r => r.Game)
+        .Include(r => r.RoomSetting)
         .FirstOrDefaultAsync(r => r.Id == roomId);
 
     if (room == null)
@@ -219,47 +220,53 @@ public async Task<IActionResult> LeaveRoom(int roomId)
 
     // หา player ที่ยังอยู่
     var activePlayers = room.Players
-        .Where(p => p.Status == PlayerStatus.Active && p.UserId != userProfile.Id)
+        .Where(p => p.Status == PlayerStatus.Active)
         .ToList();
 
-    // ถ้า owner ออก
-    if (room.OwnerId == userProfile.Id)
+    var activePlayerCount = activePlayers.Count;
+
+    // owner leave
+    if (room.OwnerId == userProfile.Id && activePlayers.Count > 0)
     {
-        if (activePlayers.Count > 0)
-        {
-            // ย้าย owner ให้ player คนถัดไป
-            room.OwnerId = activePlayers.First().UserId;
-        }
+        room.OwnerId = activePlayers.First().UserId;
     }
 
-    // ถ้าไม่มี player เหลือ
-    if (activePlayers.Count == 0)
+    // update room status
+    if (activePlayerCount == 0)
     {
         room.Status = room.Status == RoomStatus.Starting
             ? RoomStatus.Close
             : RoomStatus.Delete;
     }
-
-    await _context.SaveChangesAsync();
-
-    await _hub.Clients
-        .Group($"room-{roomId}")
-        .SendAsync("RoomUpdated", roomId);
-
-    await _hub.Clients
-        .Group(room.Game.GameName)
-        .SendAsync("PlayerJoinedRoom", room.Game.GameName);
-
-    // ถ้า room ปิดตัว ให้แจ้ง queue players ด้วย เพื่อให้ MY QUEUE card หายออก real-time
-    if (activePlayers.Count == 0)
+    else
     {
+        var maxPlayer = room.RoomSetting!.MaxPlayer;
+
+        room.Status = activePlayerCount >= maxPlayer
+            ? RoomStatus.Full
+            : RoomStatus.Waiting;
+    }
+    
+        await _context.SaveChangesAsync();
+
         await _hub.Clients
             .Group($"room-{roomId}")
-            .SendAsync("QueueUpdated", roomId);
-    }
+            .SendAsync("RoomUpdated", roomId);
 
-    return Ok(new { message = "Left room" });
-}
+        await _hub.Clients
+            .Group(room.Game.GameName)
+            .SendAsync("PlayerJoinedRoom", room.Game.GameName);
+
+        // ถ้า room ปิดตัว ให้แจ้ง queue players ด้วย เพื่อให้ MY QUEUE card หายออก real-time
+        if (activePlayers.Count == 0)
+        {
+            await _hub.Clients
+                .Group($"room-{roomId}")
+                .SendAsync("QueueUpdated", roomId);
+        }
+
+        return Ok(new { message = "Left room" });
+    }
 
 [HttpPut("{roomId}/ready")]
 public async Task<IActionResult> PlayerReady(int roomId)

@@ -141,8 +141,12 @@ connection = new signalR.HubConnectionBuilder()
 
 init();
 
-setInterval(reloadQueue, 5000);
-setInterval(reloadRooms, 5000);
+const _roomInterval = setInterval(reloadRooms, 5000);
+const _queueInterval = setInterval(reloadQueue, 5000);
+window.addEventListener("beforeunload", () => {
+    clearInterval(_roomInterval);
+    clearInterval(_queueInterval);
+});
 
 let chat_list = [];
 

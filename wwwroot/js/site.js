@@ -7,6 +7,9 @@
    FLOATING ROOM CARD
 ================================ */
 
+let _roomPanelExpanded = false;
+let _queuePanelExpanded = false;
+
 function createFloatingCard(room) {
     const card = document.createElement("div");
     card.classList.add("floating-room-card");
@@ -68,9 +71,14 @@ async function initFloatingCards() {
         panel.appendChild(createFloatingCard(room));
     });
 
-    let isExpanded = false;
+    let isExpanded = _roomPanelExpanded;
+    if (isExpanded) {
+        panel.classList.remove("hidden");
+        arrow.textContent = "\u25bc";
+    }
     tab.addEventListener("click", () => {
         isExpanded = !isExpanded;
+        _roomPanelExpanded = isExpanded;
         panel.classList.toggle("hidden", !isExpanded);
         arrow.textContent = isExpanded ? "\u25bc" : "\u25b2";
     });
@@ -162,9 +170,14 @@ async function initFloatingQueue() {
 
     queuedRooms.forEach(room => panel.appendChild(createQueueCard(room)));
 
-    let isExpanded = false;
+    let isExpanded = _queuePanelExpanded;
+    if (isExpanded) {
+        panel.classList.remove("hidden");
+        arrow.textContent = "\u25bc";
+    }
     tab.addEventListener("click", () => {
         isExpanded = !isExpanded;
+        _queuePanelExpanded = isExpanded;
         panel.classList.toggle("hidden", !isExpanded);
         arrow.textContent = isExpanded ? "\u25bc" : "\u25b2";
     });
@@ -180,7 +193,10 @@ async function updateQueueCard() {
 
 document.addEventListener("DOMContentLoaded", initFloatingQueue);
 
-setInterval(async () => {
-    await initFloatingCards();
-    await initFloatingQueue();
-}, 5000);
+// ไม่รัน floating interval บนหน้า Room เพราะมี interval ของตัวเองอยู่แล้ว
+if (typeof roomId === "undefined") {
+    setInterval(async () => {
+        await initFloatingCards();
+        await initFloatingQueue();
+    }, 5000);
+}

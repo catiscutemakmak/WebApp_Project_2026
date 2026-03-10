@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using hateekub.Data;
 using hateekub.Models;
 using hateekub.DTOS;
@@ -173,6 +174,7 @@ public async Task<IActionResult> MyQueueStatus(int roomId)
     return Ok(new { status = player.Status.ToString(), roomUrl });
 }
 
+[Authorize]
 [HttpDelete("{roomId}/cancel-queue")]
 public async Task<IActionResult> CancelQueue(int roomId)
 {

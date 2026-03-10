@@ -12,7 +12,9 @@
 
 <div class="lobby">
 
-
+<div class="queueBox" id="queueBox">
+    
+</div>
 <div class ="topbar">
 <button id="leftBtn" class="left-btn"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M4.95236 4.06401C4.83244 4.00547 4.69767 3.98442 4.56561 4.0036C4.43355 4.02279 4.31034 4.08132 4.21203 4.17156C4.11373 4.2618 4.0449 4.37957 4.01451 4.50951C3.98413 4.63945 3.9936 4.77553 4.04169 4.90001L7.83236 15.0693C8.05592 15.6696 8.05592 16.3304 7.83236 16.9307L4.04303 27.1C3.99517 27.2243 3.98583 27.3602 4.0162 27.4899C4.04657 27.6196 4.11525 27.7372 4.21332 27.8273C4.31139 27.9175 4.43431 27.9761 4.56611 27.9954C4.6979 28.0148 4.83249 27.9941 4.95236 27.936L28.9524 16.6027C29.0665 16.5487 29.163 16.4634 29.2306 16.3567C29.2981 16.25 29.334 16.1263 29.334 16C29.334 15.8737 29.2981 15.75 29.2306 15.6433C29.163 15.5366 29.0665 15.4513 28.9524 15.3973L4.95236 4.06401Z" stroke="#F4A5FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -28,25 +30,37 @@
 </svg>
 </button>
 </div>
-    <div class="bottom-bar">
+    
 
-        <button class="practice">
+    <a asp-controller="Match"
+    asp-action="Match"
+    asp-route-gameName="@ViewBag.GameName"
+    class="Backbtn">
+         BACK
+    </a>
+    <div class="bottom-bar">
+        <button id="Readybtn" class="Readybtn">
             Ready
         </button>
 
-        <button class="start">
+        <button id = "Startbtn"class="Startbtn">
             START
         </button>
 
-        <button class="leave">
+        <button id= "Leavebtn" class="Leavebtn">
             LEAVE PARTY
         </button>
 
     </div>
 
 </div>
+    <script>
+    const gameName = "@ViewBag.GameName";
+    const roomId = "@ViewBag.RoomId";
+</script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
 <script src="/js/testroom.js"></script>
-
+   
 </body>
 </html>

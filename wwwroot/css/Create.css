@@ -435,6 +435,7 @@ textarea {
 
 .avatar-grid img{
   width:70px;
+  height: auto;
   border-radius:10px;
   cursor:pointer;
   border:2px solid transparent;
@@ -506,3 +507,8 @@ textarea {
   cursor:not-allowed;
 }
 
+.rank-img.disabled{
+  opacity:0.3;
+  pointer-events:none;
+  filter:grayscale(100%);
+}

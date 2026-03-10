@@ -1,6 +1,8 @@
 let selectedAvatar = null;
 let selectedRoomId = null;
+let selectedRankId = null;
 let pendingRoomData = null;
+let pickerMode = null; 
 const amongUsAvatars = [
 "/images/amongus/Banana.webp",
 "/images/amongus/Blue.webp",
@@ -19,6 +21,28 @@ const amongUsAvatars = [
 "/images/amongus/White.webp",
 "/images/amongus/Yellow.webp"
 ];
+
+ranks = []
+async function reloadRank(gamename) {
+
+  try {
+
+    const res = await fetch(`/api/get/rank/${gamename}`);
+
+    if (!res.ok) {
+      throw new Error("Reload rank failed");
+    }
+
+    ranks = await res.json();
+    
+
+  } catch (err) {
+
+    console.error("Reload rank error:", err);
+
+  }
+
+}
 
 /* =========================
    DATE + TIME PICKER
@@ -235,6 +259,10 @@ const form = document.getElementById("create-room-form");
 
 form.addEventListener("submit", async function(e){
 
+        if(!form.checkValidity()){
+        form.reportValidity();
+        return;
+    }
     e.preventDefault();
 
     const formData = new FormData(form);
@@ -257,25 +285,101 @@ form.addEventListener("submit", async function(e){
         )
     };
     console.log(data.game);
+    pendingRoomData = data;
     // ⭐ ถ้าเป็น Among Us ให้เปิด avatar picker ก่อน
     if(data.game === "Among Us"){
 
-        pendingRoomData = data;
+        
         openAvatarPicker();
         return;
 
     }
-
-    // ⭐ เกมอื่นสร้างห้องเลย
-    createRoom(data);
+    await reloadRank(data.game);
+    openRankPicker();
+    return;
 
 });
 
 /* =========================
-   AVATAR PICKER
+   RANK PICKER
+========================= */
+
+function openRankPicker(){
+
+    pickerMode = "rank";
+
+    const picker = document.getElementById("avatarPicker");
+    const grid = document.getElementById("avatarGrid");
+    const confirmBtn = document.getElementById("avatarConfirm");
+    const showname = document.getElementById("ShowName");
+
+    showname.innerText = "Select Your Rank";
+    picker.addEventListener("click", (e) => {
+
+    const box = document.querySelector(".avatar-box");
+
+    if (!box.contains(e.target)) {
+        picker.classList.add("hide");
+    }
+
+    });
+    grid.innerHTML="";
+    confirmBtn.disabled = true;
+
+    const minRankName = minRank.value;
+    const maxRankName = maxRank.value;
+
+    const minIndex = ranks.findIndex(r => r.rankName === minRankName);
+    const maxIndex = ranks.findIndex(r => r.rankName === maxRankName);
+
+    ranks.forEach((p,index)=>{
+
+        const img = document.createElement("img");
+
+        img.src = p.rankImageUrl;
+        img.classList.add("rank-img");
+
+        const isBelowMin = minIndex !== -1 && index < minIndex;
+        const isAboveMax = maxIndex !== -1 && index > maxIndex;
+
+        if(isBelowMin || isAboveMax){
+
+            img.classList.add("disabled");
+
+        }else{
+
+            img.onclick=()=>{
+
+                document
+                .querySelectorAll("#avatarGrid img")
+                .forEach(i=>i.classList.remove("selected"));
+
+                img.classList.add("selected");
+
+                selectedRankId = p.id;
+
+                confirmBtn.disabled = false;
+
+            };
+
+        }
+
+        grid.appendChild(img);
+
+    });
+
+    picker.classList.remove("hide");
+
+}
+
+
+/* =========================
+   Rank PICKER
 ========================= */
 
 function openAvatarPicker(){
+
+    pickerMode = "avatar";
     console.log("open avatar picker");
     const picker = document.getElementById("avatarPicker");
     const grid = document.getElementById("avatarGrid");
@@ -283,7 +387,15 @@ function openAvatarPicker(){
 
     grid.innerHTML="";
     confirmBtn.disabled = true;
+    picker.addEventListener("click", (e) => {
 
+    const box = document.querySelector(".avatar-box");
+
+    if (!box.contains(e.target)) {
+        picker.classList.add("hide");
+    }
+
+    });
     amongUsAvatars.forEach(src=>{
 
         const img = document.createElement("img");
@@ -311,19 +423,33 @@ function openAvatarPicker(){
     picker.classList.remove("hide");
 
 }
-
 /* =========================
-   AVATAR CONFIRM
+   AVATAR RANK CONFIRM 
 ========================= */
 
 document.getElementById("avatarConfirm").onclick = async () => {
-    console.log(pendingRoomData)
-    if(!selectedAvatar || !pendingRoomData) return ;
+
+    if(!pendingRoomData) return;
 
     const confirmBtn = document.getElementById("avatarConfirm");
     confirmBtn.disabled = true;
 
-    pendingRoomData.avatar = selectedAvatar;
+    if(pickerMode === "avatar"){
+
+        if(!selectedAvatar) return;
+
+        pendingRoomData.avatar = selectedAvatar;
+
+    }
+
+    if(pickerMode === "rank"){
+
+        if(!selectedRankId) return;
+
+        pendingRoomData.rankId = selectedRankId;
+
+    }
+
     createRoom(pendingRoomData);
 
 };

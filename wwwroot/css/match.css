@@ -213,6 +213,7 @@ p {
 }
 
 body.game-CS2 .rankImg{
+height: auto;
 width:100px;
 }
 

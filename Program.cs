@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using hateekub.Data;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -53,6 +54,9 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Landing}/{action=Landing}/{id?}")
     .WithStaticAssets();
+// builder.Services.AddHostedService<RoomCleanupService>();
+// builder.Services.AddDbContext<AppDbContext>(options =>
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 app.MapHub<hateekub.Hubs.ChatHub>("/chathub");
 app.MapHub<hateekub.Hubs.RoomHub>("/roomhub");

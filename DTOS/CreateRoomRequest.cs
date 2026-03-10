@@ -21,5 +21,7 @@ public class CreateRoomRequest
     public DateTime PlayDateTime { get; set; }
 
     public string? avatar {get;set;}
+
+    public int? RankId {get;set;}
 }
 }

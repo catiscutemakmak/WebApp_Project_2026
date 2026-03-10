@@ -1,100 +1,114 @@
-// notifications จะถูกส่งมาจาก view ผ่าน JSON
-// const notice_mock = [...]; // Removed - using real data from server
-
+// notice.js — รับ notifications จาก @Html.Raw(Json.Serialize(Model)) ใน Razor view
+// ตัวแปร `notifications` ถูก inject ก่อน script นี้โหลด
 
 function getDateLabel(createdAt) {
-    const today = new Date();
+    const today     = new Date();
     const yesterday = new Date();
-
     yesterday.setDate(today.getDate() - 1);
 
-    today.setHours(0,0,0,0);
-    yesterday.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
+    yesterday.setHours(0, 0, 0, 0);
 
     const notice = new Date(createdAt);
-    notice.setHours(0,0,0,0);
-    
-    if (notice.getTime() === today.getTime()) return "TODAY";
+    notice.setHours(0, 0, 0, 0);
+
+    if (notice.getTime() === today.getTime())     return "TODAY";
     if (notice.getTime() === yesterday.getTime()) return "Yesterday";
-    
+
     return notice.toLocaleDateString("th-TH");
 }
 
 function getThaiTime(createdAt) {
     return new Date(createdAt).toLocaleTimeString("th-TH", {
         timeZone: "Asia/Bangkok",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
+        hour:     "2-digit",
+        minute:   "2-digit",
+        hour12:   false
     });
 }
 
 const noticeContainer = document.getElementById("NoticeContainer");
 let current_label = null;
-let noticeDev = null;
+let groupDiv = null;
 
-// แสดงข้อความว่าง ถ้าไม่มี notification
 if (!notifications || notifications.length === 0) {
+    // ── Empty state ────────────────────────────────────────────────────────
     const emptyContainer = document.createElement("div");
     emptyContainer.classList.add("empty-notice-container");
-    
+
     const emptyText = document.createElement("p");
     emptyText.classList.add("empty-notice-text");
-    emptyText.innerHTML = "It's quite lonely right now";
+    emptyText.textContent = "It's quite lonely right now";
+
     emptyContainer.appendChild(emptyText);
     noticeContainer.appendChild(emptyContainer);
+
 } else {
     notifications.forEach(notice => {
-        const label = getDateLabel(notice.createdAt);
+        const label = getDateLabel(notice.createdAt);   // camelCase จาก Json.Serialize
 
+        // ── สร้าง date header ถ้าวันเปลี่ยน ──────────────────────────────────
         if (current_label !== label) {
-            if (noticeDev) {
-                noticeContainer.appendChild(noticeDev);
+            if (groupDiv) {
+                noticeContainer.appendChild(groupDiv);
             }
 
-            noticeDev = document.createElement("div");
+            groupDiv = document.createElement("div");
 
-            const date_header = document.createElement("h3");
-            date_header.classList.add("date-header");
-            date_header.innerText = label;
-            noticeDev.appendChild(date_header);
+            const dateHeader = document.createElement("h3");
+            dateHeader.classList.add("date-header");
+            dateHeader.textContent = label;
+            groupDiv.appendChild(dateHeader);
 
             current_label = label;
         }
-        
-        const noticedev = document.createElement("div")
-        noticedev.classList.add("notice-dev")
-        
-        const messagebox = document.createElement("div");
-        const messagechat = document.createElement("p")
-        messagebox.classList.add("message-dev");
-        messagechat.innerText = notice.message;
-        
-        const messagedate = document.createElement("p")
-        messagechat.classList.add("message-text");
-        messagedate.classList.add("message-time");
-        messagedate.innerText = getThaiTime(notice.createdAt);
-        messagebox.appendChild(messagechat);
-        messagebox.appendChild(messagedate)
 
-        const detailbox = document.createElement("div");
-        const detailchat = document.createElement("p")
-        detailbox.classList.add("detail-dev");
-        detailchat.innerText = notice.message;
-        
-        const detailgame = document.createElement("p")
-        detailchat.classList.add("detail-text");
-        detailgame.classList.add("detail-game");
-        detailgame.innerText = notice.room?.game?.gameName || "Unknown Game";
-        detailbox.appendChild(detailchat);
-        detailbox.appendChild(detailgame)
-        
-        noticedev.appendChild(messagebox);
-        noticedev.appendChild(detailbox);
-        noticeDev.appendChild(noticedev);
+        // ── notice card ───────────────────────────────────────────────────────
+        const noticeCard = document.createElement("div");
+        noticeCard.classList.add("notice-dev");
+        if (!notice.isRead) noticeCard.classList.add("unread");
+
+        // message box (ซ้าย)
+        const messageBox = document.createElement("div");
+        messageBox.classList.add("message-dev");
+
+        const messageText = document.createElement("p");
+        messageText.classList.add("message-text");
+        messageText.textContent = notice.message;
+
+        const messageTime = document.createElement("p");
+        messageTime.classList.add("message-time");
+        messageTime.textContent = getThaiTime(notice.createdAt);
+
+        messageBox.appendChild(messageText);
+        messageBox.appendChild(messageTime);
+
+        // detail box (ขวา)
+        const detailBox = document.createElement("div");
+        detailBox.classList.add("detail-dev");
+
+        const detailText = document.createElement("p");
+        detailText.classList.add("detail-text");
+        detailText.textContent = notice.message;
+
+        // ── FIX: Json.Serialize ส่ง camelCase ─────────────────────────────────
+        // notice.room?.game?.gameName  (C# serialize เป็น camelCase)
+        const gameLabel = notice.room?.game?.gameName ?? "Unknown Game";
+
+        const detailGame = document.createElement("p");
+        detailGame.classList.add("detail-game");
+        detailGame.textContent = gameLabel;
+
+        detailBox.appendChild(detailText);
+        detailBox.appendChild(detailGame);
+
+        noticeCard.appendChild(messageBox);
+        noticeCard.appendChild(detailBox);
+        groupDiv.appendChild(noticeCard);
     });
-    
-    if (noticeDev) {
-        noticeContainer.appendChild(noticeDev);
+
+    // flush กลุ่มสุดท้าย
+    if (groupDiv) {
+        noticeContainer.appendChild(groupDiv);
     }
 }

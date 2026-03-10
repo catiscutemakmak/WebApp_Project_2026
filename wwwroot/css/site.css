@@ -97,7 +97,7 @@ body {
     border-bottom: none;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow-y: auto;
     max-height: 400px;
     transition: max-height 0.3s ease, opacity 0.25s ease;
     opacity: 1;
@@ -105,6 +105,7 @@ body {
 
 .floating-room-panel.hidden {
     max-height: 0;
+    overflow: hidden;
     opacity: 0;
     pointer-events: none;
 }
@@ -215,7 +216,7 @@ body {
     border-bottom: none;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow-y: auto;
     max-height: 400px;
     transition: max-height 0.3s ease, opacity 0.25s ease;
     opacity: 1;
@@ -223,6 +224,7 @@ body {
 
 .floating-queue-panel.hidden {
     max-height: 0;
+    overflow: hidden;
     opacity: 0;
     pointer-events: none;
 }

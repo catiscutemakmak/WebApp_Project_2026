@@ -409,15 +409,6 @@ function createJoinButton(roomId) {
           window.location.href = data.roomUrl;
         } else {
 
-          const dismissed = JSON.parse(localStorage.getItem("dismissedQueues") || "[]");
-          const updated = dismissed.filter(id => id !== data.roomId);
-
-          localStorage.setItem("dismissedQueues", JSON.stringify(updated));
-
-          if (connection.state === "Connected") {
-            connection.invoke("AcceptRejectQueue", String(data.roomId));
-          }
-
           if (typeof initFloatingQueue === "function") {
             initFloatingQueue();
           }

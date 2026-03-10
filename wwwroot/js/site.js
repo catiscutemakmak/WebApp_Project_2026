@@ -99,28 +99,25 @@ function createQueueCard(room) {
             <span class="floating-queue-name">${room.roomName}</span>
             <span class="floating-queue-status">${statusText}</span>
         </div>
-        <button class="floating-queue-cancel" title="Dismiss">&times;</button>
+        <button class="floating-queue-cancel" title="Cancel Queue">&times;</button>
     `;
 
     if (isRejected) {
         card.classList.add("floating-queue-card--rejected");
     }
 
-    card.querySelector(".floating-queue-cancel").addEventListener("click", (e) => {
+    card.querySelector(".floating-queue-cancel").addEventListener("click", async (e) => {
         e.stopPropagation();
-        // เก็บไว้ใน localStorage เพื่อคงไว้ข้าม tab/reload
-        const dismissed = JSON.parse(localStorage.getItem("dismissedQueues") || "[]");
-        if (!dismissed.includes(room.roomId)) {
-            dismissed.push(room.roomId);
-            localStorage.setItem("dismissedQueues", JSON.stringify(dismissed));
-        }
-        card.remove();
-        const container = document.getElementById("floating-queue-container");
-        const remaining = container?.querySelectorAll(".floating-queue-card");
-        const countEl = container?.querySelector(".floating-queue-tab-count");
-        if (countEl && remaining) countEl.textContent = remaining.length;
-        if (!remaining || remaining.length === 0) {
-            if (container) container.innerHTML = "";
+        const res = await fetch(`/api/rooms/${room.roomId}/cancel-queue`, { method: "DELETE" });
+        if (res.ok) {
+            card.remove();
+            const container = document.getElementById("floating-queue-container");
+            const remaining = container?.querySelectorAll(".floating-queue-card");
+            const countEl = container?.querySelector(".floating-queue-tab-count");
+            if (countEl && remaining) countEl.textContent = remaining.length;
+            if (!remaining || remaining.length === 0) {
+                if (container) container.innerHTML = "";
+            }
         }
     });
 
@@ -138,10 +135,6 @@ async function initFloatingQueue() {
         const res = await fetch("/api/rooms/my-queue-rooms");
         if (res.ok) queuedRooms = await res.json();
     } catch { return; }
-
-    // กรองสิ่งที่ dismiss ไว้แล้วใน localStorage
-    const dismissed = JSON.parse(localStorage.getItem("dismissedQueues") || "[]");
-    queuedRooms = queuedRooms.filter(r => !dismissed.includes(r.roomId));
 
     if (queuedRooms.length === 0) return;
 

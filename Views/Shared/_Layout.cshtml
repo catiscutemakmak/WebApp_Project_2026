@@ -16,8 +16,11 @@
 
     @RenderBody()
 
-    <div id="floating-room-container" class="floating-room-container"></div>
-    <div id="floating-queue-container" class="floating-queue-container"></div>
+    @if (ViewData["HideNavbar"] == null)
+    {
+        <div id="floating-room-container" class="floating-room-container"></div>
+        <div id="floating-queue-container" class="floating-queue-container"></div>
+    }
 
     <script src="~/js/NavBar.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>

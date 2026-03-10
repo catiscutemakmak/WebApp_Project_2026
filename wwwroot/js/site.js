@@ -185,33 +185,9 @@ async function updateQueueCard() {
     await initFloatingQueue();
 }
 
-async function initQueueNotifications() {
-    if (typeof signalR === "undefined") return;
-    if (window._queueHandlerRegistered) return;
-
-    let allQueueRooms = [];
-    try {
-        const res = await fetch("/api/rooms/my-queue-rooms");
-        if (res.ok) allQueueRooms = await res.json();
-    } catch { return; }
-
-    if (allQueueRooms.length === 0) return;
-
-    const notifConn = new signalR.HubConnectionBuilder()
-        .withUrl("/roomhub")
-        .withAutomaticReconnect()
-        .build();
-
-    notifConn.on("QueueUpdated", async () => {
-        await initFloatingCards();
-        await initFloatingQueue();
-    });
-
-    // join group ทุก room ที่ยังรอ queue (ทั้ง Queue และ Rejected)
-    notifConn.start().then(() => {
-        allQueueRooms.forEach(r => notifConn.invoke("AcceptRejectQueue", String(r.roomId)));
-    }).catch(err => console.error("Queue notification error:", err));
-}
-
 document.addEventListener("DOMContentLoaded", initFloatingQueue);
-document.addEventListener("DOMContentLoaded", initQueueNotifications);
+
+setInterval(async () => {
+    await initFloatingCards();
+    await initFloatingQueue();
+}, 5000);

@@ -98,15 +98,6 @@ connection.on("PlayerJoinedRoom", async (updatedGameName) => {
 
 });
 
-connection.on("QueueUpdated", async () => {
-  if (typeof initFloatingCards === "function") await initFloatingCards();
-  if (typeof initFloatingQueue === "function") await initFloatingQueue();
-});
-window._queueHandlerRegistered = true;
-
-
-
-
 /* ================================
    GLOBAL STATE
 ================================ */

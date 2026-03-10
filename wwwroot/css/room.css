@@ -150,6 +150,7 @@ transition:.2s;
 }
 
 body.game-CS2 .rankImg{
+height: auto;
 width:100px;
 }
 

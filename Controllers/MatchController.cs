@@ -161,22 +161,21 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         return BadRequest("Avatar is required");
     }
 
-    // กัน join ซ้ำ
-    var alreadyInRoom = room.Players
-        .Any(p => p.UserId == userProfile.Id
-               && p.Status != PlayerStatus.Rejected);
+    var existingPlayer = room.Players
+        .FirstOrDefault(p => p.UserId == userProfile.Id);
 
-    if (alreadyInRoom)
+    if (existingPlayer != null)
     {
-        var alreadyInQueue = room.Players
-            .Any(p => p.UserId == userProfile.Id
-                   && p.Status == PlayerStatus.Queue);
-
-        if (alreadyInQueue)
+        if (existingPlayer.Status == PlayerStatus.Queue)
             return BadRequest("You are waiting for queue");
 
-        return BadRequest("You already joined this room");
-    }
+        if (existingPlayer.Status == PlayerStatus.Active)
+            return BadRequest("You already joined this room");
+
+        if (existingPlayer.Status == PlayerStatus.Kicked)
+            return BadRequest("You were kicked from this room");
+        
+}
 
     var isPrivate = room.RoomSetting!.IsPrivate;
 
@@ -207,10 +206,18 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
 
     if (gameHasRanks)
     {
-        rankId = await _context.GameRanks
-            .Where(r => r.GameId == room.GameId)
-            .Select(r => r.Id)
-            .FirstOrDefaultAsync();
+        if (request.RankId == null)
+            return BadRequest("Rank is required");
+
+        var rank = await _context.GameRanks
+            .FirstOrDefaultAsync(r =>
+                r.Id == request.RankId &&
+                r.GameId == room.GameId);
+
+        if (rank == null)
+            return BadRequest("Invalid rank");
+
+        rankId = rank.Id;
     }
 
     // Prevent duplicate avatar (Among Us)
@@ -283,6 +290,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
             : "Joined room"
     });
 }
+
 }
 }
 //test//

@@ -82,10 +82,15 @@ public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request
 
     if (request.MinRank != null && request.MinRank != "Any")
     {
-        rankId = await _context.GameRanks
-            .Where(r => r.RankName == request.MinRank && r.GameId == game.Id)
-            .Select(r => r.Id)
-            .FirstOrDefaultAsync();
+        var rank = await _context.GameRanks
+                    .FirstOrDefaultAsync(r =>
+                        r.Id == request.RankId &&
+                        r.GameId == game.Id);
+
+        if (rank == null)
+            return BadRequest("Invalid rank");
+
+        rankId = rank.Id;
     } 
 
     var newRoom = new Room

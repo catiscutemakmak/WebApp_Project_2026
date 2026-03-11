@@ -57,6 +57,13 @@ async function init() {
         ReadyBtn()
         document.getElementById("kickbtn").addEventListener("click", kickbtn);
 
+        const kickButton = document.getElementById("kickbtn");
+
+        if(rooms.isOwner){
+            kickButton.addEventListener("click", kickbtn);
+        }else{
+            kickButton.style.display = "none";
+        }
         
     const chatRes = await fetch(`/api/chat/${roomId}`);
     const chatHistory = await chatRes.json();

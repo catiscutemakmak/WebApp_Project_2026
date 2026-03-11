@@ -8,7 +8,7 @@ let rooms = [];
 let queue = [];
 let chat_list = [];
 let isQueueOpen = false;
-
+let kickMode = false;
 async function reloadRooms() {
   try {
     const res = await fetch(`/game/${gameName}/room/${roomId}/details`);
@@ -55,7 +55,9 @@ async function init() {
         StartBtn()
         LeaveBtn()
         ReadyBtn()
+        document.getElementById("kickbtn").addEventListener("click", kickbtn);
 
+        
     const chatRes = await fetch(`/api/chat/${roomId}`);
     const chatHistory = await chatRes.json();
 
@@ -65,8 +67,10 @@ async function init() {
     message: m.message,
     sentAt: m.sentAt
     }));
+    
      InitChat()
     RenderChatHistory();
+
     setInterval(fetchChatMessages,1000);
     setInterval(reloadQueue,5000);
     setInterval(reloadRooms,5000);
@@ -155,20 +159,20 @@ function getStatusText(status){
 switch(status){
 
 case 0:
-return "SYSTEM STATUS : WAITING";
+return "ROOM STATUS : WAITING";
 
 case 1:
-return "SYSTEM STATUS : FULL";
+return "ROOM STATUS : FULL";
 
 
 case 2:
-return "SYSTEM STATUS : MATCH STARTING";
+return "ROOM STATUS : MATCH STARTING";
 
 case 3:
-return "SYSTEM STATUS : ROOM CLOSED";
+return "ROOM STATUS : ROOM CLOSED";
 
 case 4:
-return "SYSTEM STATUS : ROOM DELETED";
+return "ROOM STATUS : ROOM DELETED";
 }
 
 }
@@ -202,6 +206,35 @@ function PlayerCard(player, ownerUsername) {
     const card = document.createElement("div");
     card.classList.add("card");
 
+    card.dataset.playerId = player.userId;;
+
+    card.addEventListener("click", async () => {
+
+        if(!kickMode) return;
+
+        const playerId = card.dataset.playerId;
+
+        try{
+            const res = await fetch(`/game/${gameName}/room/${roomId}/kick/${playerId}`,{
+                method:"DELETE"
+            });
+
+            if(!res.ok){
+                const err = await res.text();
+                alert(err);
+                return;
+            }
+
+            reloadRooms();
+
+        }catch(err){
+            console.error(err);
+        }
+
+    });
+    if(player.status) {
+    card.classList.add("gold")
+    }
     const rank = document.createElement("img");
     if (gameName == "Among Us" || gameName == "Peak"){
         rank.src = player.avatar    
@@ -675,6 +708,17 @@ function showLoading(){
 
 function hideLoading(){
   document.body.classList.remove("loading");
+}
+
+
+function kickbtn(){
+
+    const container = document.getElementById("roomContainer");
+
+    kickMode = !kickMode;
+
+    container.classList.toggle("kick-mode");
+
 }
 
 init();

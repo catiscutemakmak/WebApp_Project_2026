@@ -74,7 +74,7 @@ function registerChatEvents(){
 async function init() {
 
     try{
-
+        showLoading();
         connection = new signalR.HubConnectionBuilder()
             .withUrl("/chathub", { withCredentials:true })
             .build();
@@ -98,11 +98,16 @@ async function init() {
         LeaveBtn()
         ReadyBtn()
         RenderChatHistory();
-
+        
     }catch(err){
         console.error("INIT ERROR:", err);
         
     }
+      finally {
+
+        hideLoading();
+
+  }
 }
 
 
@@ -494,7 +499,6 @@ function renderQueue(queue) {
     const queueBox = document.getElementById("queueBox");
     queueBox.innerHTML = "";
 
-    
     const queueList = document.createElement("div");
     queueList.classList.add("queue-list");
 
@@ -508,142 +512,80 @@ function renderQueue(queue) {
         queueList.classList.toggle("show-queue");
     });
 
-    queue.forEach(p => {
+    // ⭐ ถ้าไม่มีคนใน queue
+    if (!queue || queue.length === 0) {
 
-        const div = document.createElement("div");
-        div.classList.add("queue-div");
+        const empty = document.createElement("p");
+        empty.textContent = "No Queue";
+        empty.classList.add("queue-empty");
 
-        const topdiv = document.createElement("div");
-        topdiv.classList.add("queue-top");
+        queueList.appendChild(empty);
 
-        const imgDiv = document.createElement("img");
-        imgDiv.classList.add("queue-profile");
-        imgDiv.src = p.profileImagePath;
+    } else {
 
-        const nameDiv = document.createElement("p");
-        nameDiv.classList.add("queue-name");
-        nameDiv.textContent = p.nickname;
+        queue.forEach(p => {
 
-        topdiv.appendChild(imgDiv);
-        topdiv.appendChild(nameDiv);
+            const div = document.createElement("div");
+            div.classList.add("queue-div");
 
-        const botdiv = document.createElement("div");
-        botdiv.classList.add("queue-bot");
+            const topdiv = document.createElement("div");
+            topdiv.classList.add("queue-top");
 
-        const roleDiv = document.createElement("p");
-        roleDiv.classList.add("queue-role");
-        roleDiv.textContent = `${p.rankName || "-"}/${p.roleName || "-"}`;
+            const imgDiv = document.createElement("img");
+            imgDiv.classList.add("queue-profile");
+            imgDiv.src = p.profileImagePath;
 
-        botdiv.appendChild(roleDiv);
+            const nameDiv = document.createElement("p");
+            nameDiv.classList.add("queue-name");
+            nameDiv.textContent = p.nickname;
 
-       // check Owner
-        if (rooms.isOwner) {
+            topdiv.appendChild(imgDiv);
+            topdiv.appendChild(nameDiv);
 
-            const BtnDiv = document.createElement("div");
-            BtnDiv.classList.add("queue-btn-div");
+            const botdiv = document.createElement("div");
+            botdiv.classList.add("queue-bot");
 
-            const acceptBtn = document.createElement("button");
-            acceptBtn.innerHTML = "✓";
-            acceptBtn.classList.add("queue-circle-btn", "accept-btn");
+            const roleDiv = document.createElement("p");
+            roleDiv.classList.add("queue-role");
+            roleDiv.textContent = `${p.rankName || "-"}/${p.roleName || "-"}`;
 
-            acceptBtn.addEventListener("click", async () => {
-        try {
+            botdiv.appendChild(roleDiv);
 
-        const response = await fetch(
-            `/api/rooms/${roomId}/accept/${p.id}`,
-            {
-            method: "PUT"
+            // check Owner
+            if (rooms.isOwner) {
+
+                const BtnDiv = document.createElement("div");
+                BtnDiv.classList.add("queue-btn-div");
+
+                const acceptBtn = document.createElement("button");
+                acceptBtn.innerHTML = "✓";
+                acceptBtn.classList.add("queue-circle-btn", "accept-btn");
+
+                const rejectBtn = document.createElement("button");
+                rejectBtn.innerHTML = "✕";
+                rejectBtn.classList.add("queue-circle-btn", "reject-btn");
+
+                BtnDiv.appendChild(acceptBtn);
+                BtnDiv.appendChild(rejectBtn);
+
+                botdiv.appendChild(BtnDiv);
             }
-        );
 
-        if (response.ok) {
-            await reloadQueue();
-            await reloadRooms();
-            const data = await response.json();
+            div.appendChild(topdiv);
+            div.appendChild(botdiv);
 
-        } else {
-
-            const errorText = await response.text();
-            alert(errorText);
-
-        }
-
-        } catch (err) {
-        console.error(err);
-        }
-
-    });
-            const rejectBtn = document.createElement("button");
-            rejectBtn.innerHTML = "✕";
-            rejectBtn.classList.add("queue-circle-btn", "reject-btn");
-            rejectBtn.addEventListener("click", async () => {
-        try {
-
-        const response = await fetch(
-            `/api/rooms/${roomId}/reject/${p.id}`,
-            {
-            method: "PUT"
-            }
-        );
-
-        if (response.ok) {
-            await reloadQueue();
-            await reloadRooms();
-            const data = await response.json();
-
-        } else {
-
-            const errorText = await response.text();
-            alert(errorText);
-
-        }
-
-        } catch (err) {
-        console.error(err);
-        }
-
-    });
-
-            BtnDiv.appendChild(acceptBtn);
-            BtnDiv.appendChild(rejectBtn);
-
-            botdiv.appendChild(BtnDiv);
-        }
-
-        div.appendChild(topdiv);
-        div.appendChild(botdiv);
-
-        queueList.appendChild(div);
-    });
+            queueList.appendChild(div);
+        });
+    }
 
     queueBox.appendChild(queueList);
-
-    DragQueue();
 }
-function DragQueue(){
-const box = document.getElementById("queueBox");
+function showLoading(){
+  document.body.classList.add("loading");
+}
 
-box.style.position = "absolute";
-
-box.addEventListener("mousedown", function(e){
-    let shiftX = e.clientX - box.getBoundingClientRect().left;
-    let shiftY = e.clientY - box.getBoundingClientRect().top;
-
-    function moveAt(pageX, pageY) {
-        box.style.left = pageX - shiftX + "px";
-        box.style.top = pageY - shiftY + "px";
-    }
-
-    function onMouseMove(e) {
-        moveAt(e.pageX, e.pageY);
-    }
-
-    document.addEventListener("mousemove", onMouseMove);
-
-    document.addEventListener("mouseup", function(){
-        document.removeEventListener("mousemove", onMouseMove);
-    }, { once: true });
-});
+function hideLoading(){
+  document.body.classList.remove("loading");
 }
 
 init();

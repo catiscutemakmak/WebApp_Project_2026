@@ -59,6 +59,7 @@ var rooms = _context.Rooms
         OwnerId = r.RoomOwner!.Id,
         GameMode = r.GameMode,
         RoomStatus = r.Status,
+        PlayTime = r.PlayDateTime,
 
         RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
         {

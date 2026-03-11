@@ -31,7 +31,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
-
+builder.Services.AddHostedService<RoomCleanupService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -54,9 +54,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Landing}/{action=Landing}/{id?}")
     .WithStaticAssets();
-// builder.Services.AddHostedService<RoomCleanupService>();
-// builder.Services.AddDbContext<AppDbContext>(options =>
-//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 app.MapHub<hateekub.Hubs.ChatHub>("/chathub");
 app.MapHub<hateekub.Hubs.RoomHub>("/roomhub");

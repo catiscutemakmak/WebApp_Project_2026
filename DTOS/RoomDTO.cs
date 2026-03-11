@@ -19,5 +19,7 @@ namespace hateekub.DTOS
     public string MyStatus { get; set; }
 
     public RoomStatus RoomStatus {get; set;}
+
+    public DateTime PlayTime {get; set;}
 }
 }

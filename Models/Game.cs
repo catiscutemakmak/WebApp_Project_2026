@@ -10,6 +10,8 @@ namespace hateekub.Models
 
         public bool HasRoles { get; set; }
         public bool HasRanks { get; set; }
+
+        public bool IsDuplicateRole {get; set;}
         public List<GameRole> GameRoles { get; set; } = new();
         public List<GameRank> GameRanks { get; set; } = new();
 

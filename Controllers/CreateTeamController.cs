@@ -108,7 +108,7 @@ public async Task<IActionResult> CreateTeam([FromBody] CreateRoomRequest request
         {
             MinRank = request.MinRank,
             MaxRank = request.MaxRank,
-            AllowDuplicateRole = false,
+            AllowDuplicateRole = game.IsDuplicateRole,
             IsPrivate = request.RoomPrivacy,
             MaxPlayer = request.MaxPlayer
         },

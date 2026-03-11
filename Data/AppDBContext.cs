@@ -142,7 +142,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = false
         },
         new Game
         {
@@ -152,7 +153,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = true
         },
         new Game
         {
@@ -162,7 +164,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = true
         },
         new Game
         {
@@ -172,7 +175,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = false
         },
         new Game
         {
@@ -182,7 +186,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = false
         },
         new Game
         {
@@ -192,7 +197,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = false
         },
         new Game
         {
@@ -202,7 +208,8 @@ namespace hateekub.Data
             MaxPlayers = 15,
             MinPlayers = 4,
             HasRoles = false,
-            HasRanks = false
+            HasRanks = false,
+            IsDuplicateRole = true
 
         },
         new Game
@@ -213,7 +220,8 @@ namespace hateekub.Data
             MaxPlayers = 4,
             MinPlayers = 1,
             HasRoles = false,
-            HasRanks = false
+            HasRanks = false,
+            IsDuplicateRole = true
         },
         new Game
         {
@@ -223,7 +231,8 @@ namespace hateekub.Data
             MaxPlayers = 4,
             MinPlayers = 1,
             HasRoles = false,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = true
         }
     );
 

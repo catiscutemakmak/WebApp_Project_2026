@@ -12,5 +12,7 @@ namespace hateekub.Models
     public int? RankDivision { get; set; }
     public DateTime? RankLastUpdated { get; set; }
     public string? ExtraDataJson { get; set; } // ข้อมูลเฉพาะเกม
+
+    
 }
 }

@@ -110,7 +110,7 @@ button {
     cursor: pointer;
     transition: 0.3s;
     align-self: center;
-    margin-top: 44px;
+    margin-top: 30px;
 }
 
 button:hover {
@@ -139,6 +139,23 @@ button:hover {
     opacity: 0.6;
     animation: floatUp linear infinite;
 }
+
+.login-link{
+    margin-top:15px;
+    text-align:center;
+    color:white;
+}
+
+.login-link a{
+    color:#f339ea;
+    text-decoration:none;
+}
+
+.login-link a:hover{
+    text-decoration:underline;
+}
+
+
 
 /* สุ่มตำแหน่ง */
 .particles span:nth-child(1){ left:10%; animation-duration:12s; }

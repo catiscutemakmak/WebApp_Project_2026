@@ -94,6 +94,12 @@ public async Task<IActionResult> AcceptQueue(int roomId, int queuePlayerId)
 
     queuePlayer.Status = PlayerStatus.Active;
 
+    // อัปเดต RoomStatus หลัง accept
+    var newActiveCount = room.ActivePlayers.Count();
+    room.Status = newActiveCount >= room.RoomSetting!.MaxPlayer
+        ? RoomStatus.Full
+        : RoomStatus.Waiting;
+
     await _context.SaveChangesAsync();
 
     // สร้าง notification แจ้ง player ที่ถูกรับเข้าห้อง

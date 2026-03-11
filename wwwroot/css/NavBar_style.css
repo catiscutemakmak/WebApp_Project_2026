@@ -130,6 +130,13 @@ body {
 /* ===== Mobile ===== */
 @media (max-width: 1100px) {
 
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 10000;
+    }
+
     .nav-buttons {
         position: fixed;   
         top: 100px;
@@ -143,9 +150,9 @@ body {
         z-index: 9999;
     }
 
-        .nav-buttons.active {
-            display: flex;
-        }
+    .nav-buttons.active {
+        display: flex;
+    }
 
     .nav-btn {
         width: 100%;

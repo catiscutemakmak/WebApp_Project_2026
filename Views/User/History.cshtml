@@ -47,7 +47,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
 
                     <div class="teammates">
                         @foreach (var player in (entry.Room?.Players
-                            .Where(p => p.Status == hateekub.Models.PlayerStatus.Active || p.Status == hateekub.Models.PlayerStatus.Left)
+                            .Where(p => p.UserId != entry.UserId && (p.Status == hateekub.Models.PlayerStatus.Active || p.Status == hateekub.Models.PlayerStatus.Left))
                             .Take(5) ?? Enumerable.Empty<hateekub.Models.RoomPlayer>()))
                         {
                             <a href="/Profile/ViewProfile/@player.User?.Id">

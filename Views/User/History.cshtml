@@ -50,8 +50,10 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                             .Where(p => p.Status == hateekub.Models.PlayerStatus.Active || p.Status == hateekub.Models.PlayerStatus.Left)
                             .Take(5) ?? Enumerable.Empty<hateekub.Models.RoomPlayer>()))
                         {
-                            <img src="@(string.IsNullOrEmpty(player.Avatar) ? "/images/profile/avatar-default.jpg" : player.Avatar)"
-                                 class="avatar" title="@(player.User?.Nickname ?? player.User?.Username ?? "Unknown")">
+                            <a href="/Profile/ViewProfile/@player.User?.Id">
+                                <img src="@(string.IsNullOrEmpty(player.User?.ProfileImagePath) ? "/images/profile/avatar-default.jpg" : player.User.ProfileImagePath)"
+                                     class="avatar" title="@(player.User?.Nickname ?? player.User?.Username ?? "Unknown")">
+                            </a>
                         }
                     </div>
                 </div>

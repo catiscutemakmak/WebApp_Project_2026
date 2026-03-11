@@ -32,14 +32,16 @@ public class RoomCleanupService : BackgroundService
 
             foreach (var room in rooms)
             {
+                room.StartTime = DateTime.UtcNow;
                 room.Status = RoomStatus.Starting;
             }
 
 
             // Starting → Close (หลัง 30 นาที)
             var start_rooms = await db.Rooms
-                .Where(r => r.Status == RoomStatus.Starting 
-                    && r.PlayDateTime.AddMinutes(30) <= now)
+                .Where(r => r.Status == RoomStatus.Starting
+                    && r.StartTime.HasValue
+                    && r.StartTime.Value.AddMinutes(30) <= now)
                 .ToListAsync();
 
             foreach (var room in start_rooms)

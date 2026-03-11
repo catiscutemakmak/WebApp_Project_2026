@@ -6,8 +6,8 @@ const visibleSlots = 5;
 const centerIndex = 2;
 let rooms = [];
 let queue = [];
-let connection = null;
 let chat_list = [];
+let isQueueOpen = false;
 
 async function reloadRooms() {
   try {
@@ -67,7 +67,9 @@ async function init() {
     }));
      InitChat()
     RenderChatHistory();
-    setInterval(fetchChatMessages,2000);
+    setInterval(fetchChatMessages,1000);
+    setInterval(reloadQueue,5000);
+    setInterval(reloadRooms,5000);
 
     }catch(err){
         console.error("INIT ERROR:", err);
@@ -269,6 +271,8 @@ async function fetchChatMessages(){
                     sentAt: m.sentAt
                 };
 
+                
+
                 chat_list.push(msg);
 
                 const prev = chat_list[chat_list.length - 2];
@@ -297,15 +301,16 @@ function CreateChatMessage(chat){
     const current_chat = document.createElement("div");
     current_chat.classList.add("chat-format");
 
-    const avatar = document.createElement("div");
+    const avatar = document.createElement("img");
     avatar.classList.add("chat-avatar");
 
-    avatar.style.backgroundImage = `url(${chat.avatar})`;
-    avatar.style.backgroundSize = "cover";
-    avatar.style.backgroundPosition = "center";
+    avatar.src = chat.avatar || "/images/default-profile.png";
+
+    avatar.onerror = () => {
+        avatar.src = "/images/default-profile.png";
+    };
 
     current_chat.appendChild(avatar);
-
     const sender = document.createElement("p");
     sender.classList.add("chat-sender");
     sender.innerText = chat.sender + ": " + chat.message;
@@ -483,7 +488,9 @@ function renderQueue(queue) {
 
     const queueList = document.createElement("div");
     queueList.classList.add("queue-list");
-
+    if(isQueueOpen){
+        queueList.classList.add("show-queue");
+    }
     const queuebutton = document.createElement("button");
     queuebutton.innerText = "QUEUE";
     queuebutton.classList.add("queue-btn");
@@ -491,7 +498,8 @@ function renderQueue(queue) {
     queueBox.appendChild(queuebutton);
 
     queuebutton.addEventListener("click", () => {
-        queueList.classList.toggle("show-queue");
+    isQueueOpen = !isQueueOpen;
+    queueList.classList.toggle("show-queue", isQueueOpen);
     });
 
     // ⭐ ถ้าไม่มีคนใน queue

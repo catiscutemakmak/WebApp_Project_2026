@@ -1,6 +1,3 @@
-let connection = null
-let connection_room = null
-let connection_queue = null
 let rooms = [];
 let queue = [];
 
@@ -41,106 +38,11 @@ async function reloadQueue() {
 }
 
 
-function registerChatEvents(){
-
-    connection.on("ReceiveMessage", function(username, avatar, message){
-
-        const new_message = {
-            sender: username,
-            avatar: avatar,
-            message: message
-        };
-
-        chat_list.push(new_message);
-
-        const chatBox = document.querySelector(".chat-dev");
-
-        if(chatBox){
-            const messageElement = CreateChatMessage(new_message);
-            chatBox.appendChild(messageElement);
-
-            // scroll ลงล่าง
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    });
-
-}
-
-function registerRoomEvents(){
-
-    connection_room.on("RoomCreated", async (updatedGameName) => {
-
-        if (updatedGameName !== gameName) return;
-
-        await reloadRooms();
-    });
-
-    connection_room.on("PlayerJoinedRoom", async (updatedGameName) => {
-
-        if (updatedGameName !== gameName) return;
-
-        await reloadRooms();
-    });
-
-}
-
-function registerQueueEvent(){
-    connection_queue.on("QueueUpdated", async (updateroomId) => {
-
-        if (updateroomId != roomId) return;
-
-        await reloadQueue();
-        await reloadRooms();
-
-    });
-
-        connection_queue.on("PlayerReady", async (updateroomId) => {
-
-        if (updateroomId != roomId) return;
-
-        await reloadQueue();
-        await reloadRooms();
-
-    });
-
-}
 
 async function init() {
 
   try {
-showLoading();
-connection = new signalR.HubConnectionBuilder()
-        .withUrl("/chathub", {
-            withCredentials: true
-        })
-        .build();
-
-    connection_room = new signalR.HubConnectionBuilder()
-      .withUrl("/roomhub")
-      .withAutomaticReconnect()
-      .build();
-
-    connection_queue = new signalR.HubConnectionBuilder()
-    .withUrl("/roomhub")
-    .withAutomaticReconnect()
-    .build();
-
-
-    registerChatEvents();
-    registerRoomEvents();
-    registerQueueEvent();
-
-    await connection.start();
-    await connection_room.start();
-    await connection_queue.start();
-    // join chat room
-    await connection.invoke("JoinRoom", roomId);
-
-    // join realtime room group
-    await connection_room.invoke("JoinGameGroup", gameName);
-
-    // queue accept,reject
-    await connection_queue.invoke("AcceptRejectQueue",roomId)
+    showLoading();
 
         const roomsRes = await fetch(`/game/${gameName}/room/${roomId}/details`);
     if (!roomsRes.ok) throw new Error("Rooms API error: " + roomsRes.status);
@@ -149,11 +51,16 @@ connection = new signalR.HubConnectionBuilder()
     renderRooms(rooms);
 
     //โหลด chat history
-    const chatRes = await fetch(`/game/${gameName}/room/${roomId}/chat`);
+    const chatRes = await fetch(`/api/chat/${roomId}`);
     const chatHistory = await chatRes.json();
 
-    chat_list = chatHistory;
-
+    chat_list = chatHistory.map(m => ({
+    sender: m.username,
+    avatar: m.avatar,
+    message: m.message,
+    sentAt: m.sentAt
+    }));
+    
     RenderChatHistory();
 
     await reloadQueue();
@@ -161,6 +68,8 @@ connection = new signalR.HubConnectionBuilder()
     StartBtn()
     LeaveBtn()
     ReadyBtn()
+
+    setInterval(fetchChatMessages,1000);
 
   } catch (err) {
     console.error(err);
@@ -290,20 +199,77 @@ function RenderChatHistory() {
 
     chatBox.innerHTML = "";
 
-    chat_list.forEach(msg => {
-        const messageElement = CreateChatMessage(msg);
+    chat_list.forEach((msg, index) => {
+
+        const prev = chat_list[index - 1];
+
+        const messageElement = CreateChatMessage(msg, prev);
+
         chatBox.appendChild(messageElement);
+
     });
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+    setTimeout(() => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 0);
 }
 
-function CreateChatMessage(chat){
+async function fetchChatMessages(){
+
+    try{
+
+        const res = await fetch(`/api/chat/${roomId}`);
+        if(!res.ok) return;
+
+        const messages = await res.json();
+
+        const chatBox = document.querySelector(".chat-dev");
+        if(!chatBox) return;
+
+        let hasNewMessage = false;
+
+        messages.forEach(m => {
+
+            const alreadyExists = chat_list.some(c => 
+                c.sentAt === m.sentAt
+            );
+
+            if(!alreadyExists){
+
+                const msg = {
+                    sender: m.username,
+                    avatar: m.avatar,
+                    message: m.message,
+                    sentAt: m.sentAt
+                };
+
+                chat_list.push(msg);
+
+                const prev = chat_list[chat_list.length - 2];
+
+                const messageElement = CreateChatMessage(msg, prev);
+                chatBox.appendChild(messageElement);
+
+                hasNewMessage = true;
+
+            }
+
+        });
+
+        if(hasNewMessage){
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+    }catch(err){
+        console.error("chat polling error:",err);
+    }
+
+}
+
+function CreateChatMessage(chat, prevChat){
 
     const current_chat = document.createElement("div");
     current_chat.classList.add("chat-format");
-
-    const prevChat = chat_list[chat_list.length - 2];
 
     const avatar = document.createElement("div");
     avatar.classList.add("chat-avatar");
@@ -364,17 +330,30 @@ function CreateSentBox() {
 stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 `;
-    sent_box.addEventListener("submit", function(e) {
+    sent_box.addEventListener("submit", async function(e) {
 
         e.preventDefault();
 
         if(input.value.trim() === "") return;
 
-        connection.invoke(
-            "SendMessage",
-            roomId,
-            input.value
-        ).catch(err => console.error(err));
+        const message = input.value;
+
+        try {
+
+            await fetch("/api/chat/send",{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    roomId: roomId,
+                    message: message
+                })
+            });
+
+        } catch(err){
+            console.error("send message error:",err);
+        }
 
         input.value = "";
     });

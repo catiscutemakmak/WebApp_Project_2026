@@ -110,7 +110,7 @@ button {
     cursor: pointer;
     transition: 0.3s;
     align-self: center;
-    margin-top: 44px;
+    margin-top: 30px;
 }
 
 button:hover {
@@ -138,6 +138,21 @@ button:hover {
     border-radius: 50%;
     opacity: 0.6;
     animation: floatUp linear infinite;
+}
+
+.register-link{
+    margin-top:15px;
+    text-align:center;
+    color:white;
+}
+
+.register-link a{
+    color:#f339ea;
+    text-decoration:none;
+}
+
+.register-link a:hover{
+    text-decoration:underline;
 }
 
 /* สุ่มตำแหน่ง */

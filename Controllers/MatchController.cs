@@ -176,7 +176,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         if (existingPlayer.Status == PlayerStatus.Kicked)
             return BadRequest("You were kicked from this room");
         
-}
+    }
 
     var isPrivate = room.RoomSetting!.IsPrivate;
 
@@ -321,7 +321,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
             UserProfileId = userProfile.Id,
             RoomId = room.Id,
             ActorUserId = userProfile.Id,
-            Message = $"You successfully joined room '{room.RoomName}'",
+            Message = $"Hooray! You successfully joined room '{room.RoomName}'",
             CreatedAt = DateTime.UtcNow,
             IsRead = false
         };
@@ -354,6 +354,77 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     });
 }
 
+[HttpPost("StartGame/{roomId}")]
+public async Task<IActionResult> StartGame(int roomId)
+{
+    var currentUser = await _userManager.GetUserAsync(User);
+    if (currentUser == null)
+        return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+
+    if (userProfile == null)
+        return BadRequest("User profile not found");
+
+    var room = await _context.Rooms
+        .Include(r => r.Players)
+        .Include(r => r.Game)
+        .FirstOrDefaultAsync(r => r.Id == roomId);
+
+    if (room == null)
+        return NotFound("Room not found");
+
+    // ตรวจสอบว่าผู้ใช้เป็นเจ้าของห้องหรือไม่
+    if (room.OwnerId != userProfile.Id)
+        return Unauthorized("Only room owner can start the game");
+
+    // เปลี่ยนสถานะห้องเป็น Playing
+    room.Status = RoomStatus.Starting;
+    await _context.SaveChangesAsync();
+
+    // ดึงผู้เล่นทั้งหมดที่ active
+    var activePlayers = room.Players
+        .Where(p => p.Status == PlayerStatus.Active)
+        .ToList();
+
+    // สร้าง notification สำหรับผู้เล่นแต่ละคน
+    foreach (var player in activePlayers)
+    {
+        var notification = new Notification
+        {
+            UserProfileId = player.UserId,
+            RoomId = room.Id,
+            ActorUserId = userProfile.Id,
+            Message = $"🎮 Game has started in '{room.RoomName}'!",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+        _context.Notifications.Add(notification);
+    }
+
+    await _context.SaveChangesAsync();
+
+    // ส่ง realtime notification ไปยังผู้เล่นทั้งหมดในห้อง
+    await _hub.Clients
+        .Group($"room-{roomId}")
+        .SendAsync("GameStarted", new
+        {
+            roomId = room.Id,
+            roomName = room.RoomName,
+            gameName = room.Game.GameName,
+            message = "Game has started!"
+        });
+
+    return Ok(new
+    {
+        success = true,
+        message = "Game started successfully",
+        roomId = room.Id,
+        roomName = room.RoomName,
+        gameName = room.Game.GameName
+    });
+}
+
 }
 }
-//test//

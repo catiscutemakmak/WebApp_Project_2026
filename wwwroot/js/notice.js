@@ -103,7 +103,7 @@ if (!notifications || notifications.length === 0) {
         detailchat.classList.add("detail-text");
         detailgame.classList.add("detail-game");
         detailgame.innerText = notice.gameName || "Unknown Game";
-        detailbox.appendChild(detailchat);
+        // detailbox.appendChild(detailchat);
         detailbox.appendChild(detailgame)
         
         noticedev.appendChild(messagebox);

@@ -309,7 +309,13 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         };
         _context.Notifications.Add(ownerNotification);
 
-        // แจ้ง user ว่า join สำเร็จ
+        var activePlayers = room.Players
+        .Count(p => p.Status == PlayerStatus.Active);
+
+        if (activePlayers >= room.RoomSetting.MaxPlayer)
+        {
+            room.Status = RoomStatus.Full;
+        }
         var userNotification = new Notification
         {
             UserProfileId = userProfile.Id,

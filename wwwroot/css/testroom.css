@@ -138,6 +138,13 @@ box-shadow:
 
 }
 
+.gold {
+    box-shadow:
+
+0 0 20px rgba(255,255,255,.2),
+0 0 60px rgba(246, 240, 62, 0.986);
+}
+
 /* BANNER */
 
 .card img{
@@ -1025,74 +1032,29 @@ body.loading #loadingOverlay {
     letter-spacing:3px;
 }
 
-.room-status.waiting{
-    color:#3b82f6;
-}
-
-.room-status.starting{
-    color:#22c55e;
-}
-
-.room-status.close{
-    color:#e1ef4d;
-}
-
-.room-status.full{
-    color:#fc7100;
-}
-
-.room-status.delete{
-    color:#ef4444;
-}
 
 .room-status.waiting{
 
-color:#60a5fa;
+color:#ffffff;
 
 border-color:rgba(96,165,250,.4);
 
 }
 
-
-/* STARTING */
-
-.room-status.starting{
-
-color:#34d399;
-
-border-color:rgba(52,211,153,.4);
-
+.kick-mode .card{
+    animation: shake 0.3s infinite;
+    cursor:pointer;
 }
 
+@keyframes shake{
 
-/* CLOSE */
-
-.room-status.close{
-
-color:#facc15;
-
-border-color:rgba(250,204,21,.4);
-
-}
-
-
-/* FULL */
-
-.room-status.full{
-
-color:#fb923c;
-
-border-color:rgba(251,146,60,.4);
+0%{ transform:rotate(-2deg); }
+25%{ transform:rotate(2deg); }
+50%{ transform:rotate(-2deg); }
+75%{ transform:rotate(2deg); }
+100%{ transform:rotate(0deg); }
 
 }
-
-
-/* DELETE */
-
-.room-status.delete{
-
-color:#f87171;
-
-border-color:rgba(248,113,113,.4);
-
+.kickbtn {
+    background-color: red;
 }

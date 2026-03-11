@@ -96,6 +96,20 @@ public async Task<IActionResult> AcceptQueue(int roomId, int queuePlayerId)
 
     await _context.SaveChangesAsync();
 
+    // สร้าง notification แจ้ง player ที่ถูกรับเข้าห้อง
+    var notification = new Notification
+    {
+        UserProfileId = queuePlayerId,
+        RoomId = roomId,
+        ActorUserId = userProfile!.Id,
+        Message = $"Your request to join room '{room.RoomName}' has been accepted by the owner",
+        CreatedAt = DateTime.UtcNow,
+        IsRead = false
+    };
+    _context.Notifications.Add(notification);
+
+    await _context.SaveChangesAsync();
+
     await _hub.Clients
     .Group($"room-{roomId}")
     .SendAsync("QueueUpdated",roomId);
@@ -140,6 +154,21 @@ public async Task<IActionResult> RejectQueue(int roomId, int queuePlayerId)
     queuePlayer.Status = PlayerStatus.Rejected;
 
     await _context.SaveChangesAsync();
+
+    // สร้าง notification แจ้ง player ที่ถูกปฏิเสธ
+    var notification = new Notification
+    {
+        UserProfileId = queuePlayerId,
+        RoomId = roomId,
+        ActorUserId = userProfile!.Id,
+        Message = $"Your request to join room '{room.RoomName}' has been rejected by the owner",
+        CreatedAt = DateTime.UtcNow,
+        IsRead = false
+    };
+    _context.Notifications.Add(notification);
+
+    await _context.SaveChangesAsync();
+
     await _hub.Clients
     .Group($"room-{roomId}")
     .SendAsync("QueueUpdated",roomId);

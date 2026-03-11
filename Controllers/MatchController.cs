@@ -275,6 +275,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         {
             UserProfileId = room.OwnerId,
             RoomId = room.Id,
+            ActorUserId = userProfile.Id,
             Message = $"{userProfile.Nickname} requested to join your room '{room.RoomName}'",
             CreatedAt = DateTime.UtcNow,
             IsRead = false
@@ -286,6 +287,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         {
             UserProfileId = userProfile.Id,
             RoomId = room.Id,
+            ActorUserId = userProfile.Id,
             Message = $"You are in the queue for room '{room.RoomName}'. Waiting for owner's approval.",
             CreatedAt = DateTime.UtcNow,
             IsRead = false
@@ -299,6 +301,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         {
             UserProfileId = room.OwnerId,
             RoomId = room.Id,
+            ActorUserId = userProfile.Id,
             Message = $"{userProfile.Nickname} has joined your room '{room.RoomName}'",
             CreatedAt = DateTime.UtcNow,
             IsRead = false
@@ -310,6 +313,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         {
             UserProfileId = userProfile.Id,
             RoomId = room.Id,
+            ActorUserId = userProfile.Id,
             Message = $"You successfully joined room '{room.RoomName}'",
             CreatedAt = DateTime.UtcNow,
             IsRead = false

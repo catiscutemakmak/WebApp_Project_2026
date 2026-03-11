@@ -1,4 +1,4 @@
-@model List<hateekub.Models.Notification>
+@model List<hateekub.DTOS.NotificationDTO>
 @{
     ViewData["Title"] = "Notification -";
 }
@@ -12,7 +12,7 @@
 
 @section Scripts {
     <script>
-        const notifications = @Html.Raw(Json.Serialize(Model ?? new List<hateekub.Models.Notification>()));
+        const notifications = @Html.Raw(Json.Serialize(Model ?? new List<hateekub.DTOS.NotificationDTO>()));
     </script>
     <script src="~/js/notice.js" asp-append-version="true"></script>
 }

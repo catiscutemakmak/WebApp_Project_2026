@@ -101,6 +101,7 @@ public async Task<IActionResult> AcceptQueue(int roomId, int queuePlayerId)
     {
         UserProfileId = queuePlayerId,
         RoomId = roomId,
+        ActorUserId = userProfile!.Id,
         Message = $"Your request to join room '{room.RoomName}' has been accepted by the owner",
         CreatedAt = DateTime.UtcNow,
         IsRead = false
@@ -159,6 +160,7 @@ public async Task<IActionResult> RejectQueue(int roomId, int queuePlayerId)
     {
         UserProfileId = queuePlayerId,
         RoomId = roomId,
+        ActorUserId = userProfile!.Id,
         Message = $"Your request to join room '{room.RoomName}' has been rejected by the owner",
         CreatedAt = DateTime.UtcNow,
         IsRead = false

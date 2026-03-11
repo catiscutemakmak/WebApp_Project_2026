@@ -160,6 +160,32 @@ body::after {
     box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }
 
+.actor-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, rgba(170,0,193,0.2) 0%, rgba(212,0,255,0.2) 100%);
+    border-left: 3px solid #aa00c1;
+    border-radius: 6px;
+}
+
+.actor-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #aa00c1;
+}
+
+.actor-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #d400ff;
+    letter-spacing: 0.5px;
+}
+
 .message-dev {
     display: flex;
     justify-content: space-between;

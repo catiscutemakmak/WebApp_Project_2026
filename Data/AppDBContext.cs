@@ -122,6 +122,12 @@ namespace hateekub.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Notification>()
+                .HasOne(n => n.ActorUser)
+                .WithMany()
+                .HasForeignKey(n => n.ActorUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Notification>()
                 .HasOne(n => n.Room)
                 .WithMany()
                 .HasForeignKey(n => n.RoomId)

@@ -147,11 +147,11 @@ if (ProfileImage != null && ProfileImage.Length > 0)
         Directory.CreateDirectory(uploadsFolder);
 
     var extension = Path.GetExtension(ProfileImage.FileName);
-    var fileName = $"{profile.Id}.jpg";
+    var fileName = $"{profile.Id}_{Guid.NewGuid()}{extension}";
     var filePath = Path.Combine(uploadsFolder, fileName);
 
     // ลบรูปเก่าทุกไฟล์ที่ขึ้นต้นด้วย profile.Id
-    var oldFiles = Directory.GetFiles(uploadsFolder, $"{profile.Id}.*");
+    var oldFiles = Directory.GetFiles(uploadsFolder, $"{profile.Id}_*");
     foreach (var file in oldFiles)
     {
         System.IO.File.Delete(file);

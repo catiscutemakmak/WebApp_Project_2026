@@ -161,7 +161,8 @@ public async Task<IActionResult> StartRoom(int roomId)
 
     if (!roomReady)
         return BadRequest("Not all players are ready");
-
+        
+    room.StartTime = DateTime.UtcNow;
     room.Status = RoomStatus.Starting;
 
     await _context.SaveChangesAsync();

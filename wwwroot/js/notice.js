@@ -1,7 +1,3 @@
-// notifications จะถูกส่งมาจาก view ผ่าน JSON
-// const notice_mock = [...]; // Removed - using real data from server
-
-
 function getDateLabel(createdAt) {
     const today = new Date();
     const yesterday = new Date();
@@ -119,3 +115,4 @@ if (!notifications || notifications.length === 0) {
         noticeContainer.appendChild(noticeDev);
     }
 }
+

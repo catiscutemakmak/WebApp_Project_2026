@@ -47,8 +47,14 @@ async function reloadRooms() {
       throw new Error("Reload rooms failed");
     }
 
-    rooms = await res.json();
-    console.log(rooms)
+    const newRooms = await res.json();
+    const newJson = JSON.stringify(newRooms);
+
+    if (newJson === lastRoomsJson) return;
+
+    rooms = newRooms;
+    lastRoomsJson = newJson;
+
     renderRooms(rooms);
 
   } catch (err) {
@@ -80,38 +86,7 @@ async function reloadRank() {
 
 }
 
-/* ================================
-   SIGNALR
-================================ */
 
-const connection = new signalR.HubConnectionBuilder()
-  .withUrl("/roomhub")
-  .withAutomaticReconnect()
-  .build();
-
-connection.on("RoomCreated", async (updatedGameName) => {
-
-  if (updatedGameName !== gameName) return;
-
-  try {
-    await reloadRooms();
-  } catch (err) {
-    console.error("Realtime update error:", err);
-  }
-
-});
-
-connection.on("PlayerJoinedRoom", async (updatedGameName) => {
-
-  if (updatedGameName !== gameName) return;
-
-  try {
-    await reloadRooms();
-  } catch (err) {
-    console.error("Realtime update error:", err);
-  }
-
-});
 
 /* ================================
    GLOBAL STATE
@@ -119,7 +94,7 @@ connection.on("PlayerJoinedRoom", async (updatedGameName) => {
 let rooms = [];
 let roles = [];
 let ranks = [];
-
+let lastRoomsJson = "";
 /* ================================
    INIT
 ================================ */
@@ -147,26 +122,11 @@ async function init() {
 
 }
 
-async function startRealtime(){
-
-  try {
-
-    await connection.start();
-
-    await connection.invoke("JoinGameGroup", gameName);
-
-    console.log("SignalR connected");
-
-  } catch(err) {
-
-    console.error("SignalR error:", err);
-
-  }
-
-}
-
 init();
-startRealtime();
+
+setInterval(() => {
+  reloadRooms();
+}, 2000);
 
 /* ================================
    NORMALIZE ROOM

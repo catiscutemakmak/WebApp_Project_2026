@@ -35,6 +35,10 @@
                 </div>
                 <span asp-validation-for="Password" style="color:red; margin-top:5px;"></span>
             </div>
+
+            <div style="color:red; text-align:center; margin-top:10px;">
+                @ViewBag.Error
+            </div>
         </div>
         <button type="submit">LOGIN</button>
 
@@ -42,9 +46,7 @@
             Don't have an account?
             <a asp-controller="Account" asp-action="Register">Register here</a>
         </div>
-            <div style="color:red">
-            @ViewBag.Error
-        </div>
+
     </form>
     <script>
         function togglePasswordVisibility() {

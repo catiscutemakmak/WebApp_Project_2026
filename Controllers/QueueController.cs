@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using hateekub.Data;
 using hateekub.Models;
 using hateekub.DTOS;
@@ -171,6 +172,31 @@ public async Task<IActionResult> MyQueueStatus(int roomId)
         : (string?)null;
 
     return Ok(new { status = player.Status.ToString(), roomUrl });
+}
+
+[Authorize]
+[HttpDelete("{roomId}/cancel-queue")]
+public async Task<IActionResult> CancelQueue(int roomId)
+{
+    var currentUser = await _userManager.GetUserAsync(User);
+    if (currentUser == null) return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+    if (userProfile == null) return NotFound();
+
+    var queuePlayer = await _context.RoomPlayers
+        .FirstOrDefaultAsync(p => p.RoomId == roomId
+                               && p.UserId == userProfile.Id
+                               && (p.Status == PlayerStatus.Queue || p.Status == PlayerStatus.Rejected));
+
+    if (queuePlayer == null)
+        return NotFound("Queue entry not found");
+
+    _context.RoomPlayers.Remove(queuePlayer);
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Queue cancelled" });
 }
 
 [HttpGet("my-queue-rooms")]

@@ -98,15 +98,6 @@ connection.on("PlayerJoinedRoom", async (updatedGameName) => {
 
 });
 
-connection.on("QueueUpdated", async () => {
-  if (typeof initFloatingCards === "function") await initFloatingCards();
-  if (typeof initFloatingQueue === "function") await initFloatingQueue();
-});
-window._queueHandlerRegistered = true;
-
-
-
-
 /* ================================
    GLOBAL STATE
 ================================ */
@@ -417,15 +408,6 @@ function createJoinButton(roomId) {
         if (data.roomUrl) {
           window.location.href = data.roomUrl;
         } else {
-
-          const dismissed = JSON.parse(localStorage.getItem("dismissedQueues") || "[]");
-          const updated = dismissed.filter(id => id !== data.roomId);
-
-          localStorage.setItem("dismissedQueues", JSON.stringify(updated));
-
-          if (connection.state === "Connected") {
-            connection.invoke("AcceptRejectQueue", String(data.roomId));
-          }
 
           if (typeof initFloatingQueue === "function") {
             initFloatingQueue();

@@ -35,6 +35,18 @@ public class RoomCleanupService : BackgroundService
                 room.Status = RoomStatus.Starting;
             }
 
+
+            // Starting → Close (หลัง 30 นาที)
+            var start_rooms = await db.Rooms
+                .Where(r => r.Status == RoomStatus.Starting 
+                    && r.PlayDateTime.AddMinutes(30) <= now)
+                .ToListAsync();
+
+            foreach (var room in start_rooms)
+            {
+                room.Status = RoomStatus.Close;
+            }
+
             await db.SaveChangesAsync();
 
             await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);

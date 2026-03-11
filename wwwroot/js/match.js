@@ -14,8 +14,23 @@ const amongUsAvatars = [
 "/images/amongus/Red.webp",
 "/images/amongus/Tan.webp",
 "/images/amongus/White.webp",
-"/images/amongus/Yellow.webp"
+"/images/amongus/Yellow.webp",
+"/images/amongus/Black.webp"
 ];
+
+const peakAvatars = [
+"/images/Peak/Red.webp",
+"/images/Peak/Orange.webp",
+"/images/Peak/Yellow.webp",
+"/images/Peak/Lime.webp",
+"/images/Peak/Green.webp",
+"/images/Peak/Turquoise.webp",
+"/images/Peak/Blue.webp",
+"/images/Peak/Purple.webp",
+"/images/Peak/Pink.webp"
+
+];
+
 let currentPage = 1;
 const roomsPerPage =5;
 let selectedAvatar = null;
@@ -249,7 +264,7 @@ function PlayerCard(player, OwnerId) {
 
     let rankImg;
 
-  if (gameName === "Among Us") {
+  if (gameName === "Among Us" || gameName === "Peak") {
 
     rankImg = player.avatar
       ? player.avatar
@@ -261,9 +276,10 @@ function PlayerCard(player, OwnerId) {
   }
 
   div.innerHTML = `
-    <img class="player-profile"
-      src="${player.userProfile ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj5K_Hlzgq-p_0Xfv_vykmcOtuXhBI7VFBxg&s'}">
-
+  <img class="player-profile"
+      src="${player.userProfile || '/images/default-profile.png'}"
+      onerror="this.src='/images/default-profile.png'">
+  
     ${player.userId === OwnerId
       ? "<span class='empty-crown'>👑</span>"
       : "<span class='empty-crown'>🎮</span>"}
@@ -377,7 +393,7 @@ function createJoinButton(roomId) {
     selectedRoleName = roleName;
 
     // Among Us → Avatar Picker
-    if (gameName === "Among Us") {
+    if (gameName === "Among Us" || gameName === "Peak") {
       openAvatarPicker();
       return;
     }
@@ -615,7 +631,16 @@ function openAvatarPicker(){
 });
   grid.innerHTML = "";
 
-  amongUsAvatars.forEach(src => {
+let avatars = [];
+  if(gameName === "Among Us"){
+    avatars = amongUsAvatars;
+}
+
+if(gameName === "Peak"){
+    avatars = peakAvatars;
+}
+
+  avatars.forEach(src => {
 
     const img = document.createElement("img");
     img.src = src;
@@ -649,7 +674,7 @@ document.getElementById("avatarConfirm").onclick = async () => {
 
   document.getElementById("avatarPicker").classList.add("hide");
 
-  if(gameName === "Among Us"){
+  if(gameName === "Among Us" || gameName === "Peak"){
 
     if(!selectedAvatar) return;
     await joinRoomWithAvatar(selectedAvatar);

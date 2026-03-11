@@ -114,38 +114,47 @@ async function init() {
 function renderRooms(room) {
 
     PlayerMain.innerHTML = "";
+    
+const slotCount = Math.min(room.roomSetting.maxPlayer, visibleSlots);
 
-    const slots = new Array(visibleSlots).fill(null);
+const slots = new Array(slotCount).fill(null);
 
-    const owner = room.players.find(p => p.username === room.ownerUsername);
-    const others = room.players.filter(p => p.username !== room.ownerUsername);
+const centerIndex = Math.floor((slotCount - 1) / 2);
 
-    const emptySlots = room.roomSetting.maxPlayer - room.players.length;
+const owner = room.players.find(p => p.username === room.ownerUsername);
+const others = room.players.filter(p => p.username !== room.ownerUsername);
 
+const emptySlots = room.roomSetting.maxPlayer - room.players.length;
 
-    const circle = [...others];
+const circle = [...others];
 
-    for(let i=0;i<emptySlots;i++){
-        circle.push(null);
-    }
+for(let i=0;i<emptySlots;i++){
+    circle.push(null);
+}
 
-    const total = circle.length;
+const total = circle.length;
 
-    // ⭐ แก้ตรงนี้
-    offset = ((offset % total) + total) % total;
+offset = ((offset % total) + total) % total;
 
-    slots[centerIndex] = owner;
+slots[centerIndex] = owner;
 
-    for(let i=1;i<=2;i++){
+for(let i=1;i<slotCount;i++){
 
+    const leftSlot = centerIndex - i;
+    const rightSlot = centerIndex + i;
+
+    if(leftSlot >= 0){
         const leftIndex = (offset - i + total) % total;
-        const rightIndex = (offset + i - 1) % total;
-
-        slots[centerIndex - i] = circle[leftIndex];
-        slots[centerIndex + i] = circle[rightIndex];
-        console.log(slots)
+        slots[leftSlot] = circle[leftIndex];
     }
-    console.log(slots)
+
+    if(rightSlot < slotCount){
+        const rightIndex = (offset + i - 1) % total;
+        slots[rightSlot] = circle[rightIndex];
+    }
+
+}
+
 slots.forEach(p => {
     if(p){
         PlayerMain.appendChild(PlayerCard(p, room.ownerUsername));
@@ -246,7 +255,7 @@ function PlayerCard(player, ownerUsername) {
     card.classList.add("card");
 
     const rank = document.createElement("img");
-    if (gameName == "Among Us"){
+    if (gameName == "Among Us" || gameName == "Peak"){
         rank.src = player.avatar    
     }
     else {
@@ -262,8 +271,11 @@ function PlayerCard(player, ownerUsername) {
     }
 
     const img = document.createElement("img");
-    img.src = player.userProfile;
-    
+    img.src = player.userProfile ?? '/images/default-profile.png';
+
+    img.onerror = () => {
+        img.src = '/images/default-profile.png';
+    };
     const name = document.createElement("div");
     name.classList.add("player-name");
     name.innerText = player.username;
@@ -552,24 +564,78 @@ function renderQueue(queue) {
             botdiv.appendChild(roleDiv);
 
             // check Owner
-            if (rooms.isOwner) {
+        if (rooms.isOwner) {
 
-                const BtnDiv = document.createElement("div");
-                BtnDiv.classList.add("queue-btn-div");
+            const BtnDiv = document.createElement("div");
+            BtnDiv.classList.add("queue-btn-div");
 
-                const acceptBtn = document.createElement("button");
-                acceptBtn.innerHTML = "✓";
-                acceptBtn.classList.add("queue-circle-btn", "accept-btn");
+            const acceptBtn = document.createElement("button");
+            acceptBtn.innerHTML = "✓";
+            acceptBtn.classList.add("queue-circle-btn", "accept-btn");
 
-                const rejectBtn = document.createElement("button");
-                rejectBtn.innerHTML = "✕";
-                rejectBtn.classList.add("queue-circle-btn", "reject-btn");
+            acceptBtn.addEventListener("click", async () => {
+        try {
 
-                BtnDiv.appendChild(acceptBtn);
-                BtnDiv.appendChild(rejectBtn);
-
-                botdiv.appendChild(BtnDiv);
+        const response = await fetch(
+            `/api/rooms/${roomId}/accept/${p.id}`,
+            {
+            method: "PUT"
             }
+        );
+
+        if (response.ok) {
+            reloadQueue()
+            reloadRooms()
+            const data = await response.json();
+
+        } else {
+
+            const errorText = await response.text();
+            alert(errorText);
+
+        }
+
+        } catch (err) {
+        console.error(err);
+        }
+
+    });
+            const rejectBtn = document.createElement("button");
+            rejectBtn.innerHTML = "✕";
+            rejectBtn.classList.add("queue-circle-btn", "reject-btn");
+            rejectBtn.addEventListener("click", async () => {
+        try {
+
+        const response = await fetch(
+            `/api/rooms/${roomId}/reject/${p.id}`,
+            {
+            method: "PUT"
+            }
+        );
+
+        if (response.ok) {
+            reloadQueue()
+            reloadRooms()
+            const data = await response.json();
+
+        } else {
+
+            const errorText = await response.text();
+            alert(errorText);
+
+        }
+
+        } catch (err) {
+        console.error(err);
+        }
+
+    });
+
+            BtnDiv.appendChild(acceptBtn);
+            BtnDiv.appendChild(rejectBtn);
+
+            botdiv.appendChild(BtnDiv);
+        }
 
             div.appendChild(topdiv);
             div.appendChild(botdiv);

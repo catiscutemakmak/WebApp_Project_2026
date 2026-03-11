@@ -19,7 +19,21 @@ const amongUsAvatars = [
 "/images/amongus/Red.webp",
 "/images/amongus/Tan.webp",
 "/images/amongus/White.webp",
-"/images/amongus/Yellow.webp"
+"/images/amongus/Yellow.webp",
+"/images/amongus/Black.webp"
+];
+
+const peakAvatars = [
+"/images/Peak/Red.webp",
+"/images/Peak/Orange.webp",
+"/images/Peak/Yellow.webp",
+"/images/Peak/Lime.webp",
+"/images/Peak/Green.webp",
+"/images/Peak/Turquoise.webp",
+"/images/Peak/Blue.webp",
+"/images/Peak/Purple.webp",
+"/images/Peak/Pink.webp"
+
 ];
 
 ranks = []
@@ -287,10 +301,10 @@ form.addEventListener("submit", async function(e){
     console.log(data.game);
     pendingRoomData = data;
     // ⭐ ถ้าเป็น Among Us ให้เปิด avatar picker ก่อน
-    if(data.game === "Among Us"){
+    if(data.game === "Among Us" || data.game === "Peak"){
 
         
-        openAvatarPicker();
+        openAvatarPicker(data.game);
         return;
 
     }
@@ -377,36 +391,37 @@ function openRankPicker(){
    Rank PICKER
 ========================= */
 
-function openAvatarPicker(){
+function openAvatarPicker(game){
 
     pickerMode = "avatar";
-    console.log("open avatar picker");
+
     const picker = document.getElementById("avatarPicker");
     const grid = document.getElementById("avatarGrid");
     const confirmBtn = document.getElementById("avatarConfirm");
 
-    grid.innerHTML="";
+    grid.innerHTML = "";
     confirmBtn.disabled = true;
-    picker.addEventListener("click", (e) => {
 
-    const box = document.querySelector(".avatar-box");
+    let avatars = [];
 
-    if (!box.contains(e.target)) {
-        picker.classList.add("hide");
+    if(game === "Among Us"){
+        avatars = amongUsAvatars;
     }
 
-    });
-    amongUsAvatars.forEach(src=>{
+    if(game === "Peak"){
+        avatars = peakAvatars;
+    }
+
+    avatars.forEach(src => {
 
         const img = document.createElement("img");
-
         img.src = src;
 
-        img.onclick=()=>{
+        img.onclick = () => {
 
             document
             .querySelectorAll("#avatarGrid img")
-            .forEach(i=>i.classList.remove("selected"));
+            .forEach(i => i.classList.remove("selected"));
 
             img.classList.add("selected");
 
@@ -421,7 +436,6 @@ function openAvatarPicker(){
     });
 
     picker.classList.remove("hide");
-
 }
 /* =========================
    AVATAR RANK CONFIRM 

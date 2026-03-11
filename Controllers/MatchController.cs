@@ -145,8 +145,8 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     if (userProfile == null)
         return BadRequest("User profile not found");
 
-    bool isAmongUs = room.Game!.GameName == "Among Us";
-
+    bool isAmongUs = room.Game!.GameName == "Among Us" || room.Game!.GameName == "Peak" ;
+    
     var gameHasRoles = await _context.GameRoles
         .AnyAsync(r => r.GameId == room.GameId);
 

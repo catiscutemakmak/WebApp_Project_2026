@@ -37,7 +37,7 @@ public class RoomController : Controller
         var rooms = await _context.RoomPlayers
             .Where(p => p.UserId == userProfile.Id && p.Status == PlayerStatus.Active)
             .Include(p => p.Room!).ThenInclude(r => r!.Game)
-            .Where(p => p.Room != null && p.Room.Status != RoomStatus.Delete && p.Room.Status != RoomStatus.Close)
+            .Where(p => p.Room != null && p.Room.Status != RoomStatus.Delete && p.Room.Status != RoomStatus.Close )
             .Select(p => new
             {
                 roomId = p.RoomId,
@@ -51,8 +51,8 @@ public class RoomController : Controller
     }
 
     // หน้า View ของ Room
-[HttpGet("testroom/{roomId}")]
-public async Task<IActionResult> Room(string gameName, int roomId)
+[HttpGet("{roomId}")]
+public async Task<IActionResult> TestRoom(string gameName, int roomId)
 {
     var currentUser = await _userManager.GetUserAsync(User);
 
@@ -81,8 +81,8 @@ public async Task<IActionResult> Room(string gameName, int roomId)
     return View();
 }
 
-[HttpGet("{roomId}")]
-public IActionResult TestRoom(string gameName, int roomId)
+[HttpGet("debug/{roomId}")]
+public IActionResult Room(string gameName, int roomId)
 {
     ViewBag.GameName = gameName;
     ViewBag.RoomId = roomId;
@@ -90,56 +90,75 @@ public IActionResult TestRoom(string gameName, int roomId)
     return View();
 }
 
-    // API ดึงข้อมูล room
-    [HttpGet("{roomId}/details")]
-    public IActionResult GetRoomById(string gameName, int roomId)
-    {
-        var currentUserId = _userManager.GetUserId(User);
-        var room = _context.Rooms
-            .Where(r => r.Id == roomId)
-            .Select(r => new RoomDTO
+[HttpGet("{roomId}/details")]
+public async Task<IActionResult> GetRoomById(string gameName, int roomId)
+{
+    var currentUser = await _userManager.GetUserAsync(User);
+    if (currentUser == null)
+        return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+
+    if (userProfile == null)
+        return Unauthorized();
+
+    // เช็คว่า player ยังอยู่ใน room
+    var isInRoom = await _context.RoomPlayers
+        .AnyAsync(p =>
+            p.RoomId == roomId &&
+            p.UserId == userProfile.Id &&
+            p.Status == PlayerStatus.Active);
+
+    if (!isInRoom)
+        return Forbid(); 
+
+    var currentUserId = currentUser.Id;
+
+    var room = await _context.Rooms
+        .Where(r => r.Id == roomId)
+        .Select(r => new RoomDTO
+        {
+            RoomId = r.Id,
+            GameName = r.Game!.GameName,
+            RoomName = r.RoomName,
+            OwnerId = r.RoomOwner!.Id,
+            OwnerUsername = r.RoomOwner!.Nickname,
+            GameMode = r.GameMode,
+            IsOwner = r.RoomOwner!.UserId == currentUserId,
+            RoomStatus = r.Status,
+            PlayTime = r.PlayDateTime,
+
+            RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
             {
-                RoomId = r.Id,
-                GameName = r.Game!.GameName,
-                RoomName = r.RoomName,
-                OwnerId = r.RoomOwner!.Id,
-                OwnerUsername = r.RoomOwner!.Nickname,
-                GameMode = r.GameMode,
-                IsOwner = r.RoomOwner!.UserId == currentUserId,
-                RoomStatus = r.Status,
-                PlayTime = r.PlayDateTime,
+                MinRank = r.RoomSetting.MinRank,
+                MaxRank = r.RoomSetting.MaxRank,
+                AllowDuplicateRole = r.RoomSetting.AllowDuplicateRole,
+                IsPrivate = r.RoomSetting.IsPrivate,
+                MaxPlayer = r.RoomSetting.MaxPlayer
+            },
 
-                RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
+            Players = r.Players
+                .Where(p => p.Status == PlayerStatus.Active)
+                .Select(p => new PlayerDTO
                 {
-                    MinRank = r.RoomSetting.MinRank,
-                    MaxRank = r.RoomSetting.MaxRank,
-                    AllowDuplicateRole = r.RoomSetting.AllowDuplicateRole,
-                    IsPrivate = r.RoomSetting.IsPrivate,
-                    MaxPlayer = r.RoomSetting.MaxPlayer
-                },
+                    UserId = p.UserId,
+                    Username = p.User != null ? p.User.Nickname : "",
+                    RoleName = p.Role != null ? p.Role.RoleName : "",
+                    RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
+                    UserProfile = p.User != null ? p.User.ProfileImagePath ?? "" : "",
+                    Avatar = p.Avatar,
+                    Status = p.IsReady
+                })
+                .ToList()
+        })
+        .FirstOrDefaultAsync();
 
-                Players = r.Players
-                    .Where(p => p.Status == PlayerStatus.Active)
-                    .Select(p => new PlayerDTO
-                    {
-                        UserId = p.UserId,
-                        Username = p.User != null ? p.User.Nickname : "",
-                        RoleName = p.Role != null ? p.Role.RoleName : "",
-                        RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
-                        UserProfile = p.User != null ? p.User.ProfileImagePath ?? "" : "",
-                        Avatar = p.Avatar,
-                        Status = p.IsReady
-                    })
-                    .ToList()
-            })
-            .FirstOrDefault();
+    if (room == null)
+        return NotFound();
 
-        if (room == null)
-            return NotFound();
-
-        return Ok(room);
-    }
-
+    return Ok(room);
+}
 [HttpPut("{roomId}/ready")]
 public async Task<IActionResult> ReadyPlayer(int roomId)
     {

@@ -997,11 +997,14 @@ body.loading #loadingOverlay {
 
 @media (max-width: 768px){
 
+
 .lobby{
     display:flex;
     flex-direction:column;
     align-items:center;
     gap:20px;
+
+    padding-bottom:50px;
 }
 
 /* card อยู่บน */
@@ -1034,6 +1037,47 @@ body.loading #loadingOverlay {
     gap:10px;
 }
 
+.left-btn{
+    margin-top: 50px;
+    transform: rotate(-90deg);
+    cursor:pointer;
+}
+
+.right-btn{
+    transform: rotate(90deg);
+    cursor:pointer;
+}
+
+.rank-badge{
+
+    bottom:-130px;
+    position:static;   /* เอา absolute ออก */
+    width:90px;
+    margin-top:10px;   /* ระยะจาก card */ 
+
+}
+.player-main{
+    display:flex;
+    flex-direction:row;     /* เรียงแนวนอน */
+    align-items:center;
+    gap:10px;
+    width:220px;
+    height:auto;
+}
+
+/* card เล็กลง */
+.card{
+    width:140px;
+    height:200px;
+}
+
+/* rank ไปซ้าย */
+.rank-badge{
+    position:static;
+    width:50px;
+    margin:0;
+    order:-1;     /* ย้ายไปซ้ายสุด */
+}
 }
 
 .statusContainer{

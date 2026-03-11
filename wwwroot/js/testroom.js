@@ -1,5 +1,5 @@
 const PlayerMain = document.getElementById("roomContainer");
-
+let removedFromRoom = false;
 let offset = 2;
 
 const visibleSlots = 5;
@@ -12,6 +12,14 @@ let kickMode = false;
 async function reloadRooms() {
   try {
     const res = await fetch(`/game/${gameName}/room/${roomId}/details`);
+    console.log(res.status)
+    if (res.status === 404 && !removedFromRoom) {
+        removedFromRoom = true;
+
+        alert("You have been removed from the room. Click OK to return to lobby.");
+        window.location.href = `/game/${gameName}`;
+        return;
+    }
 
     if (!res.ok) {
       throw new Error("Reload rooms failed");

@@ -127,4 +127,60 @@ public class NoticeController : Controller
 
         return RedirectToAction("Notice");
     }
+
+    [HttpGet]
+    [Route("notice/unread-count")]
+    public async Task<IActionResult> GetUnreadCount()
+    {
+        var identityUser = await _userManager.GetUserAsync(User);
+        if (identityUser == null)
+        {
+            return Unauthorized();
+        }
+
+        var userProfile = await _db.UserProfiles
+            .FirstOrDefaultAsync(u => u.UserId == identityUser.Id);
+
+        if (userProfile == null)
+        {
+            return NotFound("UserProfile not found.");
+        }
+
+        var unreadCount = await _db.Notifications
+            .Where(n => n.UserProfileId == userProfile.Id && !n.IsRead)
+            .CountAsync();
+
+        return Ok(new { count = unreadCount });
+    }  
+    [HttpPost]
+    [Route("notice/mark-all-read")]
+    public async Task<IActionResult> MarkAllAsRead()
+    {
+        var identityUser = await _userManager.GetUserAsync(User);
+        if (identityUser == null)
+        {
+            return Unauthorized();
+        }
+
+        var userProfile = await _db.UserProfiles
+            .FirstOrDefaultAsync(u => u.UserId == identityUser.Id);
+
+        if (userProfile == null)
+        {
+            return NotFound("UserProfile not found.");
+        }
+
+        var unreadNotifications = await _db.Notifications
+            .Where(n => n.UserProfileId == userProfile.Id && !n.IsRead)
+            .ToListAsync();
+
+        foreach (var notification in unreadNotifications)
+        {
+            notification.IsRead = true;
+        }
+
+        await _db.SaveChangesAsync();
+
+        return RedirectToAction("Notice");
+    }
 }

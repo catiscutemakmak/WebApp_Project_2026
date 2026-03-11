@@ -68,7 +68,6 @@ public async Task<IActionResult> AcceptQueue(int roomId, int queuePlayerId)
     // หา room
     var room = await _context.Rooms
         .Include(r => r.Players)
-        .Include(r=> r.OwnerId)
         .Include(r => r.RoomSetting)
         .Include(r => r.Game)
         .FirstOrDefaultAsync(r => r.Id == roomId);

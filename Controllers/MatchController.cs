@@ -267,6 +267,58 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
 
     await _context.SaveChangesAsync();
 
+    // สร้าง notifications
+    if (isPrivate)
+    {
+        // แจ้งเจ้าของห้องว่ามีคนขอ join
+        var ownerNotification = new Notification
+        {
+            UserProfileId = room.OwnerId,
+            RoomId = room.Id,
+            Message = $"{userProfile.Nickname} requested to join your room '{room.RoomName}'",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+        _context.Notifications.Add(ownerNotification);
+
+        // แจ้ง user ว่าอยู่ใน queue
+        var userNotification = new Notification
+        {
+            UserProfileId = userProfile.Id,
+            RoomId = room.Id,
+            Message = $"You are in the queue for room '{room.RoomName}'. Waiting for owner's approval.",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+        _context.Notifications.Add(userNotification);
+    }
+    else
+    {
+        // แจ้งเจ้าของห้องว่ามีคน join สำเร็จ
+        var ownerNotification = new Notification
+        {
+            UserProfileId = room.OwnerId,
+            RoomId = room.Id,
+            Message = $"{userProfile.Nickname} has joined your room '{room.RoomName}'",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+        _context.Notifications.Add(ownerNotification);
+
+        // แจ้ง user ว่า join สำเร็จ
+        var userNotification = new Notification
+        {
+            UserProfileId = userProfile.Id,
+            RoomId = room.Id,
+            Message = $"You successfully joined room '{room.RoomName}'",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+        _context.Notifications.Add(userNotification);
+    }
+
+    await _context.SaveChangesAsync();
+
     // realtime update rooms list
     await _hub.Clients.Group(room.Game.GameName)
         .SendAsync("PlayerJoinedRoom", room.Game.GameName);

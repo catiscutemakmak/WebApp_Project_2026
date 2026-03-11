@@ -68,7 +68,7 @@ align-items:center;
 
 gap:10px;
 
-margin-top:60px;
+margin-top:30px;
 
 }
 
@@ -1008,5 +1008,91 @@ body.loading #loadingOverlay {
     flex-direction:column;
     gap:10px;
 }
+
+}
+
+.statusContainer{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    margin-top:30px;
+    margin-bottom:10px;
+}
+
+.room-status{
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:3px;
+}
+
+.room-status.waiting{
+    color:#3b82f6;
+}
+
+.room-status.starting{
+    color:#22c55e;
+}
+
+.room-status.close{
+    color:#e1ef4d;
+}
+
+.room-status.full{
+    color:#fc7100;
+}
+
+.room-status.delete{
+    color:#ef4444;
+}
+
+.room-status.waiting{
+
+color:#60a5fa;
+
+border-color:rgba(96,165,250,.4);
+
+}
+
+
+/* STARTING */
+
+.room-status.starting{
+
+color:#34d399;
+
+border-color:rgba(52,211,153,.4);
+
+}
+
+
+/* CLOSE */
+
+.room-status.close{
+
+color:#facc15;
+
+border-color:rgba(250,204,21,.4);
+
+}
+
+
+/* FULL */
+
+.room-status.full{
+
+color:#fb923c;
+
+border-color:rgba(251,146,60,.4);
+
+}
+
+
+/* DELETE */
+
+.room-status.delete{
+
+color:#f87171;
+
+border-color:rgba(248,113,113,.4);
 
 }

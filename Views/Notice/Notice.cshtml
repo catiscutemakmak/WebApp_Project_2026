@@ -13,7 +13,6 @@
 @section Scripts {
     <script>
         const notifications = @Html.Raw(Json.Serialize(Model ?? new List<hateekub.DTOS.NotificationDTO>()));
-        // Mark all as read เมื่อเข้าหน้า Notice
         document.addEventListener('DOMContentLoaded', function() {
             fetch('/notice/mark-all-read', {
                 method: 'POST',
@@ -28,6 +27,19 @@
                     badge.style.display = 'none';
                 }
             });
+        });
+        // ในหน้า Frontend เมื่อเจ้าของกดปุ่มเริ่มเกม
+        fetch(`/game/${gameName}/StartGame/${roomId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Game started!');
+            }
         });
     </script>
     <script src="~/js/notice.js" asp-append-version="true"></script>

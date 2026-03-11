@@ -140,6 +140,47 @@ public IActionResult TestRoom(string gameName, int roomId)
         return Ok(room);
     }
 
+[HttpPut("{roomId}/ready")]
+public async Task<IActionResult> ReadyPlayer(int roomId)
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+    if (currentUser == null)
+        return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+
+
+    var room = await _context.Rooms
+        .Include(r => r.Players)
+        .FirstOrDefaultAsync(r => r.Id == roomId);
+
+    if (room == null)
+        return NotFound("Room not found");
+
+    
+    var player = await _context.RoomPlayers
+        .FirstOrDefaultAsync(p =>
+            p.RoomId == roomId &&
+            p.UserId == userProfile.Id &&
+            p.Status == PlayerStatus.Active);
+
+    if (player == null)
+        return NotFound("Player not found");
+
+    player.IsReady = !player.IsReady;
+
+    await _context.SaveChangesAsync();
+
+    await _hub.Clients
+            .Group($"room-{roomId}")
+            .SendAsync("PlayerReady", roomId);
+
+    return Ok("Ok");
+    }
+
+
 [HttpPut("{roomId}/start")]
 public async Task<IActionResult> StartRoom(int roomId)
 {   
@@ -155,7 +196,6 @@ public async Task<IActionResult> StartRoom(int roomId)
 
     var room = await _context.Rooms
         .Include(r => r.Players)
-        .Include(r=> r.OwnerId)
         .FirstOrDefaultAsync(r => r.Id == roomId);
 
     if (room == null)
@@ -167,7 +207,7 @@ public async Task<IActionResult> StartRoom(int roomId)
 
     bool roomReady = true;
 
-    foreach (var player in room.Players)
+    foreach (var player in room.Players.Where(p => p.Status == PlayerStatus.Active))
     {
         if (!player.IsReady)
         {
@@ -310,7 +350,7 @@ public async Task<IActionResult> KickPlayer(int roomId, int playerId)
         return BadRequest("Cannot kick room owner");
 
     // เตะออก
-    _context.RoomPlayers.Remove(player);
+    player.Status = PlayerStatus.Kicked;
 
     await _context.SaveChangesAsync();
 

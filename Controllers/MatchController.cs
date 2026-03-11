@@ -59,6 +59,7 @@ var rooms = _context.Rooms
         OwnerId = r.RoomOwner!.Id,
         GameMode = r.GameMode,
         RoomStatus = r.Status,
+        PlayTime = r.PlayDateTime,
 
         RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
         {
@@ -144,8 +145,8 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
     if (userProfile == null)
         return BadRequest("User profile not found");
 
-    bool isAmongUs = room.Game!.GameName == "Among Us";
-
+    bool isAmongUs = room.Game!.GameName == "Among Us" || room.Game!.GameName == "Peak" ;
+    
     var gameHasRoles = await _context.GameRoles
         .AnyAsync(r => r.GameId == room.GameId);
 
@@ -161,22 +162,21 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
         return BadRequest("Avatar is required");
     }
 
-    // กัน join ซ้ำ
-    var alreadyInRoom = room.Players
-        .Any(p => p.UserId == userProfile.Id
-               && p.Status != PlayerStatus.Rejected);
+    var existingPlayer = room.Players
+        .FirstOrDefault(p => p.UserId == userProfile.Id);
 
-    if (alreadyInRoom)
+    if (existingPlayer != null)
     {
-        var alreadyInQueue = room.Players
-            .Any(p => p.UserId == userProfile.Id
-                   && p.Status == PlayerStatus.Queue);
-
-        if (alreadyInQueue)
+        if (existingPlayer.Status == PlayerStatus.Queue)
             return BadRequest("You are waiting for queue");
 
-        return BadRequest("You already joined this room");
-    }
+        if (existingPlayer.Status == PlayerStatus.Active)
+            return BadRequest("You already joined this room");
+
+        if (existingPlayer.Status == PlayerStatus.Kicked)
+            return BadRequest("You were kicked from this room");
+        
+}
 
     var isPrivate = room.RoomSetting!.IsPrivate;
 
@@ -207,10 +207,18 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
 
     if (gameHasRanks)
     {
-        rankId = await _context.GameRanks
-            .Where(r => r.GameId == room.GameId)
-            .Select(r => r.Id)
-            .FirstOrDefaultAsync();
+        if (request.RankId == null)
+            return BadRequest("Rank is required");
+
+        var rank = await _context.GameRanks
+            .FirstOrDefaultAsync(r =>
+                r.Id == request.RankId &&
+                r.GameId == room.GameId);
+
+        if (rank == null)
+            return BadRequest("Invalid rank");
+
+        rankId = rank.Id;
     }
 
     // Prevent duplicate avatar (Among Us)
@@ -260,6 +268,62 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
 
     await _context.SaveChangesAsync();
 
+    // สร้าง notifications
+    if (isPrivate)
+    {
+        // แจ้งเจ้าของห้องว่ามีคนขอ join
+        var ownerNotification = new Notification
+        {
+            UserProfileId = room.OwnerId,
+            RoomId = room.Id,
+            ActorUserId = userProfile.Id,
+            Message = $"{userProfile.Nickname} requested to join your room '{room.RoomName}'",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+        _context.Notifications.Add(ownerNotification);
+
+        // แจ้ง user ว่าอยู่ใน queue
+        var userNotification = new Notification
+        {
+            UserProfileId = userProfile.Id,
+            RoomId = room.Id,
+            ActorUserId = userProfile.Id,
+            Message = $"You are in the queue for room '{room.RoomName}'. Waiting for owner's approval.",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+        _context.Notifications.Add(userNotification);
+    }
+    else
+    {
+        // แจ้งเจ้าของห้องว่ามีคน join สำเร็จ
+        var ownerNotification = new Notification
+        {
+            UserProfileId = room.OwnerId,
+            RoomId = room.Id,
+            ActorUserId = userProfile.Id,
+            Message = $"{userProfile.Nickname} has joined your room '{room.RoomName}'",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+        _context.Notifications.Add(ownerNotification);
+
+        // แจ้ง user ว่า join สำเร็จ
+        var userNotification = new Notification
+        {
+            UserProfileId = userProfile.Id,
+            RoomId = room.Id,
+            ActorUserId = userProfile.Id,
+            Message = $"You successfully joined room '{room.RoomName}'",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+        _context.Notifications.Add(userNotification);
+    }
+
+    await _context.SaveChangesAsync();
+
     // realtime update rooms list
     await _hub.Clients.Group(room.Game.GameName)
         .SendAsync("PlayerJoinedRoom", room.Game.GameName);
@@ -283,6 +347,7 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
             : "Joined room"
     });
 }
+
 }
 }
 //test//

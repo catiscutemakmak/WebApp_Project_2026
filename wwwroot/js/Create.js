@@ -1,6 +1,8 @@
 let selectedAvatar = null;
 let selectedRoomId = null;
+let selectedRankId = null;
 let pendingRoomData = null;
+let pickerMode = null; 
 const amongUsAvatars = [
 "/images/amongus/Banana.webp",
 "/images/amongus/Blue.webp",
@@ -17,8 +19,44 @@ const amongUsAvatars = [
 "/images/amongus/Red.webp",
 "/images/amongus/Tan.webp",
 "/images/amongus/White.webp",
-"/images/amongus/Yellow.webp"
+"/images/amongus/Yellow.webp",
+"/images/amongus/Black.webp"
 ];
+
+const peakAvatars = [
+"/images/Peak/Red.webp",
+"/images/Peak/Orange.webp",
+"/images/Peak/Yellow.webp",
+"/images/Peak/Lime.webp",
+"/images/Peak/Green.webp",
+"/images/Peak/Turquoise.webp",
+"/images/Peak/Blue.webp",
+"/images/Peak/Purple.webp",
+"/images/Peak/Pink.webp"
+
+];
+
+ranks = []
+async function reloadRank(gamename) {
+
+  try {
+
+    const res = await fetch(`/api/get/rank/${gamename}`);
+
+    if (!res.ok) {
+      throw new Error("Reload rank failed");
+    }
+
+    ranks = await res.json();
+    
+
+  } catch (err) {
+
+    console.error("Reload rank error:", err);
+
+  }
+
+}
 
 /* =========================
    DATE + TIME PICKER
@@ -235,6 +273,10 @@ const form = document.getElementById("create-room-form");
 
 form.addEventListener("submit", async function(e){
 
+        if(!form.checkValidity()){
+        form.reportValidity();
+        return;
+    }
     e.preventDefault();
 
     const formData = new FormData(form);
@@ -257,44 +299,129 @@ form.addEventListener("submit", async function(e){
         )
     };
     console.log(data.game);
+    pendingRoomData = data;
     // ⭐ ถ้าเป็น Among Us ให้เปิด avatar picker ก่อน
-    if(data.game === "Among Us"){
+    if(data.game === "Among Us" || data.game === "Peak"){
 
-        pendingRoomData = data;
-        openAvatarPicker();
+        
+        openAvatarPicker(data.game);
         return;
 
     }
-
-    // ⭐ เกมอื่นสร้างห้องเลย
-    createRoom(data);
+    await reloadRank(data.game);
+    openRankPicker();
+    return;
 
 });
 
 /* =========================
-   AVATAR PICKER
+   RANK PICKER
 ========================= */
 
-function openAvatarPicker(){
-    console.log("open avatar picker");
+function openRankPicker(){
+
+    pickerMode = "rank";
+
+    const picker = document.getElementById("avatarPicker");
+    const grid = document.getElementById("avatarGrid");
+    const confirmBtn = document.getElementById("avatarConfirm");
+    const showname = document.getElementById("ShowName");
+
+    showname.innerText = "Select Your Rank";
+    picker.addEventListener("click", (e) => {
+
+    const box = document.querySelector(".avatar-box");
+
+    if (!box.contains(e.target)) {
+        picker.classList.add("hide");
+    }
+
+    });
+    grid.innerHTML="";
+    confirmBtn.disabled = true;
+
+    const minRankName = minRank.value;
+    const maxRankName = maxRank.value;
+
+    const minIndex = ranks.findIndex(r => r.rankName === minRankName);
+    const maxIndex = ranks.findIndex(r => r.rankName === maxRankName);
+
+    ranks.forEach((p,index)=>{
+
+        const img = document.createElement("img");
+
+        img.src = p.rankImageUrl;
+        img.classList.add("rank-img");
+
+        const isBelowMin = minIndex !== -1 && index < minIndex;
+        const isAboveMax = maxIndex !== -1 && index > maxIndex;
+
+        if(isBelowMin || isAboveMax){
+
+            img.classList.add("disabled");
+
+        }else{
+
+            img.onclick=()=>{
+
+                document
+                .querySelectorAll("#avatarGrid img")
+                .forEach(i=>i.classList.remove("selected"));
+
+                img.classList.add("selected");
+
+                selectedRankId = p.id;
+
+                confirmBtn.disabled = false;
+
+            };
+
+        }
+
+        grid.appendChild(img);
+
+    });
+
+    picker.classList.remove("hide");
+
+}
+
+
+/* =========================
+   Rank PICKER
+========================= */
+
+function openAvatarPicker(game){
+
+    pickerMode = "avatar";
+
     const picker = document.getElementById("avatarPicker");
     const grid = document.getElementById("avatarGrid");
     const confirmBtn = document.getElementById("avatarConfirm");
 
-    grid.innerHTML="";
+    grid.innerHTML = "";
     confirmBtn.disabled = true;
 
-    amongUsAvatars.forEach(src=>{
+    let avatars = [];
+
+    if(game === "Among Us"){
+        avatars = amongUsAvatars;
+    }
+
+    if(game === "Peak"){
+        avatars = peakAvatars;
+    }
+
+    avatars.forEach(src => {
 
         const img = document.createElement("img");
-
         img.src = src;
 
-        img.onclick=()=>{
+        img.onclick = () => {
 
             document
             .querySelectorAll("#avatarGrid img")
-            .forEach(i=>i.classList.remove("selected"));
+            .forEach(i => i.classList.remove("selected"));
 
             img.classList.add("selected");
 
@@ -309,21 +436,34 @@ function openAvatarPicker(){
     });
 
     picker.classList.remove("hide");
-
 }
-
 /* =========================
-   AVATAR CONFIRM
+   AVATAR RANK CONFIRM 
 ========================= */
 
 document.getElementById("avatarConfirm").onclick = async () => {
-    console.log(pendingRoomData)
-    if(!selectedAvatar || !pendingRoomData) return ;
+
+    if(!pendingRoomData) return;
 
     const confirmBtn = document.getElementById("avatarConfirm");
     confirmBtn.disabled = true;
 
-    pendingRoomData.avatar = selectedAvatar;
+    if(pickerMode === "avatar"){
+
+        if(!selectedAvatar) return;
+
+        pendingRoomData.avatar = selectedAvatar;
+
+    }
+
+    if(pickerMode === "rank"){
+
+        if(!selectedRankId) return;
+
+        pendingRoomData.rankId = selectedRankId;
+
+    }
+
     createRoom(pendingRoomData);
 
 };

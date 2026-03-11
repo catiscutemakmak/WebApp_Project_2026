@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using hateekub.Data;
 using hateekub.Models;
 using hateekub.DTOS;
@@ -95,6 +96,20 @@ public async Task<IActionResult> AcceptQueue(int roomId, int queuePlayerId)
 
     await _context.SaveChangesAsync();
 
+    // สร้าง notification แจ้ง player ที่ถูกรับเข้าห้อง
+    var notification = new Notification
+    {
+        UserProfileId = queuePlayerId,
+        RoomId = roomId,
+        ActorUserId = userProfile!.Id,
+        Message = $"Your request to join room '{room.RoomName}' has been accepted by the owner",
+        CreatedAt = DateTime.UtcNow,
+        IsRead = false
+    };
+    _context.Notifications.Add(notification);
+
+    await _context.SaveChangesAsync();
+
     await _hub.Clients
     .Group($"room-{roomId}")
     .SendAsync("QueueUpdated",roomId);
@@ -139,6 +154,21 @@ public async Task<IActionResult> RejectQueue(int roomId, int queuePlayerId)
     queuePlayer.Status = PlayerStatus.Rejected;
 
     await _context.SaveChangesAsync();
+
+    // สร้าง notification แจ้ง player ที่ถูกปฏิเสธ
+    var notification = new Notification
+    {
+        UserProfileId = queuePlayerId,
+        RoomId = roomId,
+        ActorUserId = userProfile!.Id,
+        Message = $"Your request to join room '{room.RoomName}' has been rejected by the owner",
+        CreatedAt = DateTime.UtcNow,
+        IsRead = false
+    };
+    _context.Notifications.Add(notification);
+
+    await _context.SaveChangesAsync();
+
     await _hub.Clients
     .Group($"room-{roomId}")
     .SendAsync("QueueUpdated",roomId);
@@ -171,6 +201,31 @@ public async Task<IActionResult> MyQueueStatus(int roomId)
         : (string?)null;
 
     return Ok(new { status = player.Status.ToString(), roomUrl });
+}
+
+[Authorize]
+[HttpDelete("{roomId}/cancel-queue")]
+public async Task<IActionResult> CancelQueue(int roomId)
+{
+    var currentUser = await _userManager.GetUserAsync(User);
+    if (currentUser == null) return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+    if (userProfile == null) return NotFound();
+
+    var queuePlayer = await _context.RoomPlayers
+        .FirstOrDefaultAsync(p => p.RoomId == roomId
+                               && p.UserId == userProfile.Id
+                               && (p.Status == PlayerStatus.Queue || p.Status == PlayerStatus.Rejected));
+
+    if (queuePlayer == null)
+        return NotFound("Queue entry not found");
+
+    _context.RoomPlayers.Remove(queuePlayer);
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Queue cancelled" });
 }
 
 [HttpGet("my-queue-rooms")]

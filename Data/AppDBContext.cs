@@ -122,6 +122,12 @@ namespace hateekub.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Notification>()
+                .HasOne(n => n.ActorUser)
+                .WithMany()
+                .HasForeignKey(n => n.ActorUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Notification>()
                 .HasOne(n => n.Room)
                 .WithMany()
                 .HasForeignKey(n => n.RoomId)
@@ -136,7 +142,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = false
         },
         new Game
         {
@@ -146,7 +153,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = true
         },
         new Game
         {
@@ -156,7 +164,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = true
         },
         new Game
         {
@@ -166,7 +175,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = false
         },
         new Game
         {
@@ -176,7 +186,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = false
         },
         new Game
         {
@@ -186,7 +197,8 @@ namespace hateekub.Data
             MaxPlayers = 5,
             MinPlayers = 1,
             HasRoles = true,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = false
         },
         new Game
         {
@@ -196,7 +208,8 @@ namespace hateekub.Data
             MaxPlayers = 15,
             MinPlayers = 4,
             HasRoles = false,
-            HasRanks = false
+            HasRanks = false,
+            IsDuplicateRole = true
 
         },
         new Game
@@ -207,7 +220,8 @@ namespace hateekub.Data
             MaxPlayers = 4,
             MinPlayers = 1,
             HasRoles = false,
-            HasRanks = false
+            HasRanks = false,
+            IsDuplicateRole = true
         },
         new Game
         {
@@ -217,7 +231,8 @@ namespace hateekub.Data
             MaxPlayers = 4,
             MinPlayers = 1,
             HasRoles = false,
-            HasRanks = true
+            HasRanks = true,
+            IsDuplicateRole = true
         }
     );
 
@@ -272,50 +287,50 @@ namespace hateekub.Data
                 new GameRank { Id = 4, GameId = 2, RankName = "Gold", RankImageUrl = "/images/ranks/val/Gold.webp" },
                 new GameRank { Id = 5, GameId = 2, RankName = "Platinum", RankImageUrl = "/images/ranks/val/Platinum.webp" },
                 new GameRank { Id = 6, GameId = 2, RankName = "Diamond", RankImageUrl = "/images/ranks/val/Diamond.webp" },
-                new GameRank { Id = 43, GameId = 2, RankName = "Ascendant", RankImageUrl = "/images/ranks/val/Ascendant.webp" },
-                new GameRank { Id = 7, GameId = 2, RankName = "Immortal", RankImageUrl = "/images/ranks/val/Immortal.webp" },
-                new GameRank { Id = 8, GameId = 2, RankName = "Radiant", RankImageUrl = "/images/ranks/val/Radiant.webp" },
+                new GameRank { Id = 7, GameId = 2, RankName = "Ascendant", RankImageUrl = "/images/ranks/val/Ascendant.webp" },
+                new GameRank { Id = 8, GameId = 2, RankName = "Immortal", RankImageUrl = "/images/ranks/val/Immortal.webp" },
+                new GameRank { Id = 9, GameId = 2, RankName = "Radiant", RankImageUrl = "/images/ranks/val/Radiant.webp" },
                 // Mobile Legends Ranks (GameId = 5)
-                new GameRank { Id = 9, GameId = 5, RankName = "Warrior", RankImageUrl = "/images/ranks/mlbb/Warrior.webp" },
-                new GameRank { Id = 10, GameId = 5, RankName = "Elite", RankImageUrl = "/images/ranks/mlbb/Elite.webp" },
-                new GameRank { Id = 11, GameId = 5, RankName = "Master", RankImageUrl = "/images/ranks/mlbb/Master.webp" },
-                new GameRank { Id = 12, GameId = 5, RankName = "Grandmaster", RankImageUrl = "/images/ranks/mlbb/Grandmaster.webp" },
-                new GameRank { Id = 13, GameId = 5, RankName = "Epic", RankImageUrl = "/images/ranks/mlbb/Epic.webp" },
-                new GameRank { Id = 14, GameId = 5, RankName = "Legend", RankImageUrl = "/images/ranks/mlbb/Legend.webp" },
-                new GameRank { Id = 15, GameId = 5, RankName = "Mythic", RankImageUrl = "/images/ranks/mlbb/Mythic.webp" },
+                new GameRank { Id = 10, GameId = 5, RankName = "Warrior", RankImageUrl = "/images/ranks/mlbb/Warrior.webp" },
+                new GameRank { Id = 11, GameId = 5, RankName = "Elite", RankImageUrl = "/images/ranks/mlbb/Elite.webp" },
+                new GameRank { Id = 12, GameId = 5, RankName = "Master", RankImageUrl = "/images/ranks/mlbb/Master.webp" },
+                new GameRank { Id = 13, GameId = 5, RankName = "Grandmaster", RankImageUrl = "/images/ranks/mlbb/Grandmaster.webp" },
+                new GameRank { Id = 14, GameId = 5, RankName = "Epic", RankImageUrl = "/images/ranks/mlbb/Epic.webp" },
+                new GameRank { Id = 15, GameId = 5, RankName = "Legend", RankImageUrl = "/images/ranks/mlbb/Legend.webp" },
+                new GameRank { Id = 16, GameId = 5, RankName = "Mythic", RankImageUrl = "/images/ranks/mlbb/Mythic.webp" },
 
                 // Overwatch Ranks (GameId = 3)
-                new GameRank { Id = 16, GameId = 3, RankName = "Bronze", RankImageUrl = "/images/ranks/Ow2/Bronze.webp" },
-                new GameRank { Id = 17, GameId = 3, RankName = "Silver", RankImageUrl = "/images/ranks/Ow2/Silver.webp" },
-                new GameRank { Id = 18, GameId = 3, RankName = "Gold", RankImageUrl = "/images/ranks/Ow2/Gold.webp" },
-                new GameRank { Id = 19, GameId = 3, RankName = "Platinum", RankImageUrl = "/images/ranks/Ow2/Platinum.webp" },
-                new GameRank { Id = 20, GameId = 3, RankName = "Diamond", RankImageUrl = "/images/ranks/Ow2/Diamond.webp" },
-                new GameRank { Id = 21, GameId = 3, RankName = "Master", RankImageUrl = "/images/ranks/Ow2/Master.webp" },
-                new GameRank { Id = 22, GameId = 3, RankName = "Grandmaster", RankImageUrl = "/images/ranks/Ow2/Grandmaster.webp" },
+                new GameRank { Id = 17, GameId = 3, RankName = "Bronze", RankImageUrl = "/images/ranks/Ow2/Bronze.webp" },
+                new GameRank { Id = 18, GameId = 3, RankName = "Silver", RankImageUrl = "/images/ranks/Ow2/Silver.webp" },
+                new GameRank { Id = 19, GameId = 3, RankName = "Gold", RankImageUrl = "/images/ranks/Ow2/Gold.webp" },
+                new GameRank { Id = 20, GameId = 3, RankName = "Platinum", RankImageUrl = "/images/ranks/Ow2/Platinum.webp" },
+                new GameRank { Id = 21, GameId = 3, RankName = "Diamond", RankImageUrl = "/images/ranks/Ow2/Diamond.webp" },
+                new GameRank { Id = 22, GameId = 3, RankName = "Master", RankImageUrl = "/images/ranks/Ow2/Master.webp" },
+                new GameRank { Id = 23, GameId = 3, RankName = "Grandmaster", RankImageUrl = "/images/ranks/Ow2/Grandmaster.webp" },
 
                 // LOL Ranks (GameId = 4)
-                new GameRank { Id = 23, GameId = 4, RankName = "Unranked", RankImageUrl = "/images/ranks/LoL/Unranked.webp" },
-                new GameRank { Id = 24, GameId = 4, RankName = "Iron", RankImageUrl = "/images/ranks/LoL/Iron.webp" },
-                new GameRank { Id = 25, GameId = 4, RankName = "Bronze", RankImageUrl = "/images/ranks/LoL/Bronze.webp" },
-                new GameRank { Id = 26, GameId = 4, RankName = "Silver", RankImageUrl = "/images/ranks/LoL/Silver.webp" },
-                new GameRank { Id = 27, GameId = 4, RankName = "Gold", RankImageUrl = "/images/ranks/LoL/Gold.webp" },
-                new GameRank { Id = 28, GameId = 4, RankName = "Platinum", RankImageUrl = "/images/ranks/LoL/Platinum.webp" },
-                new GameRank { Id = 29, GameId = 4, RankName = "Emerald", RankImageUrl = "/images/ranks/LoL/Emerald.webp" },
-                new GameRank { Id = 30, GameId = 4, RankName = "Diamond", RankImageUrl = "/images/ranks/LoL/Diamond.webp" },
-                new GameRank { Id = 31, GameId = 4, RankName = "Master", RankImageUrl = "/images/ranks/LoL/Master.webp" },
-                new GameRank { Id = 32, GameId = 4, RankName = "Grandmaster", RankImageUrl = "/images/ranks/LoL/Grandmaster.webp" },
-                new GameRank { Id = 33, GameId = 4, RankName = "Challenger", RankImageUrl = "/images/ranks/LoL/Challenger.webp" },
+                new GameRank { Id = 24, GameId = 4, RankName = "Unranked", RankImageUrl = "/images/ranks/LoL/Unranked.webp" },
+                new GameRank { Id = 25, GameId = 4, RankName = "Iron", RankImageUrl = "/images/ranks/LoL/Iron.webp" },
+                new GameRank { Id = 26, GameId = 4, RankName = "Bronze", RankImageUrl = "/images/ranks/LoL/Bronze.webp" },
+                new GameRank { Id = 27, GameId = 4, RankName = "Silver", RankImageUrl = "/images/ranks/LoL/Silver.webp" },
+                new GameRank { Id = 28, GameId = 4, RankName = "Gold", RankImageUrl = "/images/ranks/LoL/Gold.webp" },
+                new GameRank { Id = 29, GameId = 4, RankName = "Platinum", RankImageUrl = "/images/ranks/LoL/Platinum.webp" },
+                new GameRank { Id = 30, GameId = 4, RankName = "Emerald", RankImageUrl = "/images/ranks/LoL/Emerald.webp" },
+                new GameRank { Id = 31, GameId = 4, RankName = "Diamond", RankImageUrl = "/images/ranks/LoL/Diamond.webp" },
+                new GameRank { Id = 32, GameId = 4, RankName = "Master", RankImageUrl = "/images/ranks/LoL/Master.webp" },
+                new GameRank { Id = 33, GameId = 4, RankName = "Grandmaster", RankImageUrl = "/images/ranks/LoL/Grandmaster.webp" },
+                new GameRank { Id = 34, GameId = 4, RankName = "Challenger", RankImageUrl = "/images/ranks/LoL/Challenger.webp" },
                 
                 // PUBG Ranks (GameId = 9)
-                new GameRank { Id = 34, GameId = 9, RankName = "Bronze", RankImageUrl = "/images/ranks/Pubg/Bronze.webp" },
-                new GameRank { Id = 35, GameId = 9, RankName = "Silver", RankImageUrl = "/images/ranks/Pubg/Silver.webp" },
-                new GameRank { Id = 36, GameId = 9, RankName = "Gold", RankImageUrl = "/images/ranks/Pubg/Gold.webp" },
-                new GameRank { Id = 37, GameId = 9, RankName = "Platinum", RankImageUrl = "/images/ranks/Pubg/Platinum.webp" },
-                new GameRank { Id = 38, GameId = 9, RankName = "Crown", RankImageUrl = "/images/ranks/Pubg/Crown.webp" },
-                new GameRank { Id = 39, GameId = 9, RankName = "Ace", RankImageUrl = "/images/ranks/Pubg/Ace.webp" },
-                new GameRank { Id = 40, GameId = 9, RankName = "AceMaster", RankImageUrl = "/images/ranks/Pubg/AceMaster.webp" },
-                new GameRank { Id = 41, GameId = 9, RankName = "AceDominator", RankImageUrl = "/images/ranks/Pubg/AceDominator.webp" },
-                new GameRank { Id = 42, GameId = 9, RankName = "Conqueror", RankImageUrl = "/images/ranks/Pubg/Conqueror.webp" },
+                new GameRank { Id = 35, GameId = 9, RankName = "Bronze", RankImageUrl = "/images/ranks/Pubg/Bronze.webp" },
+                new GameRank { Id = 36, GameId = 9, RankName = "Silver", RankImageUrl = "/images/ranks/Pubg/Silver.webp" },
+                new GameRank { Id = 37, GameId = 9, RankName = "Gold", RankImageUrl = "/images/ranks/Pubg/Gold.webp" },
+                new GameRank { Id = 38, GameId = 9, RankName = "Platinum", RankImageUrl = "/images/ranks/Pubg/Platinum.webp" },
+                new GameRank { Id = 39, GameId = 9, RankName = "Crown", RankImageUrl = "/images/ranks/Pubg/Crown.webp" },
+                new GameRank { Id = 40, GameId = 9, RankName = "Ace", RankImageUrl = "/images/ranks/Pubg/Ace.webp" },
+                new GameRank { Id = 41, GameId = 9, RankName = "AceMaster", RankImageUrl = "/images/ranks/Pubg/AceMaster.webp" },
+                new GameRank { Id = 42, GameId = 9, RankName = "AceDominator", RankImageUrl = "/images/ranks/Pubg/AceDominator.webp" },
+                new GameRank { Id = 43, GameId = 9, RankName = "Conqueror", RankImageUrl = "/images/ranks/Pubg/Conqueror.webp" },
 
                 // RoV Ranks (GameId = 6)
                 new GameRank { Id = 44, GameId = 6, RankName = "Bronze", RankImageUrl = "/images/ranks/RoV/Bronze.webp" },

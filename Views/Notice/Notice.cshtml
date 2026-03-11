@@ -1,4 +1,4 @@
-@model List<hateekub.Models.Notification>
+@model List<hateekub.DTOS.NotificationDTO>
 @{
     ViewData["Title"] = "Notification -";
 }
@@ -12,7 +12,23 @@
 
 @section Scripts {
     <script>
-        const notifications = @Html.Raw(Json.Serialize(Model ?? new List<hateekub.Models.Notification>()));
+        const notifications = @Html.Raw(Json.Serialize(Model ?? new List<hateekub.DTOS.NotificationDTO>()));
+        // Mark all as read เมื่อเข้าหน้า Notice
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/notice/mark-all-read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(() => {
+                // อัปเดต badge ให้เป็น 0
+                const badge = document.getElementById('notificationBadge');
+                if (badge) {
+                    badge.style.display = 'none';
+                }
+            });
+        });
     </script>
     <script src="~/js/notice.js" asp-append-version="true"></script>
 }

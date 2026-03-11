@@ -51,7 +51,7 @@ public class RoomController : Controller
     }
 
     // หน้า View ของ Room
-[HttpGet("{roomId}")]
+[HttpGet("testroom/{roomId}")]
 public async Task<IActionResult> Room(string gameName, int roomId)
 {
     var currentUser = await _userManager.GetUserAsync(User);
@@ -75,6 +75,15 @@ public async Task<IActionResult> Room(string gameName, int roomId)
         return Redirect($"/game/{gameName}");
     }
 
+    ViewBag.GameName = gameName;
+    ViewBag.RoomId = roomId;
+
+    return View();
+}
+
+[HttpGet("{roomId}")]
+public IActionResult TestRoom(string gameName, int roomId)
+{
     ViewBag.GameName = gameName;
     ViewBag.RoomId = roomId;
 

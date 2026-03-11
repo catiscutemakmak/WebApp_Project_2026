@@ -14,12 +14,29 @@ const amongUsAvatars = [
 "/images/amongus/Red.webp",
 "/images/amongus/Tan.webp",
 "/images/amongus/White.webp",
-"/images/amongus/Yellow.webp"
+"/images/amongus/Yellow.webp",
+"/images/amongus/Black.webp"
 ];
+
+const peakAvatars = [
+"/images/Peak/Red.webp",
+"/images/Peak/Orange.webp",
+"/images/Peak/Yellow.webp",
+"/images/Peak/Lime.webp",
+"/images/Peak/Green.webp",
+"/images/Peak/Turquoise.webp",
+"/images/Peak/Blue.webp",
+"/images/Peak/Purple.webp",
+"/images/Peak/Pink.webp"
+
+];
+
 let currentPage = 1;
 const roomsPerPage =5;
 let selectedAvatar = null;
 let selectedRoomId = null;
+let selectedRankId = null;
+let selectedRoleName = null;
 async function reloadRooms() {
 
   try {
@@ -37,6 +54,27 @@ async function reloadRooms() {
   } catch (err) {
 
     console.error("Reload rooms error:", err);
+
+  }
+
+}
+
+async function reloadRank() {
+
+  try {
+
+    const res = await fetch(`/api/get/rank/${gameName}`);
+
+    if (!res.ok) {
+      throw new Error("Reload rank failed");
+    }
+
+    ranks = await res.json();
+    
+
+  } catch (err) {
+
+    console.error("Reload rank error:", err);
 
   }
 
@@ -75,20 +113,12 @@ connection.on("PlayerJoinedRoom", async (updatedGameName) => {
 
 });
 
-connection.on("QueueUpdated", async () => {
-  if (typeof initFloatingCards === "function") await initFloatingCards();
-  if (typeof initFloatingQueue === "function") await initFloatingQueue();
-});
-window._queueHandlerRegistered = true;
-
-
-
-
 /* ================================
    GLOBAL STATE
 ================================ */
 let rooms = [];
 let roles = [];
+let ranks = [];
 
 /* ================================
    INIT
@@ -101,8 +131,9 @@ async function init() {
 
     const rolesRes = await fetch(`/game/${gameName}/roles`);
     roles = await rolesRes.json();
-
+    await reloadRank();
     await reloadRooms();
+    
 
   } catch(err){
 
@@ -233,7 +264,7 @@ function PlayerCard(player, OwnerId) {
 
     let rankImg;
 
-  if (gameName === "Among Us") {
+  if (gameName === "Among Us" || gameName === "Peak") {
 
     rankImg = player.avatar
       ? player.avatar
@@ -245,9 +276,10 @@ function PlayerCard(player, OwnerId) {
   }
 
   div.innerHTML = `
-    <img class="player-profile"
-      src="${player.userProfile ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj5K_Hlzgq-p_0Xfv_vykmcOtuXhBI7VFBxg&s'}">
-
+  <img class="player-profile"
+      src="${player.userProfile || '/images/default-profile.png'}"
+      onerror="this.src='/images/default-profile.png'">
+  
     ${player.userId === OwnerId
       ? "<span class='empty-crown'>👑</span>"
       : "<span class='empty-crown'>🎮</span>"}
@@ -346,11 +378,8 @@ function createJoinButton(roomId) {
 
   btn.addEventListener("click", async () => {
 
-      if(gameName === "Among Us"){
-      selectedRoomId = roomId;
-      openAvatarPicker();
-      return;
-  }
+    selectedRoomId = roomId;
+
     const selectedRole = document.querySelector(
       `input[name="role-${roomId}"]:checked`
     );
@@ -361,7 +390,22 @@ function createJoinButton(roomId) {
     }
 
     const roleName = selectedRole ? selectedRole.value : null;
+    selectedRoleName = roleName;
 
+    // Among Us → Avatar Picker
+    if (gameName === "Among Us" || gameName === "Peak") {
+      openAvatarPicker();
+      return;
+    }
+
+    // Game ที่มี Rank
+    if (ranks && ranks.length > 0) {
+      const room = rooms.find(r => r.roomId === roomId);
+      openRankPicker(room);
+      return;
+    }
+
+    // Game ที่ไม่มี Rank / Avatar → join ตรง
     try {
 
       const response = await fetch(
@@ -374,21 +418,19 @@ function createJoinButton(roomId) {
       );
 
       if (response.ok) {
-      const data = await response.json();
 
-      if (data.roomUrl) {
-        window.location.href = data.roomUrl;
-      } else {
-        // private room → เข้าร่วม SignalR group และแสดง tab ทันที
-        // ลบ roomId ออกจาก dismissedQueues เผื่อเคย dismiss ไว้ก่อนหน้า
-        const dismissed = JSON.parse(localStorage.getItem("dismissedQueues") || "[]");
-        const updated = dismissed.filter(id => id !== data.roomId);
-        localStorage.setItem("dismissedQueues", JSON.stringify(updated));
-        if (connection.state === "Connected") {
-          connection.invoke("AcceptRejectQueue", String(data.roomId));
+        const data = await response.json();
+
+        if (data.roomUrl) {
+          window.location.href = data.roomUrl;
+        } else {
+
+          if (typeof initFloatingQueue === "function") {
+            initFloatingQueue();
+          }
+
         }
-        if (typeof initFloatingQueue === "function") initFloatingQueue();
-      }
+
       } else {
 
         const errorText = await response.text();
@@ -403,7 +445,6 @@ function createJoinButton(roomId) {
   });
 
   return btn;
-
 }
 /* ================================
    REQUIREMENT BAR
@@ -415,22 +456,45 @@ function createRequirementBar(room) {
 
   const s = room.roomSetting ?? {};
 
-  const items = [
+let playTimeText = null;
+
+if(room.playTime){
+
+    const date = new Date(room.playTime);
+
+    const day = date.toLocaleDateString(undefined,{
+        year:"numeric",
+        month:"short",
+        day:"numeric"
+    });
+
+    const time = date.toLocaleTimeString(undefined,{
+        hour:"2-digit",
+        minute:"2-digit"
+    });
+
+    playTimeText = `⏱️ Play time: ${day} - ${time}`;
+}
+
+const items = [
     room.roomStatus === 0 ? "🔵 Waiting Room" : null,
     room.roomStatus === 1 ? "🟠 Room Full" : null,
     room.roomStatus === 2 ? "🔴 Room Start" : null,
- 
+
     room.myStatus === "Active" ? "🟢 In Room" : null,
     room.myStatus === "Queue" ? "🟡 In Queue" : null,
 
     s.minRank ? `Min Rank: ${s.minRank}` : null,
     s.maxRank ? `Max Rank: ${s.maxRank}` : null,
-    s.isPrivate ? "🔒 Private Room" : "🌐 Public Room",
-    s.allowDuplicateRole
-      ? "♻ Duplicate Role Allowed"
-      : "🚫 No Duplicate Role"
 
-  ];
+    s.isPrivate ? "🔒 Private Room" : "🌐 Public Room",
+
+    s.allowDuplicateRole
+        ? "♻ Duplicate Role Allowed"
+        : "🚫 No Duplicate Role",
+
+    formatPlayTime(room.playTime)
+].filter(Boolean);
 
   items.forEach(text => {
 
@@ -468,6 +532,41 @@ function createRequirementBar(room) {
   return bar;
 
 }
+
+function formatPlayTime(playTime){
+
+    if(!playTime) return null;
+
+    const date = new Date(playTime);
+    const now = new Date();
+
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const time = date.toLocaleTimeString(undefined,{
+        hour:"2-digit",
+        minute:"2-digit"
+    });
+
+    if(target.getTime() === today.getTime()){
+        return `🕒 Today ${time}`;
+    }
+
+    if(target.getTime() === tomorrow.getTime()){
+        return `🕒 Tomorrow ${time}`;
+    }
+
+    const day = date.toLocaleDateString(undefined,{
+        day:"numeric",
+        month:"short"
+    });
+
+    return `🕒 ${day} ${time}`;
+}
+
 function renderPagination(totalRooms){
 
   const totalPages = Math.ceil(totalRooms / roomsPerPage);
@@ -519,11 +618,29 @@ function openAvatarPicker(){
 
   const picker = document.getElementById("avatarPicker");
   const grid = document.getElementById("avatarGrid");
+  selectedAvatar = null;
   const confirmBtn = document.getElementById("avatarConfirm");
+  picker.addEventListener("click", (e) => {
 
+  const box = document.querySelector(".avatar-box");
+
+  if (!box.contains(e.target)) {
+    picker.classList.add("hide");
+  }
+
+});
   grid.innerHTML = "";
 
-  amongUsAvatars.forEach(src => {
+let avatars = [];
+  if(gameName === "Among Us"){
+    avatars = amongUsAvatars;
+}
+
+if(gameName === "Peak"){
+    avatars = peakAvatars;
+}
+
+  avatars.forEach(src => {
 
     const img = document.createElement("img");
     img.src = src;
@@ -555,11 +672,19 @@ function openAvatarPicker(){
 }
 document.getElementById("avatarConfirm").onclick = async () => {
 
-  if(!selectedAvatar) return;
-
   document.getElementById("avatarPicker").classList.add("hide");
 
-  await joinRoomWithAvatar(selectedAvatar);
+  if(gameName === "Among Us" || gameName === "Peak"){
+
+    if(!selectedAvatar) return;
+    await joinRoomWithAvatar(selectedAvatar);
+
+  }else{
+
+    if(!selectedRankId) return;
+    await joinRoomWithRank(selectedRankId);
+
+  }
 
 };
 
@@ -575,6 +700,107 @@ async function joinRoomWithAvatar(avatar){
         body: JSON.stringify({
           roleName:null,
           avatar:avatar
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Join room failed");
+    }
+
+    const data = await response.json();
+
+    window.location.href = data.roomUrl;
+
+  } catch (err) {
+
+    console.error("Join room error:", err);
+    alert(err.message);
+
+  }
+
+}
+
+function openRankPicker(room){
+
+  const picker = document.getElementById("avatarPicker");
+  const grid = document.getElementById("avatarGrid");
+  const showname = document.getElementById("ShowName");
+  const confirmBtn = document.getElementById("avatarConfirm");
+
+  showname.innerText = "Select Your Rank";
+  selectedRankId = null;
+  confirmBtn.disabled = true;
+
+    picker.addEventListener("click", (e) => {
+
+    const box = document.querySelector(".avatar-box");
+
+    if (!box.contains(e.target)) {
+        picker.classList.add("hide");
+    }
+
+    });
+  grid.innerHTML = "";
+
+  const minRank = room.roomSetting?.minRank;
+  const maxRank = room.roomSetting?.maxRank;
+
+  const minIndex = ranks.findIndex(r => r.rankName === minRank);
+  const maxIndex = ranks.findIndex(r => r.rankName === maxRank);
+
+  ranks.forEach((r,index) => {
+
+    const img = document.createElement("img");
+    img.src = r.rankImageUrl;
+
+    const isBelowMin = minIndex !== -1 && index < minIndex;
+    const isAboveMax = maxIndex !== -1 && index > maxIndex;
+
+    if (isBelowMin || isAboveMax) {
+
+      img.classList.add("disabled");
+      img.style.opacity = "0.3";
+      img.style.pointerEvents = "none";
+
+    } else {
+
+      img.onclick = () => {
+
+        document.querySelectorAll("#avatarGrid img")
+          .forEach(i => i.classList.remove("selected"));
+
+        img.classList.add("selected");
+
+        selectedRankId = r.id;
+        confirmBtn.disabled = false;
+
+      };
+
+    }
+
+    grid.appendChild(img);
+
+  });
+
+  picker.classList.remove("hide");
+
+}
+
+async function joinRoomWithRank(rankId){
+
+  try {
+
+    const response = await fetch(
+      `/game/${gameName}/JoinRoom/${selectedRoomId}`,
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+          roleName:selectedRoleName,
+          rankId:rankId,
+          avatar:null
         })
       }
     );

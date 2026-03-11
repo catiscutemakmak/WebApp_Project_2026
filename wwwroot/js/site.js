@@ -7,6 +7,9 @@
    FLOATING ROOM CARD
 ================================ */
 
+let _roomPanelExpanded = false;
+let _queuePanelExpanded = false;
+
 function createFloatingCard(room) {
     const card = document.createElement("div");
     card.classList.add("floating-room-card");
@@ -30,15 +33,18 @@ async function initFloatingCards() {
     const container = document.getElementById("floating-room-container");
     if (!container) return;
 
-    container.innerHTML = "";
-
     let joinedRooms = [];
     try {
         const res = await fetch("/api/my-active-rooms");
         if (res.ok) joinedRooms = await res.json();
     } catch { return; }
 
-    if (joinedRooms.length === 0) return;
+    container.innerHTML = "";
+
+    if (joinedRooms.length === 0) {
+        _roomPanelExpanded = false;
+        return;
+    }
 
     // สร้าง panel เก็บ cards
     const panel = document.createElement("div");
@@ -68,9 +74,14 @@ async function initFloatingCards() {
         panel.appendChild(createFloatingCard(room));
     });
 
-    let isExpanded = false;
+    let isExpanded = _roomPanelExpanded;
+    if (isExpanded) {
+        panel.classList.remove("hidden");
+        arrow.textContent = "\u25bc";
+    }
     tab.addEventListener("click", () => {
         isExpanded = !isExpanded;
+        _roomPanelExpanded = isExpanded;
         panel.classList.toggle("hidden", !isExpanded);
         arrow.textContent = isExpanded ? "\u25bc" : "\u25b2";
     });
@@ -99,28 +110,25 @@ function createQueueCard(room) {
             <span class="floating-queue-name">${room.roomName}</span>
             <span class="floating-queue-status">${statusText}</span>
         </div>
-        <button class="floating-queue-cancel" title="Dismiss">&times;</button>
+        <button class="floating-queue-cancel" title="Cancel Queue">&times;</button>
     `;
 
     if (isRejected) {
         card.classList.add("floating-queue-card--rejected");
     }
 
-    card.querySelector(".floating-queue-cancel").addEventListener("click", (e) => {
+    card.querySelector(".floating-queue-cancel").addEventListener("click", async (e) => {
         e.stopPropagation();
-        // เก็บไว้ใน localStorage เพื่อคงไว้ข้าม tab/reload
-        const dismissed = JSON.parse(localStorage.getItem("dismissedQueues") || "[]");
-        if (!dismissed.includes(room.roomId)) {
-            dismissed.push(room.roomId);
-            localStorage.setItem("dismissedQueues", JSON.stringify(dismissed));
-        }
-        card.remove();
-        const container = document.getElementById("floating-queue-container");
-        const remaining = container?.querySelectorAll(".floating-queue-card");
-        const countEl = container?.querySelector(".floating-queue-tab-count");
-        if (countEl && remaining) countEl.textContent = remaining.length;
-        if (!remaining || remaining.length === 0) {
-            if (container) container.innerHTML = "";
+        const res = await fetch(`/api/rooms/${room.roomId}/cancel-queue`, { method: "DELETE" });
+        if (res.ok) {
+            card.remove();
+            const container = document.getElementById("floating-queue-container");
+            const remaining = container?.querySelectorAll(".floating-queue-card");
+            const countEl = container?.querySelector(".floating-queue-tab-count");
+            if (countEl && remaining) countEl.textContent = remaining.length;
+            if (!remaining || remaining.length === 0) {
+                if (container) container.innerHTML = "";
+            }
         }
     });
 
@@ -131,19 +139,18 @@ async function initFloatingQueue() {
     const container = document.getElementById("floating-queue-container");
     if (!container) return;
 
-    container.innerHTML = "";
-
     let queuedRooms = [];
     try {
         const res = await fetch("/api/rooms/my-queue-rooms");
         if (res.ok) queuedRooms = await res.json();
     } catch { return; }
 
-    // กรองสิ่งที่ dismiss ไว้แล้วใน localStorage
-    const dismissed = JSON.parse(localStorage.getItem("dismissedQueues") || "[]");
-    queuedRooms = queuedRooms.filter(r => !dismissed.includes(r.roomId));
+    container.innerHTML = "";
 
-    if (queuedRooms.length === 0) return;
+    if (queuedRooms.length === 0) {
+        _queuePanelExpanded = false;
+        return;
+    }
 
     const panel = document.createElement("div");
     panel.classList.add("floating-queue-panel", "hidden");
@@ -169,9 +176,14 @@ async function initFloatingQueue() {
 
     queuedRooms.forEach(room => panel.appendChild(createQueueCard(room)));
 
-    let isExpanded = false;
+    let isExpanded = _queuePanelExpanded;
+    if (isExpanded) {
+        panel.classList.remove("hidden");
+        arrow.textContent = "\u25bc";
+    }
     tab.addEventListener("click", () => {
         isExpanded = !isExpanded;
+        _queuePanelExpanded = isExpanded;
         panel.classList.toggle("hidden", !isExpanded);
         arrow.textContent = isExpanded ? "\u25bc" : "\u25b2";
     });
@@ -185,33 +197,12 @@ async function updateQueueCard() {
     await initFloatingQueue();
 }
 
-async function initQueueNotifications() {
-    if (typeof signalR === "undefined") return;
-    if (window._queueHandlerRegistered) return;
+document.addEventListener("DOMContentLoaded", initFloatingQueue);
 
-    let allQueueRooms = [];
-    try {
-        const res = await fetch("/api/rooms/my-queue-rooms");
-        if (res.ok) allQueueRooms = await res.json();
-    } catch { return; }
-
-    if (allQueueRooms.length === 0) return;
-
-    const notifConn = new signalR.HubConnectionBuilder()
-        .withUrl("/roomhub")
-        .withAutomaticReconnect()
-        .build();
-
-    notifConn.on("QueueUpdated", async () => {
+// ไม่รัน floating interval บนหน้า Room เพราะมี interval ของตัวเองอยู่แล้ว
+if (typeof roomId === "undefined") {
+    setInterval(async () => {
         await initFloatingCards();
         await initFloatingQueue();
-    });
-
-    // join group ทุก room ที่ยังรอ queue (ทั้ง Queue และ Rejected)
-    notifConn.start().then(() => {
-        allQueueRooms.forEach(r => notifConn.invoke("AcceptRejectQueue", String(r.roomId)));
-    }).catch(err => console.error("Queue notification error:", err));
+    }, 5000);
 }
-
-document.addEventListener("DOMContentLoaded", initFloatingQueue);
-document.addEventListener("DOMContentLoaded", initQueueNotifications);

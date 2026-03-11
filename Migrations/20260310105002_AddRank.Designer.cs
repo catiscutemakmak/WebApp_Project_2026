@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using hateekub.Data;
@@ -11,9 +12,11 @@ using hateekub.Data;
 namespace hateekub.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260310105002_AddRank")]
+    partial class AddRank
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,9 +243,6 @@ namespace hateekub.Migrations
                     b.Property<bool>("HasRoles")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsDuplicateRole")
-                        .HasColumnType("boolean");
-
                     b.Property<int>("MaxPlayers")
                         .HasColumnType("integer");
 
@@ -261,7 +261,6 @@ namespace hateekub.Migrations
                             GameType = "FPS",
                             HasRanks = true,
                             HasRoles = true,
-                            IsDuplicateRole = false,
                             MaxPlayers = 5,
                             MinPlayers = 1
                         },
@@ -272,7 +271,6 @@ namespace hateekub.Migrations
                             GameType = "FPS",
                             HasRanks = true,
                             HasRoles = true,
-                            IsDuplicateRole = true,
                             MaxPlayers = 5,
                             MinPlayers = 1
                         },
@@ -283,7 +281,6 @@ namespace hateekub.Migrations
                             GameType = "FPS",
                             HasRanks = true,
                             HasRoles = true,
-                            IsDuplicateRole = true,
                             MaxPlayers = 5,
                             MinPlayers = 1
                         },
@@ -294,7 +291,6 @@ namespace hateekub.Migrations
                             GameType = "MOBA",
                             HasRanks = true,
                             HasRoles = true,
-                            IsDuplicateRole = false,
                             MaxPlayers = 5,
                             MinPlayers = 1
                         },
@@ -305,7 +301,6 @@ namespace hateekub.Migrations
                             GameType = "MOBA",
                             HasRanks = true,
                             HasRoles = true,
-                            IsDuplicateRole = false,
                             MaxPlayers = 5,
                             MinPlayers = 1
                         },
@@ -316,7 +311,6 @@ namespace hateekub.Migrations
                             GameType = "MOBA",
                             HasRanks = true,
                             HasRoles = true,
-                            IsDuplicateRole = false,
                             MaxPlayers = 5,
                             MinPlayers = 1
                         },
@@ -327,7 +321,6 @@ namespace hateekub.Migrations
                             GameType = "Party",
                             HasRanks = false,
                             HasRoles = false,
-                            IsDuplicateRole = true,
                             MaxPlayers = 15,
                             MinPlayers = 4
                         },
@@ -338,7 +331,6 @@ namespace hateekub.Migrations
                             GameType = "Party",
                             HasRanks = false,
                             HasRoles = false,
-                            IsDuplicateRole = true,
                             MaxPlayers = 4,
                             MinPlayers = 1
                         },
@@ -349,7 +341,6 @@ namespace hateekub.Migrations
                             GameType = "Battle Royale",
                             HasRanks = true,
                             HasRoles = false,
-                            IsDuplicateRole = true,
                             MaxPlayers = 4,
                             MinPlayers = 1
                         });
@@ -999,9 +990,6 @@ namespace hateekub.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ActorUserId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -1019,8 +1007,6 @@ namespace hateekub.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ActorUserId");
 
                     b.HasIndex("RoomId");
 
@@ -1415,11 +1401,6 @@ namespace hateekub.Migrations
 
             modelBuilder.Entity("hateekub.Models.Notification", b =>
                 {
-                    b.HasOne("hateekub.Models.UserProfile", "ActorUser")
-                        .WithMany()
-                        .HasForeignKey("ActorUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("hateekub.Models.Room", "Room")
                         .WithMany()
                         .HasForeignKey("RoomId")
@@ -1430,8 +1411,6 @@ namespace hateekub.Migrations
                         .HasForeignKey("UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ActorUser");
 
                     b.Navigation("Room");
 

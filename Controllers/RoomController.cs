@@ -142,13 +142,28 @@ public IActionResult TestRoom(string gameName, int roomId)
 
 [HttpPut("{roomId}/start")]
 public async Task<IActionResult> StartRoom(int roomId)
-{
+{   
+
+    var currentUser = await _userManager.GetUserAsync(User);
+
+    if (currentUser == null)
+        return Unauthorized();
+
+    var userProfile = await _context.UserProfiles
+        .FirstOrDefaultAsync(p => p.UserId == currentUser.Id);
+
+
     var room = await _context.Rooms
         .Include(r => r.Players)
+        .Include(r=> r.OwnerId)
         .FirstOrDefaultAsync(r => r.Id == roomId);
 
     if (room == null)
         return NotFound("Room not found");
+
+    if (room.OwnerId != userProfile!.Id)
+        return BadRequest("Only Room's Owner Can Start");
+
 
     bool roomReady = true;
 
@@ -256,9 +271,9 @@ public async Task<IActionResult> LeaveRoom(int roomId)
         return Ok(new { message = "Left room" });
     }
 
-[HttpPut("{roomId}/ready")]
-public async Task<IActionResult> PlayerReady(int roomId)
-    {
+[HttpDelete("{roomId}/kick/{playerId}")]
+public async Task<IActionResult> KickPlayer(int roomId, int playerId)
+{
     var currentUser = await _userManager.GetUserAsync(User);
 
     if (currentUser == null)
@@ -270,33 +285,41 @@ public async Task<IActionResult> PlayerReady(int roomId)
     if (userProfile == null)
         return NotFound("User profile not found");
 
-
     var room = await _context.Rooms
-        .Include(r => r.Players)
-        .Include(r => r.Game)
         .FirstOrDefaultAsync(r => r.Id == roomId);
 
     if (room == null)
         return NotFound("Room not found");
-    
-    
+
+    // owner เท่านั้นเตะได้
+    if (room.OwnerId != userProfile.Id)
+        return BadRequest("Only room owner can kick players");
+
+    // หา player ที่ถูกเตะ
     var player = await _context.RoomPlayers
         .FirstOrDefaultAsync(p =>
             p.RoomId == roomId &&
-            p.UserId == userProfile.Id &&
+            p.UserId == playerId &&
             p.Status == PlayerStatus.Active);
 
     if (player == null)
         return NotFound("Player not found");
 
-    player.IsReady = !player.IsReady;
+    // ห้ามเตะ owner
+    if (player.UserId == room.OwnerId)
+        return BadRequest("Cannot kick room owner");
+
+    // เตะออก
+    _context.RoomPlayers.Remove(player);
 
     await _context.SaveChangesAsync();
 
     await _hub.Clients
-            .Group($"room-{roomId}")
-            .SendAsync("PlayerReady", roomId);
+        .Group($"room-{roomId}")
+        .SendAsync("PlayerKicked", playerId);
 
-    return Ok("Ok");
-    }
+    return Ok("Player kicked");
+}
+
+
         }

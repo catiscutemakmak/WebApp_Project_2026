@@ -65,6 +65,27 @@ if (!notifications || notifications.length === 0) {
         const noticedev = document.createElement("div")
         noticedev.classList.add("notice-dev")
         
+        // แสดง Actor Label ถ้ามี
+        if (notice.actorUserName) {
+            const actorLabel = document.createElement("div");
+            actorLabel.classList.add("actor-label");
+            
+            if (notice.actorProfileImage) {
+                const actorImg = document.createElement("img");
+                actorImg.src = notice.actorProfileImage;
+                actorImg.alt = notice.actorUserName;
+                actorImg.classList.add("actor-avatar");
+                actorLabel.appendChild(actorImg);
+            }
+            
+            const actorName = document.createElement("span");
+            actorName.classList.add("actor-name");
+            actorName.innerText = notice.actorUserName;
+            actorLabel.appendChild(actorName);
+            
+            noticedev.appendChild(actorLabel);
+        }
+        
         const messagebox = document.createElement("div");
         const messagechat = document.createElement("p")
         messagebox.classList.add("message-dev");
@@ -85,7 +106,7 @@ if (!notifications || notifications.length === 0) {
         const detailgame = document.createElement("p")
         detailchat.classList.add("detail-text");
         detailgame.classList.add("detail-game");
-        detailgame.innerText = notice.room?.game?.gameName || "Unknown Game";
+        detailgame.innerText = notice.gameName || "Unknown Game";
         detailbox.appendChild(detailchat);
         detailbox.appendChild(detailgame)
         

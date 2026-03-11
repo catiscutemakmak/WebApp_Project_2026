@@ -33,15 +33,18 @@ async function initFloatingCards() {
     const container = document.getElementById("floating-room-container");
     if (!container) return;
 
-    container.innerHTML = "";
-
     let joinedRooms = [];
     try {
         const res = await fetch("/api/my-active-rooms");
         if (res.ok) joinedRooms = await res.json();
     } catch { return; }
 
-    if (joinedRooms.length === 0) return;
+    container.innerHTML = "";
+
+    if (joinedRooms.length === 0) {
+        _roomPanelExpanded = false;
+        return;
+    }
 
     // สร้าง panel เก็บ cards
     const panel = document.createElement("div");
@@ -136,15 +139,18 @@ async function initFloatingQueue() {
     const container = document.getElementById("floating-queue-container");
     if (!container) return;
 
-    container.innerHTML = "";
-
     let queuedRooms = [];
     try {
         const res = await fetch("/api/rooms/my-queue-rooms");
         if (res.ok) queuedRooms = await res.json();
     } catch { return; }
 
-    if (queuedRooms.length === 0) return;
+    container.innerHTML = "";
+
+    if (queuedRooms.length === 0) {
+        _queuePanelExpanded = false;
+        return;
+    }
 
     const panel = document.createElement("div");
     panel.classList.add("floating-queue-panel", "hidden");

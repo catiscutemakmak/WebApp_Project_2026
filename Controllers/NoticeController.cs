@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using hateekub.Models;
 using hateekub.Data;
+using hateekub.DTOS;
 
 namespace hateekub.Controllers;
 
@@ -37,12 +38,25 @@ public class NoticeController : Controller
             return NotFound("UserProfile not found.");
         }
 
-        // ดึง Notifications ของ user นี้ พร้อมข้อมูล Room และ Game
+        // ดึง Notifications ของ user นี้ พร้อมข้อมูล Room, Game และ ActorUser และแปลงเป็น DTO
         var notifications = await _db.Notifications
             .Where(n => n.UserProfileId == userProfile.Id)
             .Include(n => n.Room)
                 .ThenInclude(r => r!.Game)
+            .Include(n => n.ActorUser)
             .OrderByDescending(n => n.CreatedAt)
+            .Select(n => new NotificationDTO
+            {
+                Id = n.Id,
+                Message = n.Message,
+                RoomId = n.RoomId,
+                RoomName = n.Room != null ? n.Room.RoomName : null,
+                GameName = n.Room != null && n.Room.Game != null ? n.Room.Game.GameName : null,
+                ActorUserName = n.ActorUser != null ? n.ActorUser.Nickname : null,
+                ActorProfileImage = n.ActorUser != null ? n.ActorUser.ProfileImagePath : null,
+                IsRead = n.IsRead,
+                CreatedAt = n.CreatedAt
+            })
             .ToListAsync();
 
         return View(notifications);
@@ -52,7 +66,11 @@ public class NoticeController : Controller
     [Route("notice/{notificationId}/read")]
     public async Task<IActionResult> MarkAsRead(int notificationId)
     {
-        var notification = await _db.Notifications.FindAsync(notificationId);
+        var notification = await _db.Notifications
+            .Include(n => n.Room)
+                .ThenInclude(r => r!.Game)
+            .FirstOrDefaultAsync(n => n.Id == notificationId);
+            
         if (notification == null)
         {
             return NotFound();

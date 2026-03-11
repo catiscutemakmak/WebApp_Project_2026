@@ -106,6 +106,8 @@ public IActionResult TestRoom(string gameName, int roomId)
                 OwnerUsername = r.RoomOwner!.Nickname,
                 GameMode = r.GameMode,
                 IsOwner = r.RoomOwner!.UserId == currentUserId,
+                RoomStatus = r.Status,
+                PlayTime = r.PlayDateTime,
 
                 RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
                 {
@@ -161,7 +163,7 @@ public async Task<IActionResult> StartRoom(int roomId)
 
     if (!roomReady)
         return BadRequest("Not all players are ready");
-        
+
     room.StartTime = DateTime.UtcNow;
     room.Status = RoomStatus.Starting;
 

@@ -87,6 +87,19 @@ function renderRooms(room) {
 
     PlayerMain.innerHTML = "";
     
+    const statusContainer = document.getElementById("statusContainer");
+
+    statusContainer.innerHTML = "";
+
+    const status = document.createElement("div");
+
+    status.classList.add("room-status","cyber-status");
+    status.classList.add(getStatusClass(room.roomStatus));
+
+    status.innerText = getStatusText(room.roomStatus);
+
+    statusContainer.appendChild(status);
+
 const slotCount = Math.min(room.roomSetting.maxPlayer, visibleSlots);
 
 const slots = new Array(slotCount).fill(null);
@@ -135,6 +148,38 @@ slots.forEach(p => {
     }
 });
 
+}
+
+function getStatusText(status){
+
+switch(status){
+
+case 0:
+return "SYSTEM STATUS : WAITING";
+
+case 1:
+return "SYSTEM STATUS : FULL";
+
+
+case 2:
+return "SYSTEM STATUS : MATCH STARTING";
+
+case 3:
+return "SYSTEM STATUS : ROOM CLOSED";
+
+case 4:
+return "SYSTEM STATUS : ROOM DELETED";
+}
+
+}
+function getStatusClass(status){
+    switch(status){
+        case 0: return "waiting";
+        case 1: return "full";
+        case 2: return "starting";
+        case 3: return "close";
+        case 4: return "delete";
+    }
 }
 
 function InitChat(){

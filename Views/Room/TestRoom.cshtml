@@ -8,12 +8,12 @@
 
 </head>
 
-<body>
+<body class="loading game-@ViewBag.GameName.Replace(" ", "-")">
 
 <div class="lobby">
 
 <div class="queueBox" id="queueBox">
-    
+
 </div>
 <div class ="topbar">
 <button id="leftBtn" class="left-btn"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -53,6 +53,17 @@
 
     </div>
 
+</div>
+<div id="loadingOverlay" class="cyber-loading hide">
+  <div class="cyber-box">
+    <div class="cyber-title">SYSTEM LOADING</div>
+
+    <div class="cyber-progress">
+      <div class="cyber-bar"></div>
+    </div>
+
+    <div class="cyber-text">Accessing room...</div>
+  </div>
 </div>
     <script>
     const gameName = "@ViewBag.GameName";

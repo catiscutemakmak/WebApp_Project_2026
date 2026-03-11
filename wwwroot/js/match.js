@@ -440,22 +440,45 @@ function createRequirementBar(room) {
 
   const s = room.roomSetting ?? {};
 
-  const items = [
+let playTimeText = null;
+
+if(room.playTime){
+
+    const date = new Date(room.playTime);
+
+    const day = date.toLocaleDateString(undefined,{
+        year:"numeric",
+        month:"short",
+        day:"numeric"
+    });
+
+    const time = date.toLocaleTimeString(undefined,{
+        hour:"2-digit",
+        minute:"2-digit"
+    });
+
+    playTimeText = `⏱️ Play time: ${day} - ${time}`;
+}
+
+const items = [
     room.roomStatus === 0 ? "🔵 Waiting Room" : null,
     room.roomStatus === 1 ? "🟠 Room Full" : null,
     room.roomStatus === 2 ? "🔴 Room Start" : null,
- 
+
     room.myStatus === "Active" ? "🟢 In Room" : null,
     room.myStatus === "Queue" ? "🟡 In Queue" : null,
 
     s.minRank ? `Min Rank: ${s.minRank}` : null,
     s.maxRank ? `Max Rank: ${s.maxRank}` : null,
-    s.isPrivate ? "🔒 Private Room" : "🌐 Public Room",
-    s.allowDuplicateRole
-      ? "♻ Duplicate Role Allowed"
-      : "🚫 No Duplicate Role"
 
-  ];
+    s.isPrivate ? "🔒 Private Room" : "🌐 Public Room",
+
+    s.allowDuplicateRole
+        ? "♻ Duplicate Role Allowed"
+        : "🚫 No Duplicate Role",
+
+    formatPlayTime(room.playTime)
+].filter(Boolean);
 
   items.forEach(text => {
 
@@ -493,6 +516,41 @@ function createRequirementBar(room) {
   return bar;
 
 }
+
+function formatPlayTime(playTime){
+
+    if(!playTime) return null;
+
+    const date = new Date(playTime);
+    const now = new Date();
+
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const time = date.toLocaleTimeString(undefined,{
+        hour:"2-digit",
+        minute:"2-digit"
+    });
+
+    if(target.getTime() === today.getTime()){
+        return `🕒 Today ${time}`;
+    }
+
+    if(target.getTime() === tomorrow.getTime()){
+        return `🕒 Tomorrow ${time}`;
+    }
+
+    const day = date.toLocaleDateString(undefined,{
+        day:"numeric",
+        month:"short"
+    });
+
+    return `🕒 ${day} ${time}`;
+}
+
 function renderPagination(totalRooms){
 
   const totalPages = Math.ceil(totalRooms / roomsPerPage);

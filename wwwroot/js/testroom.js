@@ -44,61 +44,31 @@ async function reloadQueue() {
   }
 }
 
-function registerChatEvents(){
-
-    connection.on("ReceiveMessage", function(username, avatar, message){
-
-        const new_message = {
-            sender: username,
-            avatar: avatar,
-            message: message
-        };
-
-        chat_list.push(new_message);
-
-        const chatBody = document.querySelector(".chat-body");
-
-        if(chatBody){
-
-            const empty = chatBody.querySelector(".chat-empty");
-            if(empty) empty.remove();
-
-            const messageElement = CreateChatMessage(new_message);
-            chatBody.appendChild(messageElement);
-
-            chatBody.scrollTop = chatBody.scrollHeight;
-        }
-    });
-
-}
 async function init() {
 
     try{
         showLoading();
-        connection = new signalR.HubConnectionBuilder()
-            .withUrl("/chathub", { withCredentials:true })
-            .build();
-
-        registerChatEvents();
-
-        await connection.start();
-
-        console.log("SignalR connected");
-
-        await connection.invoke("JoinRoom", roomId);
-
+        
         await reloadRooms();
         await reloadQueue();
 
-        const chatRes = await fetch(`/game/${gameName}/room/${roomId}/chat`);
-        const chatHistory = await chatRes.json();
-
-        chat_list = chatHistory;
         StartBtn()
         LeaveBtn()
         ReadyBtn()
-        RenderChatHistory();
-        
+
+    const chatRes = await fetch(`/api/chat/${roomId}`);
+    const chatHistory = await chatRes.json();
+
+    chat_list = chatHistory.map(m => ({
+    sender: m.username,
+    avatar: m.avatar,
+    message: m.message,
+    sentAt: m.sentAt
+    }));
+     InitChat()
+    RenderChatHistory();
+    setInterval(fetchChatMessages,2000);
+
     }catch(err){
         console.error("INIT ERROR:", err);
         
@@ -163,88 +133,19 @@ slots.forEach(p => {
     }
 });
 
-// chat
-const chatbox = CreateChatBox();
-PlayerMain.appendChild(chatbox);
-
-RenderChatHistory();
-
-const sent_box = CreateSentBox();
-PlayerMain.appendChild(sent_box);
 }
 
+function InitChat(){
+    const ChatMain = document.getElementById("chatContainer")
+    const chatbox = CreateChatBox();
+    ChatMain.appendChild(chatbox);
 
-// function renderRooms(room) {
+    const sent_box = CreateSentBox();
+    ChatMain.appendChild(sent_box);
 
-//     PlayerMain.innerHTML = "";
+    RenderChatHistory();
 
-//     const slots = new Array(visibleSlots).fill(null);
-
-//     const owner = room.players.find(p => p.username === room.ownerUsername);
-//     const others = room.players.filter(p => p.username !== room.ownerUsername);
-
-//     const emptySlots = room.roomSetting.maxPlayer - room.players.length;
-
-
-//     const circle = [...others];
-
-//     for(let i=0;i<emptySlots;i++){
-//         circle.push(null);
-//     }
-
-//     const total = circle.length;
-
-//     // ⭐ แก้ตรงนี้
-//     offset = ((offset % total) + total) % total;
-
-//     slots[centerIndex] = owner;
-
-// let currentleft = centerIndex - 1;
-// let currentright = centerIndex + 1;
-
-// let Isleft = true;
-
-// for(let i = 0; i < circle.length; i++){
-
-//     const c = circle[(offset + i) % total];
-
-//     if(Isleft){
-
-//         if(currentleft >= 0){
-//             slots[currentleft] = c;
-//             currentleft--;
-//         }
-
-//     }else{
-
-//         if(currentright < visibleSlots){
-//             slots[currentright] = c;
-//             currentright++;
-//         }
-
-//     }
-
-//     Isleft = !Isleft;
-
-// }
-//     console.log(slots)
-// slots.forEach(p => {
-//     if(p){
-//         PlayerMain.appendChild(PlayerCard(p, room.ownerUsername));
-//     }else{
-//         PlayerMain.appendChild(EmptySlot());
-//     }
-// });
-
-// // chat
-// const chatbox = CreateChatBox();
-// PlayerMain.appendChild(chatbox);
-
-// RenderChatHistory();
-
-// const sent_box = CreateSentBox();
-// PlayerMain.appendChild(sent_box);
-// }
+}
 
 function PlayerCard(player, ownerUsername) {
 
@@ -320,30 +221,77 @@ document.getElementById("rightBtn").onclick = () => {
 
 };
 function RenderChatHistory() {
+    const chatBox = document.querySelector(".chat-body");
+    if(!chatBox) return;
 
-    const chatBody = document.querySelector(".chat-body");
+    chatBox.innerHTML = "";
 
-    if(!chatBody) return;
+    chat_list.forEach((msg, index) => {
 
-    chatBody.innerHTML = "";
 
-    if(chat_list.length === 0){
-
-        const empty = document.createElement("p");
-        empty.classList.add("chat-empty");
-        empty.innerText = "No messages yet";
-
-        chatBody.appendChild(empty);
-        return;
-    }
-
-    chat_list.forEach(msg => {
         const messageElement = CreateChatMessage(msg);
-        chatBody.appendChild(messageElement);
+
+        chatBox.appendChild(messageElement);
+
     });
 
-    chatBody.scrollTop = chatBody.scrollHeight;
+    setTimeout(() => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 0);
 }
+
+async function fetchChatMessages(){
+
+    try{
+
+        const res = await fetch(`/api/chat/${roomId}`);
+        if(!res.ok) return;
+
+        const messages = await res.json();
+
+        const chatBox = document.querySelector(".chat-body");
+        if(!chatBox) return;
+
+        let hasNewMessage = false;
+
+        messages.forEach(m => {
+
+            const alreadyExists = chat_list.some(c => 
+                c.sentAt === m.sentAt
+            );
+
+            if(!alreadyExists){
+
+                const msg = {
+                    sender: m.username,
+                    avatar: m.avatar,
+                    message: m.message,
+                    sentAt: m.sentAt
+                };
+
+                chat_list.push(msg);
+
+                const prev = chat_list[chat_list.length - 2];
+
+                const messageElement = CreateChatMessage(msg, prev);
+                chatBox.appendChild(messageElement);
+
+                hasNewMessage = true;
+
+            }
+
+        });
+
+        if(hasNewMessage){
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+    }catch(err){
+        console.error("chat polling error:",err);
+    }
+
+}
+
 function CreateChatMessage(chat){
 
     const current_chat = document.createElement("div");
@@ -356,12 +304,18 @@ function CreateChatMessage(chat){
     avatar.style.backgroundSize = "cover";
     avatar.style.backgroundPosition = "center";
 
-    const message = document.createElement("p");
-    message.classList.add("chat-message");
-    message.innerText = `${chat.sender}: ${chat.message}`;
-
     current_chat.appendChild(avatar);
-    current_chat.appendChild(message);
+
+    const sender = document.createElement("p");
+    sender.classList.add("chat-sender");
+    sender.innerText = chat.sender + ": " + chat.message;
+
+    current_chat.appendChild(sender);
+
+    const textBox = document.createElement("div");
+    textBox.classList.add("chat-textbox");
+
+    current_chat.appendChild(textBox);
 
     return current_chat;
 }
@@ -389,35 +343,51 @@ function CreateChatBox() {
     return chatdiv;
 }
 function CreateSentBox() {
-
     const sent_box = document.createElement("form");
     sent_box.classList.add("sent-box");
 
-    const label = document.createElement("span");
-    label.classList.add("chat-label");
-    label.innerText = "Party:";
 
     const input = document.createElement("input");
-    input.placeholder = "Send message...";
+    input.placeholder = "Let's greet your teammate";
     input.classList.add("chat-input");
 
     const button = document.createElement("button");
     button.type = "submit";
-    button.innerText = "Send";
-    button.classList.add("chat-send");
-
-    sent_box.addEventListener("submit", function(e){
+    button.classList.add("chat-send-btn");
+    button.innerHTML = `
+<svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+<path d="M4.95 4.06L28.95 16.6L4.95 27.93L8 16L4.95 4.06Z"
+stroke="#EB55FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+    sent_box.addEventListener("submit", async function(e) {
 
         e.preventDefault();
 
         if(input.value.trim() === "") return;
 
-        connection.invoke("SendMessage", roomId, input.value);
+        const message = input.value;
+
+        try {
+
+            await fetch("/api/chat/send",{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    roomId: roomId,
+                    message: message
+                })
+            });
+
+        } catch(err){
+            console.error("send message error:",err);
+        }
 
         input.value = "";
     });
 
-    sent_box.appendChild(label);
     sent_box.appendChild(input);
     sent_box.appendChild(button);
 

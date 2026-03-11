@@ -413,7 +413,7 @@ function renderQueue(queue) {
         botdiv.appendChild(roleDiv);
 
        // check Owner
-        if (room.isOwner) {
+        if (rooms.isOwner) {
 
             const BtnDiv = document.createElement("div");
             BtnDiv.classList.add("queue-btn-div");

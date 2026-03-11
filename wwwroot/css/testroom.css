@@ -469,7 +469,15 @@ body{
     box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 
     padding: 10px;
+
+    overflow: hidden;   /* ป้องกัน element ล้น */
 }
+
+.chat-format{
+    max-width: 100%;
+    word-break: break-word;
+}
+
 
 /* header */
 
@@ -506,7 +514,7 @@ body{
 .chat-format{
     display:flex;
     gap:10px;
-    margin-bottom:8px;
+    margin-bottom:4px;
 }
 
 .chat-avatar{
@@ -938,3 +946,4 @@ body.loading > *:not(#loadingOverlay) {
 body.loading #loadingOverlay {
   display: flex;
 }
+

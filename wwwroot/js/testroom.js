@@ -223,7 +223,10 @@ function PlayerCard(player, ownerUsername) {
 
     card.dataset.playerId = player.userId;;
       div.addEventListener("click", () => {
-    window.location.href = `/Profile/ViewProfile/${player.userId}`;
+                    if (!kickMode){
+                    window.location.href = `/Profile/ViewProfile/${p.id}`;
+
+                }
   });
 
     card.addEventListener("click", async () => {
@@ -631,6 +634,10 @@ function renderQueue(queue) {
             const imgDiv = document.createElement("img");
             imgDiv.classList.add("queue-profile");
             imgDiv.src = p.profileImagePath;
+            console.log(p.id)
+            imgDiv.addEventListener("click", () => {
+                window.location.href = `/Profile/ViewProfile/${p.id}`;
+            });
 
             const nameDiv = document.createElement("p");
             nameDiv.classList.add("queue-name");

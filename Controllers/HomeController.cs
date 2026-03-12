@@ -71,8 +71,8 @@ public class HomeController : Controller
             .Include(u => u.UserGames)
             .FirstOrDefaultAsync(u => u.UserId == identityUser.Id);
 
-        if (userProfile == null)
-            return NotFound("UserProfile not found.");
+        if (userProfile == null || string.IsNullOrEmpty(userProfile.Nickname) || userProfile.Nickname == "User")
+            return Redirect("/Profile/EditProfile");
 
         // 3. หา Game จาก GameName ที่ส่งมา
         var game = await _db.Games.FirstOrDefaultAsync(g => g.GameName == gameName);
@@ -95,6 +95,7 @@ public class HomeController : Controller
             _db.UserGames.Add(newUserGame);
             await _db.SaveChangesAsync();
         }
+
         // ถ้าเคยกรอกแล้ว → ไม่ทำอะไร ข้ามไป redirect เลย
 
         return Redirect($"/game/{Uri.EscapeDataString(gameName)}");

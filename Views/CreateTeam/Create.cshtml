@@ -56,8 +56,8 @@
             <div class="right-panel">
                  <h1 class="title">Requirement</h1>
 
-                                <label>Room Name</label>
-                <input type="text" class ="RoomName" placeholder="Enter room name" name="roomName" required>
+                <label>Room Name</label>
+                <input type="text" class="RoomName" placeholder="Enter room name" name="roomName" required>
 
                 <label>Game Mode</label>
                 <select id="game-mode" name="gameMode" disabled>
@@ -68,35 +68,44 @@
                 <select id="game-server" name="gameServer" disabled>
                     <option value="" disabled selected hidden>Choose Game First</option>
                 </select>
-                <div id="rank-requirement" class="rank-requirement">
-                <label>Rank Require</label>
-                <div class="rank-row">
-                    <select id="min-rank" name="minRank" disabled required>
-                        <option value=""  selected hidden>Min Rank</option>
-                    </select>
-
-                    <select id="max-rank" name="maxRank" disabled required>
-                        <option value="" selected hidden>Max Rank</option>
-                    </select>
-                </div>
-                </div>
-                <label>Number of players</label>
-                <select name="maxPlayer" id="player-select" class="player-select" required>
-                    <option value="" disabled selected hidden>Choose Player</option>
-                </select>
-
-                                <label>Room Privacy</label>
-                <select name="RoomPrivacy" class="player-select" required>
-                    <option value="" disabled selected hidden>Choose Privacy</option>
-                    <option value="false">Public</option>
-                    <option value="true">Private</option>
-                </select>
                 
-                <div id="role-container">
-                    <label>Your Role</label>
-                    <select id="game-role" name="gameRole" class="player-select" disabled required>
-                        <option value="" disabled selected hidden>Choose Game First</option>
-                    </select>
+                <div id="rank-requirement" class="rank-requirement">
+                    <label>Rank Require</label>
+                    <div class="rank-row">
+                        <select id="min-rank" name="minRank" disabled required>
+                            <option value=""  selected hidden>Min Rank</option>
+                        </select>
+
+                        <select id="max-rank" name="maxRank" disabled required>
+                            <option value="" selected hidden>Max Rank</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 3 OPTIONS IN ONE ROW -->
+                <div class="options-row">
+                    <div class="option-group">
+                        <label>Number of players</label>
+                        <select name="maxPlayer" id="player-select" class="player-select" required>
+                            <option value="" disabled selected hidden>Choose Player</option>
+                        </select>
+                    </div>
+
+                    <div class="option-group">
+                        <label>Room Privacy</label>
+                        <select name="RoomPrivacy" class="player-select" required>
+                            <option value="" disabled selected hidden>Choose Privacy</option>
+                            <option value="false">Public</option>
+                            <option value="true">Private</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group" id="role-container">
+                        <label>Your Role</label>
+                        <select id="game-role" name="gameRole" class="player-select" disabled required>
+                            <option value="" disabled selected hidden>Choose Game First</option>
+                        </select>
+                    </div>
                 </div>
 
                 <label>Description</label>

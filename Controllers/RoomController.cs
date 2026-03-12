@@ -4,8 +4,8 @@ using hateekub.Data;
 using hateekub.Models;
 using hateekub.DTOS;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SignalR;
-using hateekub.Hubs;
+
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 
@@ -15,13 +15,11 @@ public class RoomController : Controller
     private readonly AppDbContext _context;
     private readonly UserManager<IdentityUser> _userManager;
 
-    private readonly IHubContext<RoomHub> _hub;
-
-    public RoomController(AppDbContext context, UserManager<IdentityUser> userManager,IHubContext<RoomHub> hub)
+    public RoomController(AppDbContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
         _userManager = userManager;
-        _hub = hub;
+
     }
 
     [HttpGet("/api/my-active-rooms")]
@@ -138,19 +136,24 @@ public async Task<IActionResult> GetRoomById(string gameName, int roomId)
                 MaxPlayer = r.RoomSetting.MaxPlayer
             },
 
-            Players = r.Players
-                .Where(p => p.Status == PlayerStatus.Active)
-                .Select(p => new PlayerDTO
-                {
-                    UserId = p.UserId,
-                    Username = p.User != null ? p.User.Nickname : "",
-                    RoleName = p.Role != null ? p.Role.RoleName : "",
-                    RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
-                    UserProfile = p.User != null ? p.User.ProfileImagePath ?? "" : "",
-                    Avatar = p.Avatar,
-                    Status = p.IsReady
-                })
-                .ToList()
+        Players = r.Players
+        .Where(p => p.Status == PlayerStatus.Active)
+        .Select(p => new PlayerDTO
+        {
+            UserId = p.UserId,
+            Username = p.User != null ? p.User.Nickname : "",
+            RoleName = p.Role != null ? p.Role.RoleName : "",
+            RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
+            UserProfile = p.User != null ? p.User.ProfileImagePath ?? "" : "",
+            Avatar = p.Avatar,
+            Status = p.IsReady,
+
+            InGameName = _context.UserGames
+                .Where(ug => ug.UserProfileId == p.UserId && ug.GameId == r.GameId)
+                .Select(ug => ug.InGameName)
+                .FirstOrDefault()
+        })
+        .ToList()
         })
         .FirstOrDefaultAsync();
 
@@ -192,9 +195,7 @@ public async Task<IActionResult> ReadyPlayer(int roomId)
 
     await _context.SaveChangesAsync();
 
-    await _hub.Clients
-            .Group($"room-{roomId}")
-            .SendAsync("PlayerReady", roomId);
+
 
     return Ok("Ok");
     }
@@ -311,22 +312,6 @@ public async Task<IActionResult> LeaveRoom(int roomId)
     
         await _context.SaveChangesAsync();
 
-        await _hub.Clients
-            .Group($"room-{roomId}")
-            .SendAsync("RoomUpdated", roomId);
-
-        await _hub.Clients
-            .Group(room.Game.GameName)
-            .SendAsync("PlayerJoinedRoom", room.Game.GameName);
-
-        // ถ้า room ปิดตัว ให้แจ้ง queue players ด้วย เพื่อให้ MY QUEUE card หายออก real-time
-        if (activePlayers.Count == 0)
-        {
-            await _hub.Clients
-                .Group($"room-{roomId}")
-                .SendAsync("QueueUpdated", roomId);
-        }
-
         return Ok(new { message = "Left room" });
     }
 
@@ -371,11 +356,21 @@ public async Task<IActionResult> KickPlayer(int roomId, int playerId)
     // เตะออก
     player.Status = PlayerStatus.Kicked;
 
+    var userNotification = new Notification
+        {
+            UserProfileId = playerId,
+            RoomId = room.Id,
+            ActorUserId = userProfile.Id,
+            Message = $"Sadly! You had been kicked from Room:'{room.RoomName}'",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+        _context.Notifications.Add(userNotification);
+
+    
     await _context.SaveChangesAsync();
 
-    await _hub.Clients
-        .Group($"room-{roomId}")
-        .SendAsync("PlayerKicked", playerId);
+
 
     return Ok("Player kicked");
 }

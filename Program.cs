@@ -55,6 +55,5 @@ app.MapControllerRoute(
     pattern: "{controller=Landing}/{action=Landing}/{id?}")
     .WithStaticAssets();
 
-app.MapHub<hateekub.Hubs.RoomHub>("/roomhub");
 
 app.Run();

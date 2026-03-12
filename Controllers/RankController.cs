@@ -5,8 +5,6 @@ using hateekub.Models;
 using hateekub.DTOS;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.SignalR;
-using hateekub.Hubs;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 
@@ -23,14 +21,14 @@ namespace hateekub.Controllers
 
     private readonly UserManager<IdentityUser> _userManager;
 
-    private readonly IHubContext<RoomHub> _hub;
+
     
 
-        public RankController(AppDbContext context, UserManager<IdentityUser> userManager,IHubContext<RoomHub> hub)
+        public RankController(AppDbContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
         _userManager = userManager;
-        _hub = hub;
+      
     }
 [HttpGet("rank")]
 public async Task<IActionResult> GetGameRanks()

@@ -452,8 +452,10 @@ const items = [
     s.allowDuplicateRole
         ? "♻ Duplicate Role Allowed"
         : "🚫 No Duplicate Role",
+    formatPlayTime(room.playTime),
+    room.description ? `Description: ${room.description}` : null,
 
-    formatPlayTime(room.playTime)
+    
 ].filter(Boolean);
 
   items.forEach(text => {

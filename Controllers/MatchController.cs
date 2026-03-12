@@ -5,8 +5,8 @@ using hateekub.Models;
 using hateekub.DTOS;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.SignalR;
-using hateekub.Hubs;
+
+
 
 
 namespace hateekub.Controllers
@@ -18,13 +18,11 @@ public class MatchController : Controller
 
     private readonly UserManager<IdentityUser> _userManager;
 
-    private readonly IHubContext<RoomHub> _hub;
     
-    public MatchController(AppDbContext context, UserManager<IdentityUser> userManager,IHubContext<RoomHub> hub)
+    public MatchController(AppDbContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
         _userManager = userManager;
-        _hub = hub;
     }
 
 [HttpGet("")]
@@ -60,6 +58,7 @@ var rooms = _context.Rooms
         GameMode = r.GameMode,
         RoomStatus = r.Status,
         PlayTime = r.PlayDateTime,
+        Description = r.Description,
 
         RoomSetting = r.RoomSetting == null ? null : new RoomSettingDTO
         {
@@ -69,7 +68,7 @@ var rooms = _context.Rooms
             IsPrivate = r.RoomSetting.IsPrivate,
             MaxPlayer = r.RoomSetting.MaxPlayer
         },
-
+        
         Players = r.Players
             .Where(p => p.Status == PlayerStatus.Active)
             .Select(p => new PlayerDTO
@@ -80,6 +79,7 @@ var rooms = _context.Rooms
                 RankName = p.Rank != null ? p.Rank.RankImageUrl : "",
                 UserProfile = p.User != null ? p.User.ProfileImagePath : "",
                 Avatar = p.Avatar, 
+
             })
             .ToList(),
 
@@ -330,15 +330,6 @@ public async Task<IActionResult> JoinRoom(int roomId, [FromBody] JoinRoomRequest
 
     await _context.SaveChangesAsync();
 
-    // realtime update rooms list
-    await _hub.Clients.Group(room.Game.GameName)
-        .SendAsync("PlayerJoinedRoom", room.Game.GameName);
-
-    // queue update
-    await _hub.Clients
-        .Group($"room-{roomId}")
-        .SendAsync("QueueUpdated", roomId);
-
     return Ok(new
     {
         success = true,
@@ -406,15 +397,7 @@ public async Task<IActionResult> StartGame(int roomId)
     await _context.SaveChangesAsync();
 
     // ส่ง realtime notification ไปยังผู้เล่นทั้งหมดในห้อง
-    await _hub.Clients
-        .Group($"room-{roomId}")
-        .SendAsync("GameStarted", new
-        {
-            roomId = room.Id,
-            roomName = room.RoomName,
-            gameName = room.Game.GameName,
-            message = "Game has started!"
-        });
+
 
     return Ok(new
     {

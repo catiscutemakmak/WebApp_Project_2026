@@ -222,13 +222,16 @@ function PlayerCard(player, ownerUsername) {
     card.classList.add("card");
 
     card.dataset.playerId = player.userId;;
+      div.addEventListener("click", () => {
+    window.location.href = `/Profile/ViewProfile/${player.userId}`;
+  });
 
     card.addEventListener("click", async () => {
 
         if(!kickMode) return;
 
         const playerId = card.dataset.playerId;
-
+        
         try{
             const res = await fetch(`/game/${gameName}/room/${roomId}/kick/${playerId}`,{
                 method:"DELETE"
@@ -266,12 +269,23 @@ function PlayerCard(player, ownerUsername) {
         card.classList.add("owner");
     }
 
+    const imgWrapper = document.createElement("div");
+    imgWrapper.classList.add("player-img-wrapper");
+
     const img = document.createElement("img");
     img.src = player.userProfile ?? '/images/default-profile.png';
+    img.classList.add("player-img");
 
     img.onerror = () => {
         img.src = '/images/default-profile.png';
     };
+
+    const ingame = document.createElement("div");
+    ingame.classList.add("player-ingame");
+    ingame.innerText = player.inGameName ?? "-";
+
+    imgWrapper.appendChild(img);
+    imgWrapper.appendChild(ingame);
     const name = document.createElement("div");
     name.classList.add("player-name");
     name.innerText = player.username;
@@ -281,7 +295,7 @@ function PlayerCard(player, ownerUsername) {
     title.innerText = player.roleName;
 
     
-    card.appendChild(img);
+    card.appendChild(imgWrapper);
     card.appendChild(name);
     card.appendChild(title);
 

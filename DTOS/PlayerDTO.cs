@@ -10,6 +10,7 @@ namespace hateekub.DTOS
 
         public string? Avatar { get; set; }
 
+        public string? InGameName { get; set; }
         public bool Status { get; set; }
     }
 }   

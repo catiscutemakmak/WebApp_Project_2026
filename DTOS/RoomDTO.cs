@@ -1,4 +1,5 @@
 using hateekub.Models;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace hateekub.DTOS
 {
@@ -21,5 +22,7 @@ namespace hateekub.DTOS
     public RoomStatus RoomStatus {get; set;}
 
     public DateTime PlayTime {get; set;}
+
+    public string? Description {get; set;}
 }
 }

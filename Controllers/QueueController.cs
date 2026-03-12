@@ -6,8 +6,7 @@ using hateekub.Models;
 using hateekub.DTOS;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.SignalR;
-using hateekub.Hubs;
+
 using Microsoft.AspNetCore.Http.HttpResults;
 
 
@@ -24,14 +23,14 @@ namespace hateekub.Controllers
 
     private readonly UserManager<IdentityUser> _userManager;
 
-    private readonly IHubContext<RoomHub> _hub;
+
     
 
-        public QueueController(AppDbContext context, UserManager<IdentityUser> userManager,IHubContext<RoomHub> hub)
+        public QueueController(AppDbContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
         _userManager = userManager;
-        _hub = hub;
+
     }
 
 [HttpGet("{roomId}/queue")]
@@ -116,12 +115,6 @@ public async Task<IActionResult> AcceptQueue(int roomId, int queuePlayerId)
 
     await _context.SaveChangesAsync();
 
-    await _hub.Clients
-    .Group($"room-{roomId}")
-    .SendAsync("QueueUpdated",roomId);
-
-    await _hub.Clients.Group(room.Game.GameName)
-        .SendAsync("PlayerJoinedRoom", room.Game.GameName);
 
     return Ok(new { message = "Player accepted" });
 }
@@ -175,12 +168,7 @@ public async Task<IActionResult> RejectQueue(int roomId, int queuePlayerId)
 
     await _context.SaveChangesAsync();
 
-    await _hub.Clients
-    .Group($"room-{roomId}")
-    .SendAsync("QueueUpdated",roomId);
 
-    await _hub.Clients.Group(room.Game.GameName)
-        .SendAsync("PlayerJoinedRoom", room.Game.GameName);
 
     return Ok(new { message = "Player rejected" });
 }

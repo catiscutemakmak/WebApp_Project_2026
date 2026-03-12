@@ -43,6 +43,7 @@ async function reloadRooms() {
 
     const res = await fetch(`/game/${gameName}/rooms`);
 
+
     if (!res.ok) {
       throw new Error("Reload rooms failed");
     }
